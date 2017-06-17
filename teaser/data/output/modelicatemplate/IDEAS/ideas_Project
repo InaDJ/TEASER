@@ -1,0 +1,9 @@
+within ${prj_name};
+model ${prj_name}_Project
+    inner IDEAS.BoundaryConditions.SimInfoManager sim
+        annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
+    %for bldgindex, bldg in enumerate(buildings, start = 1):
+    ${prj_name}.${bldg.name}.${bldg.name}_Building ${bldg.name}_Building
+        annotation (Placement(transformation(extent={{${-120+(20*bldgindex)},0},{${-100+(20*bldgindex)},20}})));
+    %endfor
+end ${prj_name}_Project;

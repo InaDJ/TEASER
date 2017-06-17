@@ -1,0 +1,9 @@
+    IDEAS.Buildings.Components.Zone ${zone.name}(
+        nSurf=${count_elementsinzone},
+        V=${zone.volume},
+        n50=${zone.infiltration_rate},
+        fRH=45,
+        allowFlowReversal=false,
+        redeclare package Medium = Medium) "Thermal zone: ${zone.name}"
+        annotation (Placement(transformation(extent={{40,${-120+(zoneindex*60)}},{60,${-100+(zoneindex*60)}}})));
+

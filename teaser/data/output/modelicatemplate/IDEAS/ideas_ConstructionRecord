@@ -1,0 +1,5 @@
+within ${mod_prj}.${bldg.name}.Structure.Data.Constructions;
+record ${buildingelement.name}  "Construction data of ${buildingelement.name}"
+  extends IDEAS.Buildings.Data.Interfaces.Construction(
+    final mats={${construction_mats}});
+end ${buildingelement.name};

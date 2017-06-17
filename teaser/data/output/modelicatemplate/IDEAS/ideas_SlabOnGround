@@ -1,0 +1,10 @@
+    IDEAS.Buildings.Components.SlabOnGround ${buildingelement.name}(
+        A=${buildingelement.area},
+        inc=incFloor,
+        azi=aziSouth,
+        redeclare parameter Data.Constructions.${buildingelement.name} constructionType)
+        annotation (Placement(transformation(
+            extent={{-5,-10},{5,10}},
+            rotation=90,
+            origin={${40-(elementindex*30)},${-120+(zoneindex*60)}})));
+

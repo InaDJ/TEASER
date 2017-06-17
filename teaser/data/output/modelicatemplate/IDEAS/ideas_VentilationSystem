@@ -1,0 +1,5 @@
+within ${mod_prj}.${bldg.name}.VentilationSystem;
+model ${bldg.name}.VentilationSystem
+    currently not in use !
+
+end ${bldg.name}.VentilationSystem;

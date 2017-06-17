@@ -12,6 +12,7 @@ from decimal import *
 
 from teaser.logic.buildingobjects.calculation.aixlib import AixLib
 from teaser.logic.buildingobjects.calculation.ibpsa import IBPSA
+from teaser.logic.buildingobjects.calculation.ideas import IDEAS
 
 
 from teaser.logic.buildingobjects.buildingsystems.buildingahu \
@@ -110,9 +111,10 @@ class Building(object):
     used_library_calc : str
         'AixLib' for https://github.com/RWTH-EBC/AixLib
         'IBPSA' for https://github.com/ibpsa/modelica
-    library_attr : Annex() or AixLib() instance
+        'IDEAS' for https://github.com/open-ideas/IDEAS
+    library_attr : Annex(), AixLib() or IDEAS() instance
         Classes with specific functions and attributes for building models in
-        IBPSA and AixLib. Python classes can be found in calculation package.
+        IBPSA, AixLib and IDEAS. Python classes can be found in calculation package.
 
     """
 
@@ -665,6 +667,8 @@ class Building(object):
                 self.library_attr.calc_auxiliary_attr()
             elif self.used_library_calc == 'IBPSA':
                 self.library_attr = IBPSA(parent=self)
+            elif self.used_library_calc == 'IDEAS':
+                self.library_attr = IDEAS(parent=self)
 
     def retrofit_building(
             self,
@@ -984,9 +988,9 @@ class Building(object):
     @used_library_calc.setter
     def used_library_calc(self, value):
 
-        ass_error_1 = "used library needs to be AixLib or IBPSA"
+        ass_error_1 = "used library needs to be AixLib, IBPSA or IDEAS"
 
-        assert value != ["AixLib", "IBPSA"], ass_error_1
+        assert value != ["AixLib", "IBPSA", "IDEAS"], ass_error_1
 
         if self.parent is None and value is None:
             self._used_library_calc = "AixLib"
@@ -999,5 +1003,7 @@ class Building(object):
             self.library_attr = AixLib(parent=self)
         elif self.used_library_calc == 'IBPSA':
             self.library_attr = IBPSA(parent=self)
+        elif self.used_library_calc == 'IDEAS':
+            self.library_attr = IDEAS(parent=self)
 
 

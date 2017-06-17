@@ -1,0 +1,12 @@
+    IDEAS.Buildings.Components.Window ${buildingelement.name}(
+        redeclare parameter Data.Constructions.${buildingelement.name}_Glazing glazing,
+        redeclare parameter Data.Constructions.${buildingelement.name}_Frame fraType,
+        redeclare IDEAS.Buildings.Components.Shading.None shaType,
+        A=${buildingelement.area},
+        inc=incWall,
+        azi=${(buildingelement.orientation-180)/180}*Modelica.Constants.pi)
+        annotation (Placement(transformation(
+            extent={{-5,-10},{5,10}},
+            rotation=90,
+            origin={${40-(elementindex*30)},${-120+(zoneindex*60)}})));
+

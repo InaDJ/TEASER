@@ -1,0 +1,38 @@
+within ${mod_prj}.${bldg.name}.Structure;
+model ${bldg.name}_Structure "Structure of ${bldg.name}"
+    extends IDEAS.Templates.Interfaces.BaseClasses.Structure(
+        redeclare each package Medium = IDEAS.Media.Air,
+        nZones = ${len(bldg.thermal_zones)},
+        VZones = {
+            %for index, zone in enumerate(bldg.thermal_zones, start=1):
+            %if index < len(bldg.thermal_zones):   #way to go for each element
+            ${zone.name}.V,
+            %else:                                 #way to go for last element (no comma)
+            ${zone.name}.V},
+            %endif
+            %endfor
+        AZones = {
+            %for index, zone in enumerate(bldg.thermal_zones, start=1):
+            %if index < len(bldg.thermal_zones):   #way to go for each element
+            ${zone.name}.A,
+            %else:                                 #way to go for last element (no comma)
+            ${zone.name}.A},
+            %endif
+            %endfor
+        Q_design = {
+            %for index, zone in enumerate(bldg.thermal_zones, start=1):
+            %if index < len(bldg.thermal_zones):   #way to go for each element
+            ${zone.name}.Q_design,
+            %else:                                 #way to go for last element (no comma)
+            ${zone.name}.Q_design},
+            %endif
+            %endfor
+        nEmb = 0);
+    parameter Modelica.SIunits.Angle incWall =  IDEAS.Types.Tilt.Wall;
+    parameter Modelica.SIunits.Angle incCeil =  IDEAS.Types.Tilt.Ceiling;
+    parameter Modelica.SIunits.Angle incFloor = IDEAS.Types.Tilt.Floor;
+    parameter Modelica.SIunits.Angle aziNorth = IDEAS.Types.Azimuth.N;
+    parameter Modelica.SIunits.Angle aziEast = IDEAS.Types.Azimuth.E;
+    parameter Modelica.SIunits.Angle aziSouth = IDEAS.Types.Azimuth.S;
+    parameter Modelica.SIunits.Angle aziWest = IDEAS.Types.Azimuth.W;
+

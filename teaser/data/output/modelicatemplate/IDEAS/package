@@ -1,0 +1,23 @@
+%if within is not None:
+within ${within};
+%endif
+%if packagedescription is not None:
+package ${name} "${packagedescription}"
+%else:
+package ${name}
+%endif
+
+  %if kindofpackage is not None:
+  extends Modelica.Icons.${kindofpackage}Package;
+  %else:
+  extends Modelica.Icons.Package;
+  %endif
+
+  %if uses is not None:
+  annotation (uses(
+	%for use in uses:
+    ${use}${',' if not loop.last else '),'}\
+	%endfor 
+    version="1");
+  %endif
+end ${name};

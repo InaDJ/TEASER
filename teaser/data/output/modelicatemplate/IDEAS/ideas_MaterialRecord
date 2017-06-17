@@ -1,0 +1,6 @@
+within ${mod_prj}.${bldg.name}.Structure.Data.Materials;
+record ${mat.name} = IDEAS.Buildings.Data.Interfaces.Material (
+    k=${mat.thermal_conduc},
+    c=${mat.heat_capac*1000},
+    rho=${mat.density}
+    ) "Material name: ${mat.name}, Material ID: ${mat.material_id}";

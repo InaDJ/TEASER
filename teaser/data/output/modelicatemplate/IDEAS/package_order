@@ -1,0 +1,17 @@
+%for e in extra:
+%if addition != None:
+${e.replace(" ", "")}
+%else:
+${e.replace(" ", "")}
+%endif
+%endfor
+%for i in list_with_add:
+%if addition != None: 
+${i.name.replace(" ", "")}${addition}
+%else:
+${i.name.replace(" ", "")}
+%endif
+%endfor
+%for i in list_without_add:
+${i.name.replace(" ", "")}
+%endfor

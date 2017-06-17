@@ -1,0 +1,5 @@
+within ${mod_prj}.${bldg.name}.ElectricalSystem;
+model ${bldg.name}.ElectricalSystem
+    currently not in use !
+
+end ${bldg.name}.ElectricalSystem;

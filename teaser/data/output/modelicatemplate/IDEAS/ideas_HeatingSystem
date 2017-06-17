@@ -1,0 +1,5 @@
+within ${mod_prj}.${bldg.name}.HeatingSystem;
+model ${bldg.name}.HeatingSystem
+    currently not in use !
+
+end ${bldg.name}.HeatingSystem;

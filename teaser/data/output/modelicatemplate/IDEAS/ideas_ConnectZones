@@ -1,0 +1,6 @@
+    connect(${zone.name}.TSensor, TSensor[${index}]);
+    connect(${zone.name}.port_a, port_a[${index}]);
+    connect(${zone.name}.port_b, port_b[${index}]);
+    connect(${zone.name}.gainCon, heatPortCon[${index}]);
+    connect(${zone.name}.gainRad, heatPortRad[${index}]);
+

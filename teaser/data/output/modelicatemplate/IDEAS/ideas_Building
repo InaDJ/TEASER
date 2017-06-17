@@ -1,0 +1,14 @@
+within ${mod_prj}.${bldg.name};
+model ${bldg.name}_Building
+    extends IDEAS.Templates.Interfaces.Building(
+        redeclare ${mod_prj}.${bldg.name}.Structure.${bldg.name}_Structure building,
+        redeclare IDEAS.Templates.Ventilation.None ventilationSystem,
+        redeclare ${mod_prj}.${bldg.name}.Occupant.ISO13790 occupant,
+        redeclare IDEAS.Templates.Heating.IdealRadiatorHeating heatingSystem(
+            QNom = building.Q_design,
+            VZones = building.VZones),
+    redeclare IDEAS.Templates.Interfaces.BaseClasses.CausalInhomeFeeder inHomeGrid);
+
+    annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
+            -100},{100,100}}), graphics));
+end ${bldg.name}_Building;

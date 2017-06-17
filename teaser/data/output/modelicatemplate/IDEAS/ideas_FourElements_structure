@@ -1,0 +1,189 @@
+<%namespace file="/modelica_language/" import="get_true_false, get_list, min_orientations"/> <%namespace file="/conversion/" import="deg_to_rad, azmiut_conv"/>
+within ${zone.parent.parent.name}.${zone.parent.name}.Structure;
+model ${zone.parent.name}_Structure "Structure of ${zone.parent.name}"
+    extends IDEAS.Templates.Interfaces.BaseClasses.Structure(
+        redeclare each package Medium = IDEAS.Media.Air,
+        nZones = ${len(zone.parent.thermal_zones)},
+        VZones = {
+            %for index, zoneinloop in enumerate(zone.parent.thermal_zones, start=1):
+            %if index < len(zone.parent.thermal_zones):   #way to go for each element
+            ${zone.name}.VAir,
+            %else:                                 #way to go for last element (no comma)
+            ${zone.name}.VAir},
+            %endif
+            %endfor
+        AZones = {
+            %for index, zoneinloop in enumerate(zone.parent.thermal_zones, start=1):
+            %if index < len(zone.parent.thermal_zones):   #way to go for each element
+            ${zone.name}.AFloor,
+            %else:                                 #way to go for last element (no comma)
+            ${zone.name}.AFloor},
+            %endif
+            %endfor
+        Q_design = {
+            %for index, zoneinloop in enumerate(zone.parent.thermal_zones, start=1):
+            %if index < len(zone.parent.thermal_zones):   #way to go for each element
+            (1/(1/alphaWall.k+${zone.name}.RExt[1]+ ${zone.name}.RExtRem+ 1/(${zone.name}.alphaExt*sum(${zone.name}.AExt)))+1/(1/alphaWin.k+${zone.name}.RWin+1/(${zone.name}.alphaWin*sum(${zone.name}.AWin)))+1/(1/alphaRoof.k+${zone.name}.RRoof[1]+${zone.name}.RRoofRem+1/(${zone.name}.alphaRoof*${zone.name}.ARoof)))*(295.15-(sim.Tdes))+1/(${zone.name}.RFloor[1]+${zone.name}.RFloorRem+1/(${zone.name}.alphaFloor*${zone.name}.AFloor))*(295.15-sim.TdesGround)+22*${zone.name}.AFloor+0.34*0.5*${zone.name}.VAir*(295.15-(sim.Tdes)),
+            %else:  #way to go for last element (no comma)
+            (1/(1/alphaWall.k+${zone.name}.RExt[1]+ ${zone.name}.RExtRem+ 1/(${zone.name}.alphaExt*sum(${zone.name}.AExt)))+1/(1/alphaWin.k+${zone.name}.RWin+1/(${zone.name}.alphaWin*sum(${zone.name}.AWin)))+1/(1/alphaRoof.k+${zone.name}.RRoof[1]+${zone.name}.RRoofRem+1/(${zone.name}.alphaRoof*${zone.name}.ARoof)))*(295.15-(sim.Tdes))+1/(${zone.name}.RFloor[1]+${zone.name}.RFloorRem+1/(${zone.name}.alphaFloor*${zone.name}.AFloor))*(295.15-sim.TdesGround)+22*${zone.name}.AFloor+0.34*0.5*${zone.name}.VAir*(295.15-(sim.Tdes))},
+            %endif
+            %endfor
+        nEmb = 0);
+    parameter Modelica.SIunits.Angle incWall =  IDEAS.Types.Tilt.Wall;
+    parameter Modelica.SIunits.Angle incCeil =  IDEAS.Types.Tilt.Ceiling;
+    parameter Modelica.SIunits.Angle incFloor = IDEAS.Types.Tilt.Floor;
+    parameter Modelica.SIunits.Angle aziNorth = IDEAS.Types.Azimuth.N;
+    parameter Modelica.SIunits.Angle aziEast = IDEAS.Types.Azimuth.E;
+    parameter Modelica.SIunits.Angle aziSouth = IDEAS.Types.Azimuth.S;
+    parameter Modelica.SIunits.Angle aziWest = IDEAS.Types.Azimuth.W;
+
+    IDEAS.ThermalZones.ReducedOrder.RC.FourElements
+    ${zone.name}(
+        VAir=${zone.volume},
+        alphaExt=${zone.model_attr.alpha_conv_inner_ow},
+        alphaWin=${zone.model_attr.alpha_conv_inner_win},
+        gWin=${zone.model_attr.weighted_g_value},
+        ratioWinConRad=${zone.model_attr.ratio_conv_rad_inner_win},
+        nExt=1,
+        RExt={${zone.model_attr.r1_ow}},
+        RExtRem=${zone.model_attr.r_rest_ow},
+        CExt={${zone.model_attr.c1_ow}},
+        alphaRad=${zone.model_attr.alpha_rad_inner_mean},
+        AInt=${zone.model_attr.area_iw},
+        alphaInt=${zone.model_attr.alpha_conv_inner_iw},
+        nInt=1,
+        RInt={${zone.model_attr.r1_iw}},
+        CInt={${zone.model_attr.c1_iw}},
+        AFloor=${zone.model_attr.area_gf},
+        alphaFloor=${zone.model_attr.alpha_conv_inner_gf},
+        nFloor=1,
+        RFloor={${zone.model_attr.r1_gf}},
+        RFloorRem=${zone.model_attr.r_rest_gf},
+        CFloor={${zone.model_attr.c1_gf}},
+        ARoof=${zone.model_attr.area_rt},
+        alphaRoof=${zone.model_attr.alpha_conv_inner_rt},
+        nRoof=1,
+        RRoof={${zone.model_attr.r1_rt}},
+        RRoofRem=${zone.model_attr.r_rest_rt},
+        CRoof={${zone.model_attr.c1_rt}},
+        energyDynamics=Modelica.Fluid.Types.Dynamics.FixedInitial,
+        extWallRC(thermCapExt(each der_T(fixed=true))),
+        intWallRC(thermCapInt(each der_T(fixed=true))),
+        floorRC(thermCapExt(each der_T(fixed=true))),
+        roofRC(thermCapExt(each der_T(fixed=true))),
+        nOrientations=${min_orientations(zone.model_attr.n_outer)},
+        RWin=${zone.model_attr.r1_win},
+        AWin=${get_list(zone.model_attr.window_areas)},
+        ATransparent=${get_list(zone.model_attr.transparent_areas)},
+        AExt=${get_list(zone.model_attr.facade_areas)},
+        redeclare package Medium = IDEAS.Media.Air,
+        volAir(m_flow_nominal=${zone.name}.VAir*1.2/3600/20),
+        mSenFac=5,
+        nPorts=2)
+        "Thermal zone"
+        annotation (Placement(transformation(extent={{30,-26},{78,10}})));
+  Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature prescribedTemperature
+    "Prescribed temperature for exterior walls outdoor surface temperature"
+    annotation (Placement(transformation(extent={{-6,-30},{6,-18}})));
+  Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature prescribedTemperature1
+    "Prescribed temperature for windows outdoor surface temperature"
+    annotation (Placement(transformation(extent={{-4,-10},{8,2}})));
+  Modelica.Thermal.HeatTransfer.Components.Convection thermalConductorWin
+    "Outdoor convective heat transfer of windows"
+    annotation (Placement(transformation(extent={{24,-8},{14,2}})));
+  Modelica.Thermal.HeatTransfer.Components.Convection thermalConductorWall
+    "Outdoor convective heat transfer of walls"
+    annotation (Placement(transformation(extent={{22,-18},{12,-28}})));
+  Modelica.Blocks.Sources.Constant alphaWall(k=23*sum(${zone.name}.AExt))
+    "Outdoor coefficient of heat transfer for walls"
+    annotation (Placement(
+    transformation(
+    extent={{-4,-4},{4,4}},
+    rotation=90,
+    origin={16,-40})));
+  Modelica.Blocks.Sources.Constant alphaWin(k=23*sum(${zone.name}.AWin))
+    "Outdoor coefficient of heat transfer for windows"
+    annotation (Placement(
+    transformation(
+    extent={{4,-4},{-4,4}},
+    rotation=90,
+    origin={18,14})));
+  Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature prescribedTemperatureFloor
+    "Prescribed temperature for floor plate outdoor surface temperature"
+    annotation (Placement(transformation(
+    extent={{-6,-6},{6,6}},
+    rotation=90,
+    origin={53,-36})));
+  Modelica.Blocks.Sources.Constant TSoil(k=sim.TdesGround)
+    "Outdoor surface temperature for floor plate"
+    annotation (
+    Placement(transformation(
+    extent={{-4,-4},{4,4}},
+    rotation=180,
+    origin={70,-46})));
+  Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature prescribedTemperatureRoof
+    "Prescribed temperature for roof outdoor surface temperature"
+    annotation (Placement(transformation(extent={{-6,-6},{6,6}},rotation=-90,
+    origin={53,20})));
+  Modelica.Thermal.HeatTransfer.Components.Convection thermalConductorRoof
+    "Outdoor convective heat transfer of roof"
+    annotation (Placement(transformation(extent={{5,-5},{-5,5}},rotation=-90,
+    origin={53,3})));
+  Modelica.Blocks.Sources.Constant alphaRoof(k=23*sum(${zone.name}.ARoof))
+    "Outdoor coefficient of heat transfer for roof"
+    annotation (Placement(transformation(extent={{4,-4},{-4,4}},rotation=0,
+    origin={72,3})));
+  Modelica.Blocks.Sources.RealExpression realExpression(y=sim.Te)
+    annotation (Placement(transformation(extent={{-96,62},{-76,82}})));
+  Modelica.Blocks.Sources.RealExpression realExpression1[4](y=sim.weaBus.solBus[2:5].iSolDir
+         + sim.weaBus.solBus[2:5].iSolDif)
+    annotation (Placement(transformation(extent={{-108,18},{-88,38}})));
+equation
+
+  connect(thermalConductorWin.solid,${zone.name}.window)
+    annotation (Line(points={{24,-3},{26,-3},{26,-4},{30,-4}},color={191,0,0}));
+  connect(prescribedTemperature1.port,thermalConductorWin.fluid)
+    annotation (Line(points={{8,-4},{14,-4},{14,-3}},color={191,0,0}));
+  connect(${zone.name}.extWall,thermalConductorWall.solid)
+    annotation (Line(points={{30,-12},{26,-12},{26,-23},{22,-23}},color={191,0,0}));
+  connect(thermalConductorWall.fluid,prescribedTemperature.port)
+    annotation (Line(points={{12,-23},{10,-23},{10,-24},{6,-24}},color={191,0,0}));
+  connect(alphaWall.y,thermalConductorWall.Gc)
+    annotation (Line(points={{16,-35.6},{16,-28},{17,-28}},color={0,0,127}));
+  connect(alphaWin.y,thermalConductorWin.Gc)
+    annotation (Line(points={{18,9.6},{18,2},{19,2}},color={0,0,127}));
+  connect(prescribedTemperatureFloor.port,${zone.name}.floor)
+    annotation (Line(points={{53,-30},{54,-30},{54,-26}},color={191,0,0}));
+  connect(prescribedTemperatureFloor.T,TSoil.y)
+    annotation (Line(points={{53,-43.2},{58.5,-43.2},{58.5,-46},{65.6,-46}},color={0,0,127}));
+  connect(prescribedTemperatureRoof.port,thermalConductorRoof.fluid)
+    annotation (Line(points={{53,14},{53,14},{53,8}},color={191,0,0}));
+  connect(thermalConductorRoof.solid,${zone.name}.roof)
+    annotation (Line(points={{53,-2},{52.9,-2},{52.9,10}},color={191,0,0}));
+  connect(thermalConductorRoof.Gc,alphaRoof.y)
+    annotation (Line(points={{58,3},{64,3},{67.6,3}},color={0,0,127}));
+  connect(${zone.name}.intGainsRad, heatPortRad[1])
+    annotation (Line(points={{78,0},{114,0},{114,-20},{150,-20}},color={191,0,0}));
+  connect(${zone.name}.intGainsConv, heatPortCon[1])
+    annotation (Line(points={{78,-4},{114,-4},{114,20},{150,20}},color={191,0,0}));
+  connect(${zone.name}.TAir, TSensor[1])
+    annotation (Line(points={{79,8},{112,8},{112,-60},{156,-60}}, color={0,0,127}));
+  connect(realExpression.y, prescribedTemperature1.T)
+    annotation (Line(points={{-75,72},{-58,72},{-58,74},{-5.2,74},{-5.2,-4}}, color={0,0,127}));
+  connect(realExpression.y, prescribedTemperature.T)
+    annotation (Line(points={{-75,72},{-40,72},{-40,-24},{-7.2,-24}}, color={0,0,127}));
+  connect(realExpression.y, prescribedTemperatureRoof.T)
+    annotation (Line(points={{-75,72},{-12,72},{-12,27.2},{53,27.2}}, color={0,0,127}));
+  connect(realExpression1.y, ${zone.name}.solRad)
+    annotation (Line(points={{-87,28},{-30,28},{-30,7},{29,7}},color={0,0,127}));
+  connect(port_a, ${zone.name}.ports[1:1])
+    annotation (Line(points={{20,100},{46,100},{46,-25.95},{67.475,-25.95}}, color={0,127,255}));
+  connect(port_b, ${zone.name}.ports[2:2])
+    annotation (Line(points={{-20,100},{26,100},{26,-25.95},{70.525,-25.95}}, color={0,127,255}));
+  annotation (experiment(
+  StopTime=${zone.parent.parent.modelica_info.runtime_simulation},
+  Interval=${zone.parent.parent.modelica_info.interval_output},
+  __Dymola_Algorithm="${zone.parent.parent.modelica_info.current_solver}"),
+  __Dymola_experimentSetupOutput(equidistant=${get_true_false(zone.parent.parent.modelica_info.equidistant_output)},
+  events=${get_true_false(zone.parent.parent.modelica_info.results_at_events)}));
+end ${zone.parent.name}_Structure;

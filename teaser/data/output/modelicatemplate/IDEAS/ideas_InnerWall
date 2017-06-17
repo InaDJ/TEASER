@@ -1,0 +1,10 @@
+    IDEAS.Buildings.Components.InternalWall ${buildingelement.name}(
+        A=${buildingelement.area},
+        inc=${inc},
+        azi=${azi}*Modelica.Constants.pi,
+        redeclare parameter Data.Constructions.${buildingelement.name} constructionType)
+        annotation (Placement(transformation(
+            extent={{-5,-10},{5,10}},
+            rotation=90,
+            origin={${40-(elementindex*30)},${(zoneindex*60)-120}})));
+
