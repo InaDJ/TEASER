@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<MaterialTemplates version="0.4" xmlns="http://teaser.material">
+  <Material material_id="5b853868-855d-11e6-9874-2cd444b2e704">
+    <name>MortarPlaster</name>
+    <density>1800.0</density>
+    <thermal_conduc>1.0</thermal_conduc>
+    <heat_capac>0.100</heat_capac>
+    <solar_absorp>0.55</solar_absorp>
+  </Material>
+  <Material material_id="0abaa039-83ff-11e6-b385-2cd444b2e704">
+    <name>LargeCavityVerticalHeatTransfer</name>
+    <density>100.0</density>
+    <thermal_conduc>0.625</thermal_conduc>
+    <heat_capac>0.020</heat_capac>
+    <solar_absorp>0.55</solar_absorp>
+  </Material>
+  <Material material_id="0abbb1a0-83ff-11e6-9986-2cd444b2e704">
+    <name>LargeCavityHorizontalHeatTransfer</name>
+    <density>100.0</density>
+    <thermal_conduc>0.555556</thermal_conduc>
+    <heat_capac>0.020</heat_capac>
+    <solar_absorp>0.55</solar_absorp>
+  </Material>
+  <Material material_id="0abaa02d-83ff-11e6-8456-2cd444b2e704">
+    <name>Air</name>
+    <density>1.23</density>
+    <thermal_conduc>0.0241</thermal_conduc>
+    <heat_capac>1.008</heat_capac>
+    <solar_absorp>0.0</solar_absorp>
+  </Material>
+  <Material material_id="0abb8a84-83ff-11e6-bd05-2cd444b2e704">
+    <name>Argon</name>
+    <density>1.7</density>
+    <thermal_conduc>0.0162</thermal_conduc>
+    <heat_capac>0.519</heat_capac>
+    <solar_absorp>0.0</solar_absorp>
+  </Material>
+  <Material material_id="0abaee5a-83ff-11e6-a1cb-2cd444b2e704">
+    <name>HeavyMasonryForExteriorApplications</name>
+    <density>1850.0</density>
+    <thermal_conduc>1.10</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.55</solar_absorp>
+  </Material>
+  <Material material_id="0abb1554-83ff-11e6-bed8-2cd444b2e704">
+    <name>HeavyMasonryForInteriorApplications</name>
+    <density>1850.0</density>
+    <thermal_conduc>0.9</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.55</solar_absorp>
+  </Material>
+  <Material material_id="0abaee50-83ff-11e6-8083-2cd444b2e704">
+    <name>LightMasonryForExteriorApplications</name>
+    <density>850.0</density>
+    <thermal_conduc>0.41</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.55</solar_absorp>
+  </Material>
+  <Material material_id="0abac72e-83ff-11e6-aba6-2cd444b2e704">
+    <name>LightMasonryForInteriorApplications</name>
+    <density>850.0</density>
+    <thermal_conduc>0.27</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.55</solar_absorp>
+  </Material>
+  <Material material_id="0aba790e-83ff-11e6-8468-2cd444b2e704">
+    <name>MediumMasonryForExteriorApplications</name>
+    <density>1400.0</density>
+    <thermal_conduc>0.75</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.55</solar_absorp>
+  </Material>
+  <Material material_id="0aba7915-83ff-11e6-8883-2cd444b2e704">
+    <name>MediumMasonryForInteriorApplications</name>
+    <density>1400</density>
+    <thermal_conduc>0.54</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.55</solar_absorp>
+  </Material>
+  <Material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">
+    <name>DenseCastConcreteAlsoForFinishing</name>
+    <density>2100.0</density>
+    <thermal_conduc>1.4</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.55</solar_absorp>
+  </Material>
+  <Material material_id="0abb8a96-83ff-11e6-99cf-2cd444b2e704">
+    <name>Glass</name>
+    <density>2500.0</density>
+    <thermal_conduc>0.96</thermal_conduc>
+    <heat_capac>0.750</heat_capac>
+  </Material>
+  <Material material_id="0abb1552-83ff-11e6-872c-2cd444b2e704">
+    <name>Ground</name>
+    <density>1600.0</density>
+    <thermal_conduc>2.0</thermal_conduc>
+    <heat_capac>1.250</heat_capac>
+    <solar_absorp>0.68</solar_absorp>
+  </Material>
+  <Material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">
+    <name>GypsumPlasterForFinishing</name>
+    <density>975.0</density>
+    <thermal_conduc>0.6</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.65</solar_absorp>
+  </Material>
+  <Material material_id="0abaa032-83ff-11e6-abf7-2cd444b2e704">
+    <name>Krypton</name>
+    <density>3.56</density>
+    <thermal_conduc>0.0086</thermal_conduc>
+    <heat_capac>0.245</heat_capac>
+    <solar_absorp>0.0</solar_absorp>
+  </Material>
+  <Material material_id="0aba520d-83ff-11e6-b775-2cd444b2e704">
+    <name>PlywoodForFinishing</name>
+    <density>1950.0</density>
+    <thermal_conduc>0.9</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.44</solar_absorp>
+  </Material>
+  <Material material_id="0abb6391-83ff-11e6-8633-2cd444b2e704">
+    <name>ScreedOrLightCastConcrete</name>
+    <density>1100.0</density>
+    <thermal_conduc>0.6</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.55</solar_absorp>
+  </Material>
+  <Material material_id="0aba520e-83ff-11e6-920d-2cd444b2e704">
+    <name>CeramicTileForFinishing</name>
+    <density>2100.0</density>
+    <thermal_conduc>1.4</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.55</solar_absorp>
+  </Material>
+  <Material material_id="0abaa02c-83ff-11e6-b0b6-2cd444b2e704">
+    <name>TimberForFinishing</name>
+    <density>550.0</density>
+    <thermal_conduc>0.11</thermal_conduc>
+    <heat_capac>1.880</heat_capac>
+    <solar_absorp>0.44</solar_absorp>
+  </Material>
+  <Material material_id="0abb1551-83ff-11e6-8dae-2cd444b2e704">
+    <name>NaturalSlateForRoofTiles</name>
+    <density>2700.0</density>
+    <thermal_conduc>2.01</thermal_conduc>
+    <heat_capac>0.760</heat_capac>
+    <solar_absorp>0.9</solar_absorp>
+  </Material>
+  <Material material_id="0abaa022-83ff-11e6-befa-2cd444b2e704">
+    <name>CellularGlass</name>
+    <density>130.0</density>
+    <thermal_conduc>0.046</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.85</solar_absorp>
+  </Material>
+  <Material material_id="0abaa033-83ff-11e6-ae46-2cd444b2e704">
+    <name>ExpandedPolystrenemOrEPS</name>
+    <density>26.0</density>
+    <thermal_conduc>0.036</thermal_conduc>
+    <heat_capac>1.470</heat_capac>
+    <solar_absorp>0.8</solar_absorp>
+  </Material>
+  <Material material_id="0aba5208-83ff-11e6-abf6-2cd444b2e704">
+    <name>Glasswool</name>
+    <density>80.0</density>
+    <thermal_conduc>0.040</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.85</solar_absorp>
+  </Material>
+  <Material material_id="0abb1567-83ff-11e6-a410-2cd444b2e704">
+    <name>PolyisocyanuraatFoamOrPIR</name>
+    <density>30.0</density>
+    <thermal_conduc>0.02</thermal_conduc>
+    <heat_capac>1.470</heat_capac>
+    <solar_absorp>0.85</solar_absorp>
+  </Material>
+  <Material material_id="0abb3c62-83ff-11e6-bd7a-2cd444b2e704">
+    <name>PolyurethaneFoamOrPUR</name>
+    <density>30.0</density>
+    <thermal_conduc>0.020</thermal_conduc>
+    <heat_capac>1.470</heat_capac>
+    <solar_absorp>0.8</solar_absorp>
+  </Material>
+  <Material material_id="0abb8a8e-83ff-11e6-a195-2cd444b2e704">
+    <name>Rockwool</name>
+    <density>110.0</density>
+    <thermal_conduc>0.036</thermal_conduc>
+    <heat_capac>0.840</heat_capac>
+    <solar_absorp>0.8</solar_absorp>
+  </Material>
+  <Material material_id="0abb8aa0-83ff-11e6-9a00-2cd444b2e704">
+    <name>ExtrudedPolystyreneOrXPS</name>
+    <density>40.0</density>
+    <thermal_conduc>0.024</thermal_conduc>
+    <heat_capac>1.470</heat_capac>
+    <solar_absorp>0.8</solar_absorp>
+  </Material>
+  <Material material_id="0abb8a9b-83ff-11e6-b02d-2cd444b2e704">
+    <name>Ytong</name>
+    <density>450.0</density>
+    <thermal_conduc>0.120</thermal_conduc>
+    <heat_capac>1.000</heat_capac>
+    <solar_absorp>0.8</solar_absorp>
+  </Material>
+  <Material material_id="0abb8a97-83ff-11e6-8deb-2cd444b2e704">
+    <name>NoInsulation</name>
+    <density>1.23</density>
+    <thermal_conduc>1000.0</thermal_conduc>
+    <heat_capac>1.008</heat_capac>
+    <solar_absorp>0.8</solar_absorp>
+  </Material>
+</MaterialTemplates>

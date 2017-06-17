@@ -76,9 +76,22 @@ class Project(object):
         IBPSA)
     used_library_calc : str
         used library (AixLib and IBPSA are supported)
+    used_data_country: str
+        used country for loading data. Currently Belgium and Germany are supported.
+        Easy to add additional country: add 3 country files to the InputDataFolder (e.g. country_MaterialTemplates)
+            and add to list in load_type_elements
+        Additional guidelines for templates: do not change any of them
+            (otherwise you need to change the XSD scheme and many other things)
+            age categories do not need to be equal for all elements
+            but type should be heavy/light for all elements and
+            Kunststofffenster, Isolierverglasung for all windows (if you generate a singlefamilydwelling,
+            the window type is automatically set to this value, however, in case you don't use the singlefamilydwelling,
+            and the window type is not set, it is currently set to EnEv... NEEDS TO BE FIXED)
+        Belgium currently only works with heavy as construction type and Kunststofffenster, Isolierverglasung as window type
+        (default: "Germany")
     """
 
-    def __init__(self, load_data=True):
+    def __init__(self, load_data=True, used_data_country="Germany"):
         """Constructor of Project Class.
         """
         self._name = "Project"
@@ -95,18 +108,20 @@ class Project(object):
         self.buildings = []
 
         self.load_data = load_data
+        self.used_data_country = used_data_country
 
         self._number_of_elements_calc = 2
         self._merge_windows_calc = False
         self._used_library_calc = "AixLib"
 
         if load_data is True:
-            self.data = self.instantiate_data_class()
+            assert self.used_data_country in ["Germany", "Belgium"]
+            self.data = self.instantiate_data_class(self.used_data_country)
         else:
             self.data = None
 
     @staticmethod
-    def instantiate_data_class():
+    def instantiate_data_class(country):
         """Initialization of DataClass
 
         Returns
@@ -115,7 +130,7 @@ class Project(object):
         DataClass : Instance of DataClass()
 
         """
-        return DataClass()
+        return DataClass(country)
 
     def calc_all_buildings(self, raise_errors=False):
         """Calculates values for all project buildings

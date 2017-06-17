@@ -39,19 +39,20 @@ class DataClass(object):
         teaser/data/input/inputdata/UseConditions.xml
     """
 
-    def __init__(self):
+    def __init__(self, country):
         """Constructor of DataClass
         """
 
+        self.country = country
         self.element_bind = None
         self.path_tb = utils.get_full_path(
-            "data/input/inputdata/TypeBuildingElements.xml")
+            "data/input/inputdata/" + country + "_TypeBuildingElements.xml")
         self.material_bind = None
         self.path_mat = utils.get_full_path(
-            "data/input/inputdata/MaterialTemplates.xml")
+            "data/input/inputdata/" + country + "_MaterialTemplates.xml")
         self.conditions_bind = None
         self.path_uc = utils.get_full_path(
-            "data/input/inputdata/UseConditions.xml")
+            "data/input/inputdata/" + country + "_UseConditions.xml")
 
         self.load_tb_binding()
         self.load_uc_binding()

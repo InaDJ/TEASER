@@ -1,0 +1,741 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TypeBuildingElements version="0.4" xmlns="http://teaser.elements">
+  <OuterWall>
+    <building_age_group>0 1945</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>2.7</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <outer_convection>20.0</outer_convection>
+    <outer_radiation>5.0</outer_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.025</thickness>
+        <material material_id="5b853868-855d-11e6-9874-2cd444b2e704">MortarPlaster</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.25</thickness>
+        <material material_id="0abaee5a-83ff-11e6-a1cb-2cd444b2e704">HeavyMasonryForExteriorApplications</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </OuterWall>
+  <OuterWall>
+    <building_age_group>1946 1970</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>2.7</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <outer_convection>20.0</outer_convection>
+    <outer_radiation>5.0</outer_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.08</thickness>
+        <material material_id="0abaee5a-83ff-11e6-a1cb-2cd444b2e704">HeavyMasonryForExteriorApplications</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abaa039-83ff-11e6-b385-2cd444b2e704">LargeCavityHorizontalHeatTransfer</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.14</thickness>
+        <material material_id="0abb1554-83ff-11e6-bed8-2cd444b2e704">HeavyMasonryForInteriorApplications</material>
+      </layer>
+      <layer>
+        <id>4</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </OuterWall>
+  <OuterWall>
+    <building_age_group>1971 1990</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>2.7</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <outer_convection>20.0</outer_convection>
+    <outer_radiation>5.0</outer_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.01</thickness>
+        <material material_id="0abaee5a-83ff-11e6-a1cb-2cd444b2e704">HeavyMasonryForExteriorApplications</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abbb1a0-83ff-11e6-9986-2cd444b2e704">LargeCavityHorizontalHeatTransfer</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.01</thickness>
+        <material material_id="0abaa033-83ff-11e6-ae46-2cd444b2e704">ExpandedPolystrenemOrEPS</material>
+      </layer>
+      <layer>
+        <id>4</id>
+        <thickness>0.14</thickness>
+        <material material_id="0aba790e-83ff-11e6-8468-2cd444b2e704">MediumMasonryForExteriorApplications</material>
+      </layer>
+      <layer>
+        <id>5</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </OuterWall>
+  <OuterWall>
+    <building_age_group>1991 2005</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>2.7</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <outer_convection>20.0</outer_convection>
+    <outer_radiation>5.0</outer_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abaee5a-83ff-11e6-a1cb-2cd444b2e704">HeavyMasonryForExteriorApplications</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abbb1a0-83ff-11e6-9986-2cd444b2e704">LargeCavityHorizontalHeatTransfer</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.035</thickness>
+        <material material_id="0abaa033-83ff-11e6-ae46-2cd444b2e704">ExpandedPolystrenemOrEPS</material>
+      </layer>
+      <layer>
+        <id>4</id>
+        <thickness>0.14</thickness>
+        <material material_id="0aba7915-83ff-11e6-8883-2cd444b2e704">MediumMasonryForInteriorApplications</material>
+      </layer>
+      <layer>
+        <id>5</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </OuterWall>
+  <OuterWall>
+    <building_age_group>2006 2011</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>2.7</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <outer_convection>20.0</outer_convection>
+    <outer_radiation>5.0</outer_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abaee5a-83ff-11e6-a1cb-2cd444b2e704">HeavyMasonryForExteriorApplications</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abbb1a0-83ff-11e6-9986-2cd444b2e704">LargeCavityHorizontalHeatTransfer</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.06</thickness>
+        <material material_id="0abb8a8e-83ff-11e6-a195-2cd444b2e704">Rockwool</material>
+      </layer>
+      <layer>
+        <id>4</id>
+        <thickness>0.14</thickness>
+        <material material_id="0abaee50-83ff-11e6-8083-2cd444b2e704">LightMasonryForExteriorApplications</material>
+      </layer>
+      <layer>
+        <id>5</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </OuterWall>
+  <InnerWall>
+    <building_age_group>0 1945</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>2.7</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.1</thickness>
+        <material material_id="0aba7915-83ff-11e6-8883-2cd444b2e704">MediumMasonryForInteriorApplications</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </InnerWall>
+  <InnerWall>
+    <building_age_group>1946 1990</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>2.7</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.14</thickness>
+        <material material_id="0aba7915-83ff-11e6-8883-2cd444b2e704">MediumMasonryForInteriorApplications</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </InnerWall>
+  <InnerWall>
+    <building_age_group>1991 2005</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>2.7</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.14</thickness>
+        <material material_id="0aba7915-83ff-11e6-8883-2cd444b2e704">MediumMasonryForInteriorApplications</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </InnerWall>
+  <InnerWall>
+    <building_age_group>2005 2011</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>2.7</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.14</thickness>
+        <material material_id="0aba7915-83ff-11e6-8883-2cd444b2e704">MediumMasonryForInteriorApplications</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </InnerWall>
+  <Rooftop>
+    <building_age_group>0 1945</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <outer_convection>20.000000000000004</outer_convection>
+    <outer_radiation>5.0</outer_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.025</thickness>
+        <material material_id="0aba520e-83ff-11e6-920d-2cd444b2e704">CeramicTileForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.03</thickness>
+        <material material_id="0abaa039-83ff-11e6-b385-2cd444b2e704">LargeCavityVerticalHeatTransfer</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.025</thickness>
+        <material material_id="0abaa02c-83ff-11e6-b0b6-2cd444b2e704">TimberForFinishing</material>
+      </layer>
+      <layer>
+        <id>4</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </Rooftop>
+  <Rooftop>
+    <building_age_group>1946 1970</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <outer_convection>20.000000000000004</outer_convection>
+    <outer_radiation>5.0</outer_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba520e-83ff-11e6-920d-2cd444b2e704">CeramicTileForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abaa039-83ff-11e6-b385-2cd444b2e704">LargeCavityVerticalHeatTransfer</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.01</thickness>
+        <material material_id="0aba5208-83ff-11e6-abf6-2cd444b2e704">Glasswool</material>
+      </layer>
+      <layer>
+        <id>4</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </Rooftop>
+  <Rooftop>
+    <building_age_group>1971 1990</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <outer_convection>20.000000000000004</outer_convection>
+    <outer_radiation>5.0</outer_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.025</thickness>
+        <material material_id="0aba520e-83ff-11e6-920d-2cd444b2e704">CeramicTileForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abaa039-83ff-11e6-b385-2cd444b2e704">LargeCavityVerticalHeatTransfer</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.04</thickness>
+        <material material_id="0aba5208-83ff-11e6-abf6-2cd444b2e704">Glasswool</material>
+      </layer>
+      <layer>
+        <id>4</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </Rooftop>
+  <Rooftop>
+    <building_age_group>1991 2005</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <outer_convection>20.000000000000004</outer_convection>
+    <outer_radiation>5.0</outer_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.025</thickness>
+        <material material_id="0aba520e-83ff-11e6-920d-2cd444b2e704">CeramicTileForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abaa039-83ff-11e6-b385-2cd444b2e704">LargeCavityVerticalHeatTransfer</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.047</thickness>
+        <material material_id="0aba5208-83ff-11e6-abf6-2cd444b2e704">Glasswool</material>
+      </layer>
+      <layer>
+        <id>4</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </Rooftop>
+  <Rooftop>
+    <building_age_group>2006 2011</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <outer_convection>20.000000000000004</outer_convection>
+    <outer_radiation>5.0</outer_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba520e-83ff-11e6-920d-2cd444b2e704">CeramicTileForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abaa039-83ff-11e6-b385-2cd444b2e704">LargeCavityVerticalHeatTransfer</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.1</thickness>
+        <material material_id="0aba5208-83ff-11e6-abf6-2cd444b2e704">Glasswool</material>
+      </layer>
+      <layer>
+        <id>4</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </Rooftop>
+  <GroundFloor>
+    <building_age_group>0 1945</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.15</thickness>
+        <material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">DenseCastConcreteAlsoForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.08</thickness>
+        <material material_id="0abb6391-83ff-11e6-8633-2cd444b2e704">ScreedOrLightCastConcrete</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba520e-83ff-11e6-920d-2cd444b2e704">CeramicTileForFinishing</material>
+      </layer>
+    </Layers>
+  </GroundFloor>
+  <GroundFloor>
+    <building_age_group>1946 1970</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.15</thickness>
+        <material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">DenseCastConcreteAlsoForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.08</thickness>
+        <material material_id="0abb6391-83ff-11e6-8633-2cd444b2e704">ScreedOrLightCastConcrete</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba520e-83ff-11e6-920d-2cd444b2e704">CeramicTileForFinishing</material>
+      </layer>
+    </Layers>
+  </GroundFloor>
+  <GroundFloor>
+    <building_age_group>1971 1990</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.15</thickness>
+        <material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">DenseCastConcreteAlsoForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.03</thickness>
+        <material material_id="0abaa033-83ff-11e6-ae46-2cd444b2e704">ExpandedPolystrenemOrEPS</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.08</thickness>
+        <material material_id="0abb6391-83ff-11e6-8633-2cd444b2e704">ScreedOrLightCastConcrete</material>
+      </layer>
+      <layer>
+        <id>4</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba520e-83ff-11e6-920d-2cd444b2e704">CeramicTileForFinishing</material>
+      </layer>
+    </Layers>
+  </GroundFloor>
+  <GroundFloor>
+    <building_age_group>1991 2005</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.2</thickness>
+        <material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">DenseCastConcreteAlsoForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.04</thickness>
+        <material material_id="0abaa033-83ff-11e6-ae46-2cd444b2e704">ExpandedPolystrenemOrEPS</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.08</thickness>
+        <material material_id="0abb6391-83ff-11e6-8633-2cd444b2e704">ScreedOrLightCastConcrete</material>
+      </layer>
+      <layer>
+        <id>4</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba520e-83ff-11e6-920d-2cd444b2e704">CeramicTileForFinishing</material>
+      </layer>
+    </Layers>
+  </GroundFloor>
+  <GroundFloor>
+    <building_age_group>2006 2011</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.2</thickness>
+        <material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">DenseCastConcreteAlsoForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.055</thickness>
+        <material material_id="0abaa033-83ff-11e6-ae46-2cd444b2e704">ExpandedPolystrenemOrEPS</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.06</thickness>
+        <material material_id="0abb6391-83ff-11e6-8633-2cd444b2e704">ScreedOrLightCastConcrete</material>
+      </layer>
+      <layer>
+        <id>4</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba520e-83ff-11e6-920d-2cd444b2e704">CeramicTileForFinishing</material>
+      </layer>
+    </Layers>
+  </GroundFloor>
+  <Window>
+    <building_age_group>0 2011</building_age_group>
+    <construction_type>Kunststofffenster, Isolierverglasung</construction_type>
+    <inner_convection>2.7</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <outer_convection>20.0</outer_convection>
+    <outer_radiation>5.0</outer_radiation>
+    <g_value>0.755</g_value>
+    <a_conv>0.03</a_conv>
+    <shading_g_total>1.0</shading_g_total>
+    <shading_max_irr>100.0</shading_max_irr>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.501284537</thickness>
+        <material material_id="0abb8a96-83ff-11e6-99cf-2cd444b2e704">Glass</material>
+      </layer>
+    </Layers>
+  </Window>
+  <Ceiling>
+    <building_age_group>0 1945</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.01</thickness>
+        <material material_id="0abaa02c-83ff-11e6-b0b6-2cd444b2e704">TimberForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </Ceiling>
+  <Ceiling>
+    <building_age_group>1946 1990</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">DenseCastConcreteAlsoForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </Ceiling>
+  <Ceiling>
+    <building_age_group>1991 2005</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">DenseCastConcreteAlsoForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </Ceiling>
+  <Ceiling>
+    <building_age_group>2006 2011</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">DenseCastConcreteAlsoForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba51fd-83ff-11e6-b93d-2cd444b2e704">GypsumPlasterForFinishing</material>
+      </layer>
+    </Layers>
+  </Ceiling>
+  <Floor>
+    <building_age_group>0 1946</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.02</thickness>
+        <material material_id="0abaa02c-83ff-11e6-b0b6-2cd444b2e704">TimberForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abaa039-83ff-11e6-b385-2cd444b2e704">LargeCavityVerticalHeatTransfer</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.01</thickness>
+        <material material_id="0abaa02c-83ff-11e6-b0b6-2cd444b2e704">TimberForFinishing</material>
+      </layer>
+    </Layers>
+  </Floor>
+  <Floor>
+    <building_age_group>1946 1970</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.02</thickness>
+        <material material_id="0abaa02c-83ff-11e6-b0b6-2cd444b2e704">TimberForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.08</thickness>
+        <material material_id="0abb6391-83ff-11e6-8633-2cd444b2e704">ScreedOrLightCastConcrete</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">DenseCastConcreteAlsoForFinishing</material>
+      </layer>
+    </Layers>
+  </Floor>
+  <Floor>
+    <building_age_group>1971 1990</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.02</thickness>
+        <material material_id="0abaa02c-83ff-11e6-b0b6-2cd444b2e704">TimberForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.08</thickness>
+        <material material_id="0abb6391-83ff-11e6-8633-2cd444b2e704">ScreedOrLightCastConcrete</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">DenseCastConcreteAlsoForFinishing</material>
+      </layer>
+    </Layers>
+  </Floor>
+  <Floor>
+    <building_age_group>1990 2005</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.02</thickness>
+        <material material_id="0abaa02c-83ff-11e6-b0b6-2cd444b2e704">TimberForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.08</thickness>
+        <material material_id="0abb6391-83ff-11e6-8633-2cd444b2e704">ScreedOrLightCastConcrete</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">DenseCastConcreteAlsoForFinishing</material>
+      </layer>
+    </Layers>
+  </Floor>
+  <Floor>
+    <building_age_group>2006 2011</building_age_group>
+    <construction_type>heavy</construction_type>
+    <inner_convection>1.7000000000000002</inner_convection>
+    <inner_radiation>5.0</inner_radiation>
+    <Layers>
+      <layer>
+        <id>1</id>
+        <thickness>0.02</thickness>
+        <material material_id="0aba520e-83ff-11e6-920d-2cd444b2e704">CeramicTileForFinishing</material>
+      </layer>
+      <layer>
+        <id>2</id>
+        <thickness>0.08</thickness>
+        <material material_id="0abb6391-83ff-11e6-8633-2cd444b2e704">ScreedOrLightCastConcrete</material>
+      </layer>
+      <layer>
+        <id>3</id>
+        <thickness>0.1</thickness>
+        <material material_id="0abb8a82-83ff-11e6-8ff5-2cd444b2e704">DenseCastConcreteAlsoForFinishing</material>
+      </layer>
+    </Layers>
+  </Floor>
+</TypeBuildingElements>
