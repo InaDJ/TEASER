@@ -30,7 +30,7 @@ from teaser.logic.archetypebuildings.bmvbs.office import Office
 from teaser.logic.buildingobjects.building import Building
 
 
-def load_gml(path, prj, checkadjacantbuildings=False):
+def load_gml(path, prj, checkadjacantbuildings, number_of_zones):
     """This function loads buildings from a CityGML file
 
     This function is a proof of concept, be careful using it.
@@ -53,7 +53,8 @@ def load_gml(path, prj, checkadjacantbuildings=False):
                 if part.BuildingPart.function:
                     if part.BuildingPart.function[0].value() == "1000":
                         bldg = SingleFamilyDwelling(parent=prj,
-                                                    name=part.BuildingPart.id)
+                                                    name=part.BuildingPart.id,
+                                                    number_of_zones=number_of_zones)
                     elif part.BuildingPart.function[0].value() == "1120":
                         bldg = Office(parent=prj,
                                       name=part.BuildingPart.id)
@@ -72,7 +73,8 @@ def load_gml(path, prj, checkadjacantbuildings=False):
             if city_object.Feature.function:
                 if city_object.Feature.function[0].value() == "1000":
                     bldg = SingleFamilyDwelling(parent=prj,
-                                                name=city_object.Feature.id)
+                                                name=city_object.Feature.id,
+                                                number_of_zones=number_of_zones)
 
                 elif city_object.Feature.function[0].value() == "1120":
                     bldg = Office(parent=prj,

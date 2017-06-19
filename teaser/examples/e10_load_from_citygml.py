@@ -29,12 +29,13 @@ def example_load_citygml():
     # given in the file and the way the buildings are modeled.
 
     prj_gml = Project(load_data=True)
-    prj_gml.name = "CityGMLSample_Genk"
+    prj_gml.name = "Genk_2"
 
     prj_gml.load_citygml(path="C:\Users\ina\Box Sync\Onderzoek\UNDER CONSTRUCTION/4DH2017\FME\Real model build up\Waterschei.gml",
-                         checkadjacantbuildings=True)
+                         checkadjacantbuildings=True,
+                         number_of_zones=1)
 
-    prj_gml.used_library_calc = 'IBPSA'
+    prj_gml.used_library_calc = 'IDEAS'
     prj_gml.number_of_elements_calc = 4
     prj_gml.merge_windows_calc = False
     prj_gml.weather_file_path = utilities.get_full_path(
@@ -47,7 +48,7 @@ def example_load_citygml():
 
     # To make sure the parameters are calculated correctly we recommend to
     # run calc_all_buildings() function
-    prj_gml.calc_all_buildings()
+    prj_gml.calc_all_buildings(raise_errors=True)
     # To export the ready-to-run models simply call Project.export_ibpsa().
     # First specify the IBPSA related library you want to export the models
     # for. The models are identical in each library, but IBPSA Modelica
@@ -62,9 +63,35 @@ def example_load_citygml():
     # directory, thus we are passing over None for both parameters.
     prj_gml.save_project(file_name=None, path=None)
 
-    prj_gml.export_ibpsa(
+    prj_gml.export_ideas(
         internal_id=None,
-        path=None)
+        path=None,
+        building_model="One-zone")
+
+    for bldgindex, bldg in enumerate(prj_gml.buildings):
+        print("Building name: " + bldg.name)
+        for zoneindex, zone in enumerate(bldg.thermal_zones, start=1):
+            print("Zone name: " + str(zone.name) + " " + str(zone.internal_id))
+            print("Building number of floors: " + str(bldg.number_of_floors))
+            # loop all building elements of this zone
+            buildingelements = zone.outer_walls + zone.inner_walls + zone.windows + zone.rooftops + zone.ground_floors + zone.ceilings + zone.floors
+            count_outerwalls_area = 0
+            count_rooftops_area = 0
+            count_groundfloors_area = 0
+            count_innerwalls_area = 0
+            count_ceilings_area = 0
+            count_floors_area = 0
+            count_windows_area = 0
+            for elementindex, buildingelement in enumerate(buildingelements, start=1):
+                print(buildingelement.name + " has a tilt of " + str(buildingelement.tilt) + " and an orient of " + str(
+                    buildingelement.orientation) + " and an area of " + str(buildingelement.area))
+        """print("Printing gml_surfaces for building " + str(bldg.name))
+        for gml_surface in bldg.gml_surfaces:
+            print("Area: " + str(gml_surface.surface_area))
+            print("Orientation: " + str(gml_surface.surface_orientation))
+            print("Tilt: " + str(gml_surface.surface_tilt))
+            print("/")
+            """
 
 if __name__ == '__main__':
     example_load_citygml()

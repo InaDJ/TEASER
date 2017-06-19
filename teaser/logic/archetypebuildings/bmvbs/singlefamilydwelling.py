@@ -154,6 +154,7 @@ class SingleFamilyDwelling(Residential):
             number_of_floors=None,
             height_of_floors=None,
             net_leased_area=None,
+            number_of_zones=1,
             with_ahu=False,
             residential_layout=None,
             neighbour_buildings=None,
@@ -180,11 +181,16 @@ class SingleFamilyDwelling(Residential):
         self.construction_type = construction_type
         self.number_of_floors = number_of_floors
         self.height_of_floors = height_of_floors
+        self.number_of_zones = number_of_zones
 
         # Parameters are default values for current calculation following IWU
 
         # [area factor, usage type(has to be set)]
-        self.zone_area_factors = {"SingleDwelling": [1, "Living"]}
+        if self.number_of_zones == 2 and number_of_floors > 1:
+            self.zone_area_factors = {"DayZone": [1/number_of_floors, "Living"],
+                                      "NightZone": [(number_of_floors-1)/number_of_floors, "Bed room"]}
+        else:
+            self.zone_area_factors = {"SingleDwelling": [1, "Living"]}
 
         self.outer_wall_names = {"Exterior Facade North": [90.0, 0.0],
                                  "Exterior Facade East": [90.0, 90.0],
