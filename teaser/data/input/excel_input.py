@@ -5,14 +5,12 @@
 
 This module contains function to call Templates for IDEAS model generation
 """
-import os
 import teaser.logic.utilities as utilities
 import pandas as pd
 import numpy as np
 from mako.template import Template
 
-def import_from_excel(path=None,
-                 building_model="One-zone"):
+def load_excel(self, excel_path, python_file_directory, ideas_building_model):
     """ Imports buildings from excel
 
         This function uses Mako Templates specified in
@@ -33,11 +31,9 @@ def import_from_excel(path=None,
         building_model : string
             Currently, only export to one-zone models is supported. Two-zone models
             will be added soon
-
-        LOOK FOR #SPECIFY AND ADD CORRECT DATA
         """
     #READ EXCEL
-    excel_path = "C:\Users\ina\Desktop/170615Genk_LOD1_Summary.xlsx" #SPECIFY
+    excel_path = excel_path
     df = pd.read_excel(excel_path,
                        sheetname= "Summary",
                        header=0,
@@ -45,16 +41,13 @@ def import_from_excel(path=None,
     print("This project contains " + str(len(df.index)) + " buildings. Now creating python script to generate these buildings in TEASER.") #each line is one building
 
     #CREATE FIRST PART OF PYTHON SCRIPT
-    project_name = excel_path[(excel_path.rindex("/") + len("/")):(excel_path.rindex(".xlsx",(excel_path.rindex("/") + len("/"))))] #project name = name of excel
     used_data_country = "Belgium"
-    python_file_directory= utilities.get_full_path(("examples/GENK/")) #SPECIFY
-    utilities.create_path(utilities.get_full_path(python_file_directory))
-    python_file_path = python_file_directory + project_name + ".py"
+    python_file_path = python_file_directory + self.name + ".py"
     teaser_project_start_template = Template(filename=utilities.get_full_path
     ("data/input/inputtemplates/teaser_project_start_from_excel"))  # do not include template .txt
     out_file = open(python_file_path, 'w')
     out_file.write(teaser_project_start_template.render_unicode(
-        project_name=project_name,
+        project_name=self.name,
         used_data_country=used_data_country))
     out_file.close()
 
@@ -121,7 +114,7 @@ def import_from_excel(path=None,
 
     #CREATE FINAL PART OF PYTHON SCRIPT
     number_of_elements_in_ROM = 4
-    ideas_building_model = "One-zone"
+    ideas_building_model = ideas_building_model
     assert ideas_building_model in ["One-zone", "ROM"]
     teaser_project_end_template = Template(filename=utilities.get_full_path
     ("data/input/inputtemplates/teaser_project_end_from_excel"))  # do not include template .txt
@@ -134,5 +127,5 @@ def import_from_excel(path=None,
     #RUN PYTHON SCRIPT > manually !
 
 if __name__ == '__main__':
-    import_from_excel()
+    load_excel()
     print("That's it! :)")

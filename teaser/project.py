@@ -10,6 +10,7 @@ import os
 import re
 import teaser.logic.utilities as utilities
 import teaser.data.input.teaserxml_input as txml_in
+import teaser.data.input.excel_input as excel_in
 import teaser.data.output.teaserxml_output as txml_out
 import teaser.data.output.aixlib_output as aixlib_output
 import teaser.data.output.ibpsa_output as ibpsa_output
@@ -1147,6 +1148,22 @@ class Project(object):
         """
 
         citygml_in.load_gml(path, self, checkadjacantbuildings=checkadjacantbuildings)
+
+    def load_excel(self, excel_path, python_file_directory, ideas_building_model):
+        """Loads buildings from an excel file
+
+        calls the function load_excel in data.excel input
+
+        Parameters
+        ----------
+
+        path : string
+            full path to an Excel file
+
+        """
+
+        excel_in.load_excel(self=self, excel_path=excel_path, python_file_directory=python_file_directory, ideas_building_model=ideas_building_model)
+
 
     def export_aixlib(
             self,
