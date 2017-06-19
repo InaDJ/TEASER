@@ -1,0 +1,114 @@
+
+    '''
+    Create a new building that is part of this project. Set all of its parameters.
+    '''
+    bldg = Building(parent=prj)
+
+    #general parameters
+    bldg.name = "${name_of_building}"
+    bldg.street_name = "${street_of_building}"
+    bldg.city = "${city_of_building}"
+    bldg.year_of_construction = ${year_of_construction}
+    bldg.number_of_floors = ${number_of_floors}
+    bldg.height_of_floors = ${height_of_floors}
+
+    #create one thermal zone
+    tz = ThermalZone(parent=bldg)
+    tz.name = "Living Room"
+    tz.area = ${total_floor_area}
+    tz.volume = ${volume_of_zone}
+    tz.infiltration_rate = ${infiltration_rate}
+
+    #instantiate UseConditions18599 class with thermal zone as parent, and load the use conditions for the usage 'Living'
+    tz.use_conditions = BoundaryConditions(parent=tz)
+    tz.use_conditions.load_use_conditions("Living")
+
+    #create outer walls, windows, roofs, ground floor, inner walls, inner floors and ceilings
+    #key is the name, while the value is a list [year of construction, construction type, area, tilt,orientation]
+    #teaser orientation: (0 : north, 90: est, 180: south, 270: west)
+    out_wall_dict = {"Outer Wall South": [bldg.year_of_construction, 'heavy',
+                                      ${wall_south_area}, 90.0, 180.0],
+                     "Outer Wall East": [bldg.year_of_construction, 'heavy',
+                                      ${wall_east_area}, 90.0, 90.0],
+                     "Outer Wall North": [bldg.year_of_construction, 'heavy',
+                                      ${wall_north_area}, 90.0, 0.0],
+                     "Outer Wall West": [bldg.year_of_construction, 'heavy',
+                                      ${wall_west_area}, 90.0, 270.0]}
+
+    win_dict = {"Window South": [bldg.year_of_construction, 'Kunststofffenster, Isolierverglasung',
+                             ${window_south_area}, 90.0, 180.0],
+                "Window East": [bldg.year_of_construction, 'Kunststofffenster, Isolierverglasung',
+                             ${window_east_area}, 90.0, 90.0],
+                "Window North": [bldg.year_of_construction, 'Kunststofffenster, Isolierverglasung',
+                             ${window_north_area}, 90.0, 0.0],
+                "Window West": [bldg.year_of_construction, 'Kunststofffenster, Isolierverglasung',
+                             ${window_west_area}, 90.0, 270.0]}
+
+    roof_dict = {"Roof South": [bldg.year_of_construction, 'heavy',
+                                      ${roof_south_area}, ${roof_tilt}, 180.0],
+                 "Roof East": [bldg.year_of_construction, 'heavy',
+                                      ${roof_east_area}, ${roof_tilt}, 90.0],
+                 "Roof North": [bldg.year_of_construction, 'heavy',
+                                      ${roof_north_area}, ${roof_tilt}, 0.0],
+                 "Roof West": [bldg.year_of_construction, 'heavy',
+                                      ${roof_west_area}, ${roof_tilt}, 270.0]} #roof tilt of flat roof is -1 in teaser
+
+    in_wall_dict = {"Inner Wall": [bldg.year_of_construction, 'heavy',
+                                        ${inner_wall_area}, 90.0, 0.0]}
+
+    for key, value in out_wall_dict.items():
+        out_wall = OuterWall(parent = tz)
+        out_wall.name = key
+        out_wall.load_type_element(year=value[0],
+                                   construction=value[1])
+        out_wall.area = value[2]
+        out_wall.tilt = value[3]
+        out_wall.orientation = value[4]
+
+    for key, value in win_dict.items():
+        win = Window(parent = tz)
+        win.name = key
+        win.load_type_element(year= value[0],
+                              construction= value[1])
+        win.area = value[2]
+        win.tilt = value[3]
+        win.orientation = value[4]
+
+    for key, value in roof_dict.items():
+        roof = Rooftop(parent=tz)
+        roof.name = key
+        roof.load_type_element(year= value[0],
+                              construction= value[1])
+        roof.area = value[2]
+        roof.tilt = value[3]
+        roof.orientation = value[4]
+
+    for key, value in in_wall_dict.items():
+        in_wall = InnerWall(parent=tz)
+        in_wall.name = key
+        in_wall.load_type_element(year=value[0],
+                                  construction=value[1])
+        in_wall.area = value[2]
+        in_wall.tilt = value[3]
+        in_wall.orientation = value[4]
+
+    ground = GroundFloor(parent=tz)
+    ground.name = "Ground floor"
+    ground.load_type_element(bldg.year_of_construction, 'heavy')
+    ground.area = ${ground_floor_area}
+    ground.orientation = -2
+    ground.tilt = 0
+
+    floor = Floor(parent=tz)
+    floor.name = "Floor"
+    floor.load_type_element(bldg.year_of_construction, 'heavy')
+    floor.area = ${inner_floor_area}
+    floor.orientation = -2
+    floor.tilt = 0
+
+    ceiling = Ceiling(parent=tz)
+    ceiling.name = "Ceiling"
+    ceiling.load_type_element(bldg.year_of_construction, 'heavy')
+    ceiling.area = ${ceiling_area}
+    ceiling.orientation = -1
+    ceiling.tilt = 0

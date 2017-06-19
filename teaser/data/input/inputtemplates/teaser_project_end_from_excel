@@ -1,0 +1,37 @@
+    '''
+    We need to set the projects calculation method. To export the ready-to-run models:
+     simply call Project.export_ibpsa(). First specify the IBPSA related library you
+     want to export the models for. The models are identical in each library, but IBPSA
+     Modelica library is  just a core set of models and should not be used standalone.
+     Valid values are 'AixLib' (default), 'Buildings','BuildingSystems' and 'IDEAS'.
+     You can specify the path, where the model files should be saved. None means that
+     the default path in your home directory will be used. If you only want to export
+     one specific building, you can pass over the internal_id of that building and only
+     this model will be exported. In this case we want to export all buildings to our
+     home directory, thus we are passing over None for both parameters. We also save
+     the entire project in teaserXML format.
+    '''
+    prj.used_library_calc = 'IDEAS'
+    prj.number_of_elements_calc = ${number_of_elements_in_ROM}
+    prj.merge_windows_calc = False
+    prj.weather_file_path = utilities.get_full_path(
+        os.path.join(
+            "data",
+            "input",
+            "inputdata",
+            "weatherdata",
+            "DEU_BW_Mannheim_107290_TRY2010_12_Jahr_BBSR.mos"))
+
+    # To make sure the parameters are calculated correctly we recommend to
+    # run calc_all_buildings() function
+    prj.calc_all_buildings()
+
+    prj.save_project(file_name=None, path=None)
+    prj.export_ideas(
+        internal_id=None,
+        path=None,
+        building_model= "${ideas_building_model}")
+
+if __name__ == '__main__':
+    create_project_from_excel()
+    print("That's it :)")

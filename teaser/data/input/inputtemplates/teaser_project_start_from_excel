@@ -1,0 +1,31 @@
+#Created June 2017
+#Ina De Jaeger
+
+'''
+First we need to import the classes we want to use
+'''
+
+from teaser.logic.buildingobjects.boundaryconditions.boundaryconditions import BoundaryConditions
+from teaser.logic.buildingobjects.building import Building
+from teaser.logic.buildingobjects.buildingphysics.groundfloor import GroundFloor
+from teaser.logic.buildingobjects.buildingphysics.innerwall import InnerWall
+from teaser.logic.buildingobjects.buildingphysics.ceiling import Ceiling
+from teaser.logic.buildingobjects.buildingphysics.floor import Floor
+from teaser.logic.buildingobjects.buildingphysics.layer import Layer
+from teaser.logic.buildingobjects.buildingphysics.material import Material
+from teaser.logic.buildingobjects.buildingphysics.outerwall import OuterWall
+from teaser.logic.buildingobjects.buildingphysics.rooftop import Rooftop
+from teaser.logic.buildingobjects.buildingphysics.window import Window
+from teaser.logic.buildingobjects.thermalzone import ThermalZone
+from teaser.project import Project
+import teaser.logic.utilities as utilities
+import os
+
+def create_project_from_excel():
+    '''
+    Instantiate a Project class (with load_data set to true), then instantiate a
+    Building class, with the project as a parent. This automatically adds the
+    specific building and all its future changes to the project.
+    '''
+    prj = Project(load_data=True,used_data_country="${used_data_country}")
+    prj.name = "${project_name}"
