@@ -77,7 +77,7 @@ class Project(object):
         separate resistance for window, default is False (only supported for
         IBPSA)
     used_library_calc : str
-        used library (AixLib and IBPSA are supported)
+        used library (AixLib, IBPSA and IDEAS are supported)
     used_data_country: str
         used country for loading data. Currently Belgium and Germany are supported.
         Easy to add additional country: add 3 country files to the InputDataFolder (e.g. country_MaterialTemplates)
@@ -1430,9 +1430,9 @@ class Project(object):
     @used_library_calc.setter
     def used_library_calc(self, value):
 
-        ass_error_1 = "used library needs to be AixLib or IBPSA"
+        ass_error_1 = "used library needs to be AixLib or IBPSA or IDEAS"
 
-        assert value != ["AixLib", "IBPSA"], ass_error_1
+        assert value != ["AixLib", "IBPSA", "IDEAS"], ass_error_1
 
         self._used_library_calc = value
 
