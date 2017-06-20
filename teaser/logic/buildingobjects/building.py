@@ -659,6 +659,8 @@ class Building(object):
                 self.library_attr.calc_auxiliary_attr()
             elif self.used_library_calc == 'IBPSA':
                 self.library_attr = IBPSA(parent=self)
+            elif self.used_library_calc == 'IDEAS':
+                self.library_attr = IDEAS(parent=self)
         else:
             warnings.warn("You set conflicting options for the used library "
                           "in Building or Project class and "
