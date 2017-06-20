@@ -512,45 +512,61 @@ class SingleFamilyDwelling(Residential):
             for surface in self.gml_surfaces:
                 if surface.surface_tilt is not None:
                     if surface.surface_tilt == 90:
-                        outer_wall = OuterWall(zone)
-                        outer_wall.load_type_element(
-                            year=self.year_of_construction,
-                            construction=self.construction_type,
-                            data_class=self.parent.data)
-                        outer_wall.name = surface.name
-                        outer_wall.tilt = surface.surface_tilt
-                        outer_wall.orientation = surface.surface_orientation
+                        if any(outer_wall.orientation == surface.surface_orientation for outer_wall in zone.outer_walls):
+                            pass
+                        else:
+                            outer_wall = OuterWall(zone)
+                            outer_wall.load_type_element(
+                                year=self.year_of_construction,
+                                construction=self.construction_type,
+                                data_class=self.parent.data)
+                            outer_wall.name = surface.name
+                            outer_wall.tilt = surface.surface_tilt
+                            outer_wall.orientation = surface.surface_orientation
 
-                        window = Window(zone)
-                        window.load_type_element(self.year_of_construction,
-                                                 "Kunststofffenster, "
-                                                 "Isolierverglasung",
-                                                 data_class=self.parent.data)
-                        window.name = "asd" + str(surface.surface_tilt)
-                        window.tilt = surface.surface_tilt
-                        window.orientation = surface.surface_orientation
+                        if any(window.orientation == surface.surface_orientation for window in
+                               zone.windows):
+                            pass
+                        else:
+                            window = Window(zone)
+                            window.load_type_element(self.year_of_construction,
+                                                     "Kunststofffenster, "
+                                                     "Isolierverglasung",
+                                                     data_class=self.parent.data)
+                            window.name = "asd" + str(surface.surface_tilt)
+                            window.tilt = surface.surface_tilt
+                            window.orientation = surface.surface_orientation
 
                     elif surface.surface_tilt == 0 and \
                         surface.surface_orientation == \
                             -2:
-                        outer_wall = GroundFloor(zone)
-                        outer_wall.load_type_element(
-                            year=self.year_of_construction,
-                            construction=self.construction_type,
-                            data_class=self.parent.data)
-                        outer_wall.name = surface.name
-                        outer_wall.tilt = surface.surface_tilt
-                        outer_wall.orientation = surface.surface_orientation
+                        if any(groundfloor.orientation == surface.surface_orientation for groundfloor in
+                               zone.ground_floors):
+                            pass
+                        else:
+                            outer_wall = GroundFloor(zone)
+                            outer_wall.load_type_element(
+                                year=self.year_of_construction,
+                                construction=self.construction_type,
+                                data_class=self.parent.data)
+                            outer_wall.name = surface.name
+                            outer_wall.tilt = surface.surface_tilt
+                            outer_wall.orientation = surface.surface_orientation
 
                     else:
-                        outer_wall = Rooftop(zone)
-                        outer_wall.load_type_element(
-                            year=self.year_of_construction,
-                            construction=self.construction_type,
-                            data_class=self.parent.data)
-                        outer_wall.name = surface.name
-                        outer_wall.tilt = surface.surface_tilt
-                        outer_wall.orientation = surface.surface_orientation
+                        if any((rooftop.orientation == surface.surface_orientation and \
+                                rooftop.tilt == surface.surface_tilt) \
+                               for rooftop in zone.rooftops):
+                            pass
+                        else:
+                            outer_wall = Rooftop(zone)
+                            outer_wall.load_type_element(
+                                year=self.year_of_construction,
+                                construction=self.construction_type,
+                                data_class=self.parent.data)
+                            outer_wall.name = surface.name
+                            outer_wall.tilt = surface.surface_tilt
+                            outer_wall.orientation = surface.surface_orientation
 
             for key, value in self.inner_wall_names.items():
 
@@ -603,7 +619,6 @@ class SingleFamilyDwelling(Residential):
                     self.set_outer_wall_area(surface.surface_area,
                                              surface.surface_orientation)
         for surface in self.gml_surfaces:
-
             if surface.surface_tilt != 0 and surface.surface_orientation != \
                     -2 and surface.surface_orientation != -1:
                 self.set_window_area(surface.surface_area *
