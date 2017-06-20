@@ -10,6 +10,7 @@ import os
 import re
 import teaser.logic.utilities as utilities
 import teaser.data.input.teaserxml_input as txml_in
+import teaser.data.input.excel_input as excel_in
 import teaser.data.output.teaserxml_output as txml_out
 import teaser.data.output.aixlib_output as aixlib_output
 import teaser.data.output.ibpsa_output as ibpsa_output
@@ -76,7 +77,7 @@ class Project(object):
         separate resistance for window, default is False (only supported for
         IBPSA)
     used_library_calc : str
-        used library (AixLib and IBPSA are supported)
+        used library (AixLib, IBPSA and IDEAS are supported)
     used_data_country: str
         used country for loading data. Currently Belgium and Germany are supported.
         Easy to add additional country: add 3 country files to the InputDataFolder (e.g. country_MaterialTemplates)
@@ -1124,7 +1125,7 @@ class Project(object):
 
         citygml_out.save_gml(self, new_path)
 
-    def load_citygml(self, path=None, checkadjacantbuildings=False):
+    def load_citygml(self, path=None, checkadjacantbuildings=False, number_of_zones=1):
         """Loads buildings from a citygml file
 
         calls the function load_gml in data.CityGML we make use of CityGML core
@@ -1146,7 +1147,23 @@ class Project(object):
 
         """
 
-        citygml_in.load_gml(path, self, checkadjacantbuildings=checkadjacantbuildings)
+        citygml_in.load_gml(path, self, checkadjacantbuildings=checkadjacantbuildings, number_of_zones=number_of_zones)
+
+    def load_excel(self, excel_path, python_file_directory, ideas_building_model):
+        """Loads buildings from an excel file
+
+        calls the function load_excel in data.excel input
+
+        Parameters
+        ----------
+
+        path : string
+            full path to an Excel file
+
+        """
+
+        excel_in.load_excel(self=self, excel_path=excel_path, python_file_directory=python_file_directory, ideas_building_model=ideas_building_model)
+
 
     def export_aixlib(
             self,
@@ -1413,9 +1430,9 @@ class Project(object):
     @used_library_calc.setter
     def used_library_calc(self, value):
 
-        ass_error_1 = "used library needs to be AixLib or IBPSA"
+        ass_error_1 = "used library needs to be AixLib or IBPSA or IDEAS"
 
-        assert value != ["AixLib", "IBPSA"], ass_error_1
+        assert value != ["AixLib", "IBPSA", "IDEAS"], ass_error_1
 
         self._used_library_calc = value
 
