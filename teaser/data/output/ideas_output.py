@@ -42,7 +42,7 @@ def export_ideas(buildings,
         """
     assert building_model in ["One-zone","ROM"]
     uses = ['Modelica(version="' + prj.modelica_info.version + '")',
-        'IBPSA(version="' + prj.buildings[-1].library_attr.version + '")']
+        'IDEAS(version="1.0.0")']
 
     #create project.mo, package.mo and package.order on project level
     _help_project(path=path, prj=prj, buildings=buildings, uses=uses)
@@ -121,9 +121,9 @@ def export_ideas(buildings,
                         count_elementsinzone += 1
                         #rename element, required when citygml import
                         if buildingelement.name == "None":
-                            buildingelement.name = "Window_" + str(count_windows)
+                            buildingelement.name = "Window_" + str(zone.floor_number) + "_" + str(count_windows)
                         else:
-                            buildingelement.name = buildingelement.name + "_" + str(count_windows)
+                            buildingelement.name = buildingelement.name + "_" + str(zone.floor_number) + "_" + str(count_windows)
                         #add to structure.mo + create glazing.mo and frame.mo
                         _help_window(structure_path=structure_path,
                                      prj=prj, bldg=bldg, zone=zone, zoneindex=zoneindex,
@@ -141,9 +141,9 @@ def export_ideas(buildings,
                             count_elementsinzone +=1
                             #rename element
                             if buildingelement.name == "None":
-                                buildingelement.name = "OuterWall_" + str(count_outerwalls)
+                                buildingelement.name = "OuterWall_" + str(zone.floor_number) + "_" + str(count_outerwalls)
                             else:
-                                buildingelement.name = buildingelement.name + "_" + str(count_outerwalls)
+                                buildingelement.name = buildingelement.name + "_" + str(zone.floor_number) + "_" + str(count_outerwalls)
                             #add to structure.mo
                             _help_buildingelement(ideasTemplate="OuterWall",
                                                   structure_path=structure_path,
@@ -161,9 +161,9 @@ def export_ideas(buildings,
                             count_elementsinzone +=1
                             #rename element
                             if buildingelement.name == "None":
-                                buildingelement.name = "Rooftop_" + str(count_rooftops)
+                                buildingelement.name = "Rooftop_" + str(zone.floor_number) + "_" + str(count_rooftops)
                             else:
-                                buildingelement.name = buildingelement.name + "_" + str(count_rooftops)
+                                buildingelement.name = buildingelement.name + "_" + str(zone.floor_number) + "_" + str(count_rooftops)
                             if buildingelement.orientation == -1:
                                 inc = "incCeil"
                             else:
@@ -183,9 +183,9 @@ def export_ideas(buildings,
                             count_elementsinzone += 1
                             #rename element
                             if buildingelement.name == "None":
-                                buildingelement.name = "Groundfloor_" + str(count_groundfloors)
+                                buildingelement.name = "Groundfloor_" + str(zone.floor_number) + "_" + str(count_groundfloors)
                             else:
-                                buildingelement.name = buildingelement.name + "_" + str(count_groundfloors)
+                                buildingelement.name = buildingelement.name + "_" + str(zone.floor_number) + "_" + str(count_groundfloors)
                             #add to structure.mo
                             _help_buildingelement(ideasTemplate="SlabOnGround",
                                                   structure_path=structure_path,
@@ -201,9 +201,9 @@ def export_ideas(buildings,
                             count_elementsinzone +=2 #element is in IDEAS InternalWall, dus 2 connectionpoints to zone
                             #rename element
                             if buildingelement.name == "None":
-                                buildingelement.name = "InnerWall_" + str(count_innerwalls)
+                                buildingelement.name = "InnerWall_" + str(zone.floor_number) + "_" + str(count_innerwalls)
                             else:
-                                buildingelement.name = buildingelement.name + "_" + str(count_innerwalls)
+                                buildingelement.name = buildingelement.name + "_" + str(zone.floor_number) + "_" + str(count_innerwalls)
                             # add to structure.mo
                             _help_buildingelement(ideasTemplate="InnerWall",
                                                   structure_path=structure_path,
@@ -221,9 +221,9 @@ def export_ideas(buildings,
                             count_elementsinzone += 2 #element is in IDEAS InternalWall, dus 2 connectionpoints to zone
                             #rename element
                             if buildingelement.name == "None":
-                                buildingelement.name = "Ceiling_" + str(count_ceilings)
+                                buildingelement.name = "Ceiling_" + str(zone.floor_number) + "_" + str(count_ceilings)
                             else:
-                                buildingelement.name = buildingelement.name + "_" + str(count_ceilings)
+                                buildingelement.name = buildingelement.name + "_" + str(zone.floor_number) + "_" + str(count_ceilings)
                             #add to structure.mo
                             _help_buildingelement(ideasTemplate="InnerWall",
                                                   structure_path=structure_path,
@@ -239,9 +239,9 @@ def export_ideas(buildings,
                             count_elementsinzone += 2 #element is in IDEAS InternalWall, dus 2 connectionpoints to zone
                             #rename element
                             if buildingelement.name == "None":
-                                buildingelement.name = "Floor_" + str(count_floors)
+                                buildingelement.name = "Floor_" + str(zone.floor_number) + "_" + str(count_floors)
                             else:
-                                buildingelement.name = buildingelement.name + "_" + str(count_floors)
+                                buildingelement.name = buildingelement.name + "_" + str(zone.floor_number) + "_" + str(count_floors)
                             #add to structure.mo
                             _help_buildingelement(ideasTemplate="InnerWall",
                                                   structure_path=structure_path,

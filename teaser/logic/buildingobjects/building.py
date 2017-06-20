@@ -283,18 +283,19 @@ class Building(object):
                         wall.area = ((new_area / self.net_leased_area) * zone.area)
                     else:
                         wall.area += ((new_area / self.net_leased_area) * zone.area)
+            # roof and groundfloor area is not weighted by zone (belong either to dayzone or night zone)
             for roof in zone.rooftops:
                 if roof.orientation == orientation:
                     if roof.area == None:
-                        roof.area = ((new_area / self.net_leased_area) * zone.area)
+                        roof.area = new_area
                     else:
-                        roof.area += ((new_area / self.net_leased_area) * zone.area)
+                        roof.area += new_area
             for ground in zone.ground_floors:
                 if ground.orientation == orientation:
                     if ground.area == None:
-                        ground.area = ((new_area / self.net_leased_area) * zone.area)
+                        ground.area = new_area
                     else:
-                        ground.area += ((new_area / self.net_leased_area) * zone.area)
+                        ground.area += new_area
     def reset_outer_wall_area(self, gml_surface):
         for bldg in self.parent.buildings:
             if bldg.internal_id == 10:  # self.internal_id >>> wel in gebouw zelf kijken om zoldermuren te verwijderen:

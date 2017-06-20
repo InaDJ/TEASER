@@ -11,6 +11,9 @@ from teaser.logic.buildingobjects.calculation.two_element import TwoElement
 from teaser.logic.buildingobjects.calculation.three_element import ThreeElement
 from teaser.logic.buildingobjects.calculation.four_element import FourElement
 
+from teaser.logic.buildingobjects.buildingphysics.ceiling import Ceiling
+from teaser.logic.buildingobjects.buildingphysics.floor import Floor
+
 class ThermalZone(object):
     """Thermal zone class.
 
@@ -92,6 +95,7 @@ class ThermalZone(object):
         self.name = None
         self._area = None
         self._volume = None
+        self._floor_number = None
         self._infiltration_rate = 0.5 
         self._outer_walls = []
         self._rooftops = []
@@ -287,14 +291,36 @@ class ThermalZone(object):
 
         assert self.parent is not None, ass_error_1
 
-        for floor in self.floors:
-            floor.area = (
-                (self.parent.number_of_floors - 1) /
-                self.parent.number_of_floors) * self.area
-        for ceiling in self.ceilings:
-            ceiling.area = (
-                (self.parent.number_of_floors - 1) /
-                self.parent.number_of_floors) * self.area
+        if self.parent.parent.used_library_calc == "IDEAS":
+            # if export to ideas, floor between 0 and 1 is connected in model and belongs completely to zone 0
+            # in second zone: all intermediate floors, that are connected to the same zone
+
+            if self.floor_number != 0:
+                for floor in self.floors:
+                    floor.area = ((self.parent.number_of_floors - 2) /
+                                     (self.parent.number_of_floors - 1) * self.area)
+
+                for ceiling in self.ceilings:
+                    ceiling.area = ((self.parent.number_of_floors - 2) /
+                                       (self.parent.number_of_floors - 1) * self.area)
+
+            elif self.floor_number == 0:
+                for floor in self.floors:
+                    floor.area = (self.area)
+
+                for ceiling in self.ceilings:
+                    ceiling.area = (self.area)
+
+        else:
+            for floor in self.floors:
+                floor.area = (
+                    (self.parent.number_of_floors - 1) /
+                    self.parent.number_of_floors) * self.area
+
+            for ceiling in self.ceilings:
+                ceiling.area = (
+                    (self.parent.number_of_floors - 1) /
+                    self.parent.number_of_floors) * self.area
 
         for wall in self.inner_walls:
             typical_area = self.typical_length * self.typical_width
@@ -575,6 +601,23 @@ class ThermalZone(object):
                 self._infiltration_rate = value
             except:
                 raise ValueError("Can't convert infiltration rate to float")
+
+    @property
+    def floor_number(self):
+        return self._floor_number
+
+    @floor_number.setter
+    def floor_number(self, value):
+        if isinstance(value, int):
+            self._floor_number = value
+        elif value is None:
+            self._floor_number = value
+        else:
+            try:
+                value = int(value)
+                self._floor_number = value
+            except:
+                raise ValueError("Can't convert infiltration rate to int")
 
     @property
     def t_inside(self):
