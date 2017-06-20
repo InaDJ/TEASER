@@ -186,11 +186,7 @@ class SingleFamilyDwelling(Residential):
         # Parameters are default values for current calculation following IWU
 
         # [area factor, usage type(has to be set)]
-        if self.number_of_zones == 2 and number_of_floors > 1:
-            self.zone_area_factors = {"DayZone": [1/number_of_floors, "Living"],
-                                      "NightZone": [(number_of_floors-1)/number_of_floors, "Bed room"]}
-        else:
-            self.zone_area_factors = {"SingleDwelling": [1, "Living"]}
+        self.zone_area_factors = {"SingleDwelling": [1, "Living"]}
 
         self.outer_wall_names = {"Exterior Facade North": [90.0, 0.0],
                                  "Exterior Facade East": [90.0, 90.0],
@@ -493,6 +489,12 @@ class SingleFamilyDwelling(Residential):
         Adds Zones, BoundaryConditions, Material settings for walls and
         windows to the geometric representation of CityGML
         """
+
+        if self.number_of_zones == 2 and self.number_of_floors > 1:
+            self.zone_area_factors = {"DayZone": [1.0/self.number_of_floors, "Living"],
+                                      "NightZone": [(self.number_of_floors-1.0)/self.number_of_floors, "Bed room"]}
+        else:
+            self.zone_area_factors = {"SingleZone": [1, "Living"]}
 
         type_bldg_area = self.net_leased_area
         self.net_leased_area = 0.0

@@ -318,7 +318,10 @@ class Building(object):
                                 common_area = self.calculate_common_area(gml_surface=gml_surface,
                                                                          neighbour_gml_surface=neighbour_gml_surface)
                                 print("common area is " + str(common_area))
-                                common_area = common_area / self.net_leased_area * zone.area  # reduce total wall area to area allocated to this zone
+                                print (zone.area)
+                                print(self.net_leased_area)
+
+                                common_area = common_area * zone.area / self.net_leased_area # reduce total wall area to area allocated to this zone
                                 print("common area is " + str(common_area))
                                 if common_area == 0:
                                     # walls are coplanar, but do not overlap

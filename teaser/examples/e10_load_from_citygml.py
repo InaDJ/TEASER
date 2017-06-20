@@ -29,7 +29,7 @@ def example_load_citygml():
     # given in the file and the way the buildings are modeled.
 
     prj_gml = Project(load_data=True)
-    prj_gml.name = "Genk_2"
+    prj_gml.name = "Genk_1"
 
     prj_gml.load_citygml(path="C:\Users\ina\Box Sync\Onderzoek\UNDER CONSTRUCTION/4DH2017\FME\Real model build up\Waterschei.gml",
                          checkadjacantbuildings=True,
