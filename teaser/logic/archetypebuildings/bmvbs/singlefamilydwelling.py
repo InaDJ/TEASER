@@ -491,10 +491,11 @@ class SingleFamilyDwelling(Residential):
         """
 
         if self.number_of_zones == 2 and self.number_of_floors > 1:
-            self.zone_area_factors = {"DayZone": [1.0/self.number_of_floors, "Living"],
-                                      "NightZone": [(self.number_of_floors-1.0)/self.number_of_floors, "Bed room"]}
+            # zone_area_factors = {key: value}, value = area factor, usage, floor_number
+            self.zone_area_factors = {"DayZone": [1.0/self.number_of_floors, "Living", 0],
+                                      "NightZone": [(self.number_of_floors-1.0)/self.number_of_floors, "Bed room", 1]}
         else:
-            self.zone_area_factors = {"SingleZone": [1, "Living"]}
+            self.zone_area_factors = {"SingleZone": [1, "Living", None]}
 
         type_bldg_area = self.net_leased_area
         self.net_leased_area = 0.0
@@ -503,6 +504,7 @@ class SingleFamilyDwelling(Residential):
             zone = ThermalZone(self)
             zone.area = type_bldg_area * value[0]
             zone.name = key
+            zone.floor_number = value[2]
             use_cond = UseCond(zone)
             use_cond.load_use_conditions(value[1],
                                          data_class=self.parent.data)
@@ -513,6 +515,7 @@ class SingleFamilyDwelling(Residential):
 
             for surface in self.gml_surfaces:
                 if surface.surface_tilt is not None:
+                    # create walls and windows for all zones (area is weighted by zone area)
                     if surface.surface_tilt == 90:
                         if any(outer_wall.orientation == surface.surface_orientation for outer_wall in zone.outer_walls):
                             pass
@@ -542,87 +545,91 @@ class SingleFamilyDwelling(Residential):
                     elif surface.surface_tilt == 0 and \
                         surface.surface_orientation == \
                             -2:
-                        if any(groundfloor.orientation == surface.surface_orientation for groundfloor in
-                               zone.ground_floors):
-                            pass
+                        #only create groundfloors for zone with floor number 0
+                        if zone.floor_number == 0 or zone.floor_number == None:
+                            if any(groundfloor.orientation == surface.surface_orientation for groundfloor in
+                                   zone.ground_floors):
+                                pass
+                            else:
+                                outer_wall = GroundFloor(zone)
+                                outer_wall.load_type_element(
+                                    year=self.year_of_construction,
+                                    construction=self.construction_type,
+                                    data_class=self.parent.data)
+                                outer_wall.name = surface.name
+                                outer_wall.tilt = surface.surface_tilt
+                                outer_wall.orientation = surface.surface_orientation
                         else:
-                            outer_wall = GroundFloor(zone)
-                            outer_wall.load_type_element(
-                                year=self.year_of_construction,
-                                construction=self.construction_type,
-                                data_class=self.parent.data)
-                            outer_wall.name = surface.name
-                            outer_wall.tilt = surface.surface_tilt
-                            outer_wall.orientation = surface.surface_orientation
+                            pass
 
                     else:
-                        if any((rooftop.orientation == surface.surface_orientation and \
-                                rooftop.tilt == surface.surface_tilt) \
-                               for rooftop in zone.rooftops):
-                            pass
+                        #only create roofs for zone with floor number 1 in case of multiple zones
+                        if (self.number_of_zones == 2 and zone.floor_number == 1) or zone.floor_number == None:
+                            if any((rooftop.orientation == surface.surface_orientation and \
+                                    rooftop.tilt == surface.surface_tilt) \
+                                   for rooftop in zone.rooftops):
+                                pass
+                            else:
+                                outer_wall = Rooftop(zone)
+                                outer_wall.load_type_element(
+                                    year=self.year_of_construction,
+                                    construction=self.construction_type,
+                                    data_class=self.parent.data)
+                                outer_wall.name = surface.name
+                                outer_wall.tilt = surface.surface_tilt
+                                outer_wall.orientation = surface.surface_orientation
                         else:
-                            outer_wall = Rooftop(zone)
-                            outer_wall.load_type_element(
-                                year=self.year_of_construction,
-                                construction=self.construction_type,
-                                data_class=self.parent.data)
-                            outer_wall.name = surface.name
-                            outer_wall.tilt = surface.surface_tilt
-                            outer_wall.orientation = surface.surface_orientation
+                            pass
 
-            for key, value in self.inner_wall_names.items():
-
-                for zone in self.thermal_zones:
-                    inner_wall = InnerWall(zone)
-                    inner_wall.load_type_element(
+        for key, value in self.inner_wall_names.items():
+            for zone in self.thermal_zones:
+                inner_wall = InnerWall(zone)
+                inner_wall.load_type_element(
                         year=self.year_of_construction,
                         construction=self.construction_type,
                         data_class=self.parent.data)
-                    inner_wall.name = key
-                    inner_wall.tilt = value[0]
-                    inner_wall.orientation = value[1]
+                inner_wall.name = key
+                inner_wall.tilt = value[0]
+                inner_wall.orientation = value[1]
 
-            if self.number_of_floors > 1:
+        if self.number_of_floors > 1:
+            for key, value in self.ceiling_names.items():
+                for zone in self.thermal_zones:
+                    ceiling = Ceiling(zone)
+                    ceiling.load_type_element(
+                        year=self.year_of_construction,
+                        construction=self.construction_type,
+                        data_class=self.parent.data)
+                    ceiling.name = key
+                    ceiling.tilt = value[0]
+                    ceiling.orientation = value[1]
 
-                for key, value in self.ceiling_names.items():
-
-                    for zone in self.thermal_zones:
-                        ceiling = Ceiling(zone)
-                        ceiling.load_type_element(
-                            year=self.year_of_construction,
-                            construction=self.construction_type,
-                            data_class=self.parent.data)
-                        ceiling.name = key
-                        ceiling.tilt = value[0]
-                        ceiling.orientation = value[1]
-
-                for key, value in self.floor_names.items():
-
-                    for zone in self.thermal_zones:
-                        floor = Floor(zone)
-                        floor.load_type_element(
-                            year=self.year_of_construction,
-                            construction=self.construction_type,
-                            data_class=self.parent.data)
-                        floor.name = key
-                        floor.tilt = value[0]
-                        floor.orientation = value[1]
-            else:
-                pass
+            for key, value in self.floor_names.items():
+                for zone in self.thermal_zones:
+                    floor = Floor(zone)
+                    floor.load_type_element(
+                       year=self.year_of_construction,
+                       construction=self.construction_type,
+                       data_class=self.parent.data)
+                    floor.name = key
+                    floor.tilt = value[0]
+                    floor.orientation = value[1]
+        else:
+            pass
 
         for surface in self.gml_surfaces:
             if surface.surface_tilt is not None:
                 if surface.surface_tilt != 0 and surface.surface_orientation\
-                        != -2 and surface.surface_orientation != -1:
+                        != -2 and surface.surface_orientation != -1: #walls
                     self.set_outer_wall_area(surface.surface_area *
                                              (1 - self.est_factor_win_area),
                                              surface.surface_orientation)
-                else:
+                else: #floors and rooftops
                     self.set_outer_wall_area(surface.surface_area,
                                              surface.surface_orientation)
         for surface in self.gml_surfaces:
             if surface.surface_tilt != 0 and surface.surface_orientation != \
-                    -2 and surface.surface_orientation != -1:
+                    -2 and surface.surface_orientation != -1: #walls=windows
                 self.set_window_area(surface.surface_area *
                                      self.est_factor_win_area,
                                      surface.surface_orientation)

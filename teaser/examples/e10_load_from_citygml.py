@@ -30,12 +30,13 @@ def example_load_citygml():
 
     prj_gml = Project(load_data=True)
     prj_gml.name = "Genk_1"
+    prj_gml.used_library_calc = 'IDEAS'
 
     prj_gml.load_citygml(path="C:\Users\ina\Box Sync\Onderzoek\UNDER CONSTRUCTION/4DH2017\FME\Real model build up\Waterschei.gml",
                          checkadjacantbuildings=True,
-                         number_of_zones=1)
+                         number_of_zones=2)
 
-    prj_gml.used_library_calc = 'IDEAS'
+
     prj_gml.number_of_elements_calc = 4
     prj_gml.merge_windows_calc = False
     prj_gml.weather_file_path = utilities.get_full_path(
@@ -68,11 +69,15 @@ def example_load_citygml():
         path=None,
         building_model="One-zone")
 
+    print(prj_gml.used_library_calc)
     for bldgindex, bldg in enumerate(prj_gml.buildings):
         print("Building name: " + bldg.name)
         for zoneindex, zone in enumerate(bldg.thermal_zones, start=1):
             print("Zone name: " + str(zone.name) + " " + str(zone.internal_id))
+            print("Zone floor number: " + str(zone.floor_number))
+            print ("Zone area: " + str(zone.area))
             print("Building number of floors: " + str(bldg.number_of_floors))
+            print(zone.parent.parent.used_library_calc)
             # loop all building elements of this zone
             buildingelements = zone.outer_walls + zone.inner_walls + zone.windows + zone.rooftops + zone.ground_floors + zone.ceilings + zone.floors
             count_outerwalls_area = 0
