@@ -42,7 +42,7 @@ def export_ideas(buildings,
         """
     assert building_model in ["One-zone","ROM"]
     uses = ['Modelica(version="' + prj.modelica_info.version + '")',
-        'IBPSA(version="' + prj.buildings[-1].library_attr.version + '")']
+        'IDEAS(version="1.0.0")']
 
     #create project.mo, package.mo and package.order on project level
     _help_project(path=path, prj=prj, buildings=buildings, uses=uses)
