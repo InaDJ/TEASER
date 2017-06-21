@@ -249,29 +249,7 @@ def export_ideas(buildings,
                             is_innerwall=True))
                         help_connections.close()
 
-                    for bldg_element in zone.ceilings:
-                        count_ceilings +=1
-                        count_elementsinzone +=2
-                        bldg_element.name = type(bldg_element).__name__ + "_" + str(count_zonesinbldg) + "_" + str(count_ceilings)
-                        # Add ceiling to structure.mo
-                        template = Template(filename=template_path + "ideas_InnerWall", lookup=lookup)
-                        out_file = open(structure_filepath, 'a')
-                        out_file.write(
-                            template.render_unicode(
-                                buildingelement=bldg_element,
-                                zoneindex=count_zonesinbldg,
-                                elementindex=count_elementsinzone))
-                        out_file.close()
-                        # Add ceiling to help_connections
-                        template = Template(filename=template_path + "ideas_ConnectComponents")
-                        help_connections = open((structure_path +"help_connections.txt"), 'a')
-                        help_connections.write(template.render_unicode(
-                            buildingelement=bldg_element,
-                            index=count_elementsinzone,
-                            is_innerwall=True))
-                        help_connections.close()
-
-                    for bldg_element in zone.floors:
+                    for bldg_element in zone.floors: #ceilings are not created as they are included in the construction record of the floor
                         count_floors +=1
                         count_elementsinzone +=2
                         bldg_element.name = type(bldg_element).__name__ + "_" + str(count_zonesinbldg) + "_" + str(count_outerwalls)
@@ -367,12 +345,66 @@ def export_ideas(buildings,
                 bldg_materials = [] # required for package.order on materials level
                 bldg_constructions = [] # required for package.order on constructions level
 
-                bldg_elements = outer_walls + rooftops + ground_floors + inner_walls + ceilings + floors
+                bldg_elements = outer_walls + rooftops + ground_floors + inner_walls
                 for bldg_element in bldg_elements:
                     construction_name = type(bldg_element).__name__
                     construction_mats = "" # construction outputstring
 
                     for layer_element in bldg_element.layer:
+                        # Create material
+                        material = layer_element.material
+                        if material.name.replace(" ", "") in bldg_materials:
+                            pass
+                        else:
+                            template = Template(filename=template_path + "ideas_MaterialRecord")
+                            out_file = open(materials_path + material.name.replace(" ", "") + ".mo", 'w')
+                            out_file.write(template.render_unicode(
+                                bldg=bldg,
+                                mat=material))
+                            out_file.close()
+                            bldg_materials.append(material.name.replace(" ", ""))
+                        # Create construction (construction outputstring)
+                        construction_mats = construction_mats + \
+                                            "Data.Materials." + \
+                                            material.name.replace(" ", "") + \
+                                            "(d=" + \
+                                            str(layer_element.thickness) + "),"
+
+                    template = Template(filename=template_path + "ideas_ConstructionRecord")
+                    out_file = open(constructions_path + construction_name+ ".mo", 'w')
+                    out_file.write(template.render_unicode(
+                        bldg=bldg,
+                        construction_name=construction_name,
+                        construction_mats=construction_mats[:-1]))  # delete last comma
+                    out_file.close()
+                    bldg_constructions.append(construction_name)
+
+                if floors != []:
+                    floor = floors[0]
+                    ceiling = ceilings[0]
+                    construction_name = type(floor).__name__
+                    construction_mats = "" # construction outputstring
+
+                    for layer_element in floor.layer:
+                        # Create material
+                        material = layer_element.material
+                        if material.name.replace(" ", "") in bldg_materials:
+                            pass
+                        else:
+                            template = Template(filename=template_path + "ideas_MaterialRecord")
+                            out_file = open(materials_path + material.name.replace(" ", "") + ".mo", 'w')
+                            out_file.write(template.render_unicode(
+                                bldg=bldg,
+                                mat=material))
+                            out_file.close()
+                            bldg_materials.append(material.name.replace(" ", ""))
+                        # Create construction (construction outputstring)
+                        construction_mats = construction_mats + \
+                                            "Data.Materials." + \
+                                            material.name.replace(" ", "") + \
+                                            "(d=" + \
+                                            str(layer_element.thickness) + "),"
+                    for layer_element in ceiling.layer:
                         # Create material
                         material = layer_element.material
                         if material.name.replace(" ", "") in bldg_materials:
