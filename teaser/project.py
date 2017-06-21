@@ -1273,7 +1273,7 @@ class Project(object):
             self,
             internal_id=None,
             path=None,
-            building_model="One-zone"):
+            building_model="Detailed"):
 
         """Exports values to a record file for Modelica simulation
 

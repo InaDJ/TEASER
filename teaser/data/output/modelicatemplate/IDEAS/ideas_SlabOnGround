@@ -1,8 +1,9 @@
+<%namespace file="/modelica_language/" import="get_true_false, get_list, min_orientations"/> <%namespace file="/conversion/" import="deg_to_rad, azmiut_conv"/>
     IDEAS.Buildings.Components.SlabOnGround ${buildingelement.name}(
         A=${buildingelement.area},
-        inc=incFloor,
-        azi=aziSouth,
-        redeclare parameter Data.Constructions.${buildingelement.name} constructionType)
+        inc=${deg_to_rad(buildingelement.tilt)},
+        azi=${azmiut_conv(buildingelement.orientation)},
+        redeclare parameter Data.Constructions.${type(buildingelement).__name__} constructionType)
         annotation (Placement(transformation(
             extent={{-5,-10},{5,10}},
             rotation=90,

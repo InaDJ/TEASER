@@ -28,13 +28,13 @@ def example_load_citygml():
     # import of CityGML underlies some limitations e.g. concerning data
     # given in the file and the way the buildings are modeled.
 
-    prj_gml = Project(load_data=True)
-    prj_gml.name = "Genk_1"
+    prj_gml = Project(load_data=True, used_data_country="Belgium")
+    prj_gml.name = "Genk_2"
     prj_gml.used_library_calc = 'IDEAS'
 
     prj_gml.load_citygml(path="C:\Users\ina\Box Sync\Onderzoek\UNDER CONSTRUCTION/4DH2017\FME\Real model build up\Waterschei.gml",
                          checkadjacantbuildings=True,
-                         number_of_zones=2)
+                         number_of_zones=1)
 
 
     prj_gml.number_of_elements_calc = 4
@@ -67,7 +67,7 @@ def example_load_citygml():
     prj_gml.export_ideas(
         internal_id=None,
         path=None,
-        building_model="One-zone")
+        building_model="Detailed")
 
     print(prj_gml.used_library_calc)
     for bldgindex, bldg in enumerate(prj_gml.buildings):

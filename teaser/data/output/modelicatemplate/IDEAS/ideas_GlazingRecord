@@ -1,4 +1,4 @@
-within ${mod_prj}.${bldg.name}.Structure.Data.Constructions;
-record ${buildingelement.name}_Glazing =
+within ${bldg.parent.name}.${bldg.name}.Structure.Data.Constructions;
+record ${construction_name}_Glazing =
               IDEAS.Buildings.Data.Glazing.${nameofglazinginIDEAS}
-  "Glazing data of ${buildingelement.name}";
+  "Glazing data of ${construction_name}";

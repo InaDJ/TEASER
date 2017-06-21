@@ -1,4 +1,4 @@
-within ${mod_prj}.${bldg.name}.Occupant;
+within ${bldg.parent.name}.${bldg.name}.Occupant;
 model ISO13790 "Occupant model, based on ISO13790 (internal gains are defined as the average between living area and others)"
   extends IDEAS.Templates.Interfaces.BaseClasses.Occupant(
                                                 nZones=1, nLoads=1);

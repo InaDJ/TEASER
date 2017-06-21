@@ -1,8 +1,9 @@
+<%namespace file="/modelica_language/" import="get_true_false, get_list, min_orientations"/> <%namespace file="/conversion/" import="deg_to_rad, azmiut_conv"/>
     IDEAS.Buildings.Components.OuterWall ${buildingelement.name}(
         A=${buildingelement.area},
-        inc=${inc},
-        azi=${azi}*Modelica.Constants.pi,
-        redeclare parameter Data.Constructions.${buildingelement.name} constructionType)
+        inc=${deg_to_rad(buildingelement.tilt)},
+        azi=${azmiut_conv(buildingelement.orientation)},
+        redeclare parameter Data.Constructions.${type(buildingelement).__name__} constructionType)
         annotation (Placement(transformation(
             extent={{-5.5,-10.5},{5.5,10.5}},
             rotation=90,

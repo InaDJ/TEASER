@@ -1,5 +1,5 @@
-within ${mod_prj}.${bldg.name}.Structure.Data.Constructions;
-record ${buildingelement.name}  "Construction data of ${buildingelement.name}"
+within ${bldg.parent.name}.${bldg.name}.Structure.Data.Constructions;
+record ${construction_name}  "Construction data of ${construction_name}"
   extends IDEAS.Buildings.Data.Interfaces.Construction(
     final mats={${construction_mats}});
-end ${buildingelement.name};
+end ${construction_name};

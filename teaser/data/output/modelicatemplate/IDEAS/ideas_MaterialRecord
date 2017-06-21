@@ -1,4 +1,4 @@
-within ${mod_prj}.${bldg.name}.Structure.Data.Materials;
+within ${bldg.parent.name}.${bldg.name}.Structure.Data.Materials;
 record ${mat.name} = IDEAS.Buildings.Data.Interfaces.Material (
     k=${mat.thermal_conduc},
     c=${mat.heat_capac*1000},

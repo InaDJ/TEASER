@@ -1,7 +1,7 @@
-within ${mod_prj}.${bldg.name}.Structure.Data.Constructions;
-record ${buildingelement.name}_Frame    "Frame data of ${buildingelement.name}"
+within ${bldg.parent.name}.${bldg.name}.Structure.Data.Constructions;
+record ${construction_name}_Frame    "Frame data of ${construction_name}"
     extends IDEAS.Buildings.Data.Interfaces.Frame (
     present=true,
     U_value=${frame_uvalue});
-end ${buildingelement.name}_Frame;
+end ${construction_name}_Frame;
 

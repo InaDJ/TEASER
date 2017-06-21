@@ -1,10 +1,11 @@
+<%namespace file="/modelica_language/" import="get_true_false, get_list, min_orientations"/> <%namespace file="/conversion/" import="deg_to_rad, azmiut_conv"/>
     IDEAS.Buildings.Components.Window ${buildingelement.name}(
-        redeclare parameter Data.Constructions.${buildingelement.name}_Glazing glazing,
-        redeclare parameter Data.Constructions.${buildingelement.name}_Frame fraType,
+        redeclare parameter Data.Constructions.${type(buildingelement).__name__}_Glazing glazing,
+        redeclare parameter Data.Constructions.${type(buildingelement).__name__}_Frame fraType,
         redeclare IDEAS.Buildings.Components.Shading.None shaType,
         A=${buildingelement.area},
-        inc=incWall,
-        azi=${(buildingelement.orientation-180)/180}*Modelica.Constants.pi)
+        inc=${deg_to_rad(buildingelement.tilt)},
+        azi=${azmiut_conv(buildingelement.orientation)})
         annotation (Placement(transformation(
             extent={{-5,-10},{5,10}},
             rotation=90,

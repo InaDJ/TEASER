@@ -1,4 +1,4 @@
-within ${mod_prj}.${bldg.name}.Structure;
+within ${bldg.parent.name}.${bldg.name}.Structure;
 model ${bldg.name}_Structure "Structure of ${bldg.name}"
     extends IDEAS.Templates.Interfaces.BaseClasses.Structure(
         redeclare each package Medium = IDEAS.Media.Air,
