@@ -236,7 +236,7 @@ def _merge_bldg(prj):
             for bldg_main in prj.buildings:
                 if (bldg_main.name) == (bldg_ext.name.split('_')[0] + '_' + bldg_ext.name.split('_')[1] + '_1'):
                     # print (bldg_ext.name + ' was found to be a building extension of ' + bldg_main.name)
-                    bldg_main.net_leased_area += bldg_ext.net_leased_area
+                    # don't add net leased area of building on building level (is automatically summed up based on zones)
                     for bldg_ext_zone in bldg_ext.thermal_zones:
                         for bldg_main_zone in bldg_main.thermal_zones:
                             if bldg_ext_zone.name == "NightZone":
