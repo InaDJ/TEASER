@@ -1,17 +1,41 @@
 within ${bldg.parent.name}.${bldg.name}.Occupant;
-model ISO13790 "Occupant model, based on ISO13790 (internal gains are defined as the average between living area and others)"
+model ISO13790 "Occupant model, based on ISO13790
+  (if 1-zone model: internal gains are defined
+  as the average between living area and others,
+  if 2-zone model: internal gains of night zone are defined as
+  the weighted average between weekdays and weekends)"
   extends IDEAS.Templates.Interfaces.BaseClasses.Occupant(
-                                                nZones=1, nLoads=1);
+                                                nZones=${len(bldg.thermal_zones)}, nLoads=1);
 
-  parameter Modelica.SIunits.Area[nZones] AFloor=ones(nZones)*100
+  parameter Modelica.SIunits.Area[nZones] AFloor = {
+            %for index, zone in enumerate(bldg.thermal_zones, start=1):
+            %if index < len(bldg.thermal_zones):   #way to go for each element
+            ${zone.area},
+            %else:                                 #way to go for last element (no comma)
+            ${zone.area}}
+            %endif
+            %endfor
     "Floor area of different zones";
 
 protected
   final parameter Modelica.SIunits.Time interval=3600 "Time interval";
   final parameter Modelica.SIunits.Time period=86400/interval
     "Number of intervals per repetition";
+  %if len(bldg.thermal_zones) == 1:
   final parameter Real[3] QDay(unit="W/m2") = {4.5,10.5,4}
     "Specific power for dayzone";
+  %elif len(bldg.thermal_zones) == 2:
+  final parameter Real[3] QDay(unit="W/m2") = {8,20,2}
+    "Specific power for dayzone";
+  final parameter Real[3] QNight(unit="W/m2") = {1.286, 1.857, 6}
+    "Specific power for nightzone";
+  %else:
+    ERROR: number of zones is neither 1 nor 2.
+  %endif
+  final parameter Real[3] TDay(unit="degC") = {16,21,18}
+    "Temperature set-points for dayzone {day, evening, night}";
+  final parameter Real[3] TNight(unit="degC") = {16,18,20}
+    "Temperature set-points for nightzone {day, evening, night}";
   Integer t "Time interval";
 
 algorithm
@@ -22,19 +46,40 @@ algorithm
 equation
   mDHW60C = 0;
   heatPortRad.Q_flow = heatPortCon.Q_flow;
+  %if len(bldg.thermal_zones) == 1:
   P = {heatPortCon[1].Q_flow + heatPortRad[1].Q_flow};
+  %elif len(bldg.thermal_zones) == 2:
+  P = {heatPortCon[1].Q_flow + heatPortRad[1].Q_flow +
+  heatPortCon[2].Q_flow + heatPortRad[2].Q_flow};
+  %endif
   Q = {0};
 
   if noEvent(t <= 7 or t >= 23) then
-    heatPortCon.Q_flow = -AFloor*QDay[3]*0.5;
-    TSet = ones(nZones)*(18 + 273.15);
+    %if len(bldg.thermal_zones) == 1:
+    heatPortCon.Q_flow = {-AFloor[1]*QDay[3]*0.5};
+    TSet = {TDay[3]+273.15};
+    %elif len(bldg.thermal_zones) == 2:
+    heatPortCon.Q_flow = {-AFloor[1]*QDay[3]*0.5, -AFloor[2]*QNight[3]*0.5};
+    TSet = {TDay[3]+273.15, TNight[3]+273.15};
+    %endif
   elseif noEvent(t > 7 and t <= 17) then
-    heatPortCon.Q_flow = -AFloor*QDay[1]*0.5;
-    TSet = ones(nZones)*(16 + 273.15);
+    %if len(bldg.thermal_zones) == 1:
+    heatPortCon.Q_flow = {-AFloor[1]*QDay[1]*0.5};
+    TSet = {TDay[1]+273.15};
+    %elif len(bldg.thermal_zones) == 2:
+    heatPortCon.Q_flow = {-AFloor[1]*QDay[1]*0.5, -AFloor[2]*QNight[1]*0.5};
+    TSet = {TDay[1]+273.15, TNight[1]+273.15};
+    %endif
   else
-    heatPortCon.Q_flow = -AFloor*QDay[2]*0.5;
-    TSet = ones(nZones)*(21 + 273.15);
+    %if len(bldg.thermal_zones) == 1:
+    heatPortCon.Q_flow = {-AFloor[1]*QDay[2]*0.5};
+    TSet = {TDay[2]+273.15};
+    %elif len(bldg.thermal_zones) == 2:
+    heatPortCon.Q_flow = {-AFloor[1]*QDay[2]*0.5, -AFloor[2]*QNight[2]*0.5};
+    TSet = {TDay[2]+273.15, TNight[2]+273.15};
+    %endif
   end if;
 
   annotation (Diagram(graphics));
 end ISO13790;
+
