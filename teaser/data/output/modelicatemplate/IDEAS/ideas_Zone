@@ -1,6 +1,7 @@
     IDEAS.Buildings.Components.Zone ${zone.name}(
         nSurf=${count_elementsinzone},
         V=${zone.volume},
+        A=${zone.area},
         n50=${zone.infiltration_rate},
         fRH=45,
         allowFlowReversal=false,
