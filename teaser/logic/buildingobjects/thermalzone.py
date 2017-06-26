@@ -294,8 +294,10 @@ class ThermalZone(object):
         if self.parent.parent.used_library_calc == "IDEAS":
             # if export to ideas, floor between 0 and 1 is connected in model and belongs completely to zone 0
             # in second zone: all intermediate floors, that are connected to the same zone
+            # if building number_of_floors == 1, then single-zone
+            # if building number_of_floors == 2, then day and nightzone, but no internal floors in nightzone > delete
 
-            if self.floor_number != 0:
+            if self.floor_number != 0 and self.parent.number_of_floors !=2:
                 for floor in self.floors:
                     floor.area = ((self.parent.number_of_floors - 2) /
                                      (self.parent.number_of_floors - 1) * self.area)
@@ -303,6 +305,10 @@ class ThermalZone(object):
                 for ceiling in self.ceilings:
                     ceiling.area = ((self.parent.number_of_floors - 2) /
                                        (self.parent.number_of_floors - 1) * self.area)
+
+            elif self.floor_number != 0 and self.parent.number_of_floors == 2:
+                self.floors = None
+                self.ceilings = None
 
             elif self.floor_number == 0:
                 for floor in self.floors:

@@ -29,12 +29,12 @@ def example_load_citygml():
     # given in the file and the way the buildings are modeled.
 
     prj_gml = Project(load_data=True, used_data_country="Belgium")
-    prj_gml.name = "Genk_1-zone_merged"
+    prj_gml.name = "Genk_Detailed_2"
     prj_gml.used_library_calc = 'IDEAS'
 
     prj_gml.load_citygml(path="C:\Users\ina\Box Sync\Onderzoek\UNDER CONSTRUCTION/4DH2017\FME\Real model build up\Waterschei.gml",
                          checkadjacantbuildings=True,
-                         number_of_zones=1,
+                         number_of_zones=2,
                          merge_buildings=True)
 
 

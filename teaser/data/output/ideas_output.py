@@ -64,7 +64,7 @@ def export_ideas(buildings,
 
     # Then, create building level
     for bldg in buildings:
-        # re-order thermal zones, first dayzone, then nightzone (required for two-zone)
+        # Re-order thermal zones, first dayzone, then nightzone (required for two-zone)
         if bldg.thermal_zones[0].name == "DayZone":
             pass
         else:
