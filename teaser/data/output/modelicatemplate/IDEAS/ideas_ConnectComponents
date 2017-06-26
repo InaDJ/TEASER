@@ -1,4 +1,6 @@
-    %if is_innerwall:
-    connect(${buildingelement.parent.name}.propsBus[${index-1}], ${buildingelement.name}.propsBus_b);
+    %if connect_to_b:
+    connect(${zone.name}.propsBus[${index-1}], ${buildingelement.name}.propsBus_b);
     %endif
-    connect(${buildingelement.parent.name}.propsBus[${index}], ${buildingelement.name}.propsBus_a);
+    %if connect_to_a:
+    connect(${zone.name}.propsBus[${index}], ${buildingelement.name}.propsBus_a);
+    %endif

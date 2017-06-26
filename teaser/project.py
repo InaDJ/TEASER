@@ -1125,7 +1125,7 @@ class Project(object):
 
         citygml_out.save_gml(self, new_path)
 
-    def load_citygml(self, path=None, checkadjacantbuildings=False, number_of_zones=1):
+    def load_citygml(self, path=None, checkadjacantbuildings=False, number_of_zones=1, merge_buildings=False):
         """Loads buildings from a citygml file
 
         calls the function load_gml in data.CityGML we make use of CityGML core
@@ -1147,7 +1147,11 @@ class Project(object):
 
         """
 
-        citygml_in.load_gml(path, self, checkadjacantbuildings=checkadjacantbuildings, number_of_zones=number_of_zones)
+        citygml_in.load_gml(path,
+                            self,
+                            checkadjacantbuildings=checkadjacantbuildings,
+                            number_of_zones=number_of_zones,
+                            merge_buildings = merge_buildings)
 
     def load_excel(self, excel_path, python_file_directory, ideas_building_model):
         """Loads buildings from an excel file

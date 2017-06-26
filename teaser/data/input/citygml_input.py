@@ -30,7 +30,7 @@ from teaser.logic.archetypebuildings.bmvbs.office import Office
 from teaser.logic.buildingobjects.building import Building
 
 
-def load_gml(path, prj, checkadjacantbuildings, number_of_zones):
+def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings):
     """This function loads buildings from a CityGML file
 
     This function is a proof of concept, be careful using it.
@@ -109,6 +109,12 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones):
             for surface in bldg.gml_surfaces:
                 if surface.surface_tilt == 90:  # it's an OuterWall
                     bldg.reset_outer_wall_area(surface)
+    else:
+        pass
+
+    if merge_buildings:
+        print ("Merging main buildings with extensions")
+        _merge_bldg(prj)
     else:
         pass
 
@@ -219,6 +225,57 @@ def _convert_bldg(bldg, function):
     bldg.set_gml_attributes()
     bldg.generate_from_gml()
 
+def _merge_bldg(prj):
+    bldgs_to_remove = []
+    for bldg in prj.buildings:
+        if bldg.name.endswith("_1"):
+            pass
+        else:
+            # this is an extension and needs to be merged with its main building
+            bldg_ext = bldg
+            for bldg_main in prj.buildings:
+                if (bldg_main.name) == (bldg_ext.name.split('_')[0] + '_' + bldg_ext.name.split('_')[1] + '_1'):
+                    # print (bldg_ext.name + ' was found to be a building extension of ' + bldg_main.name)
+                    bldg_main.net_leased_area += bldg_ext.net_leased_area
+                    for bldg_ext_zone in bldg_ext.thermal_zones:
+                        for bldg_main_zone in bldg_main.thermal_zones:
+                            if bldg_ext_zone.name == "NightZone":
+                                if bldg_main_zone.name == "NightZone":
+                                    _merge_zone(zone_main= bldg_main_zone, zone_ext= bldg_ext_zone)
+                            else:
+                                # bldg_ext_zone.name is DayZone or SingleZone > needs to be merged with bldg_main_zone met als naam DayZone or SingleZone
+                                if bldg_main_zone.name == "DayZone" or bldg_main_zone.name == "SingleZone":
+                                    _merge_zone(zone_main= bldg_main_zone, zone_ext= bldg_ext_zone)
+                                    # print ("I have found my mother zone. I'm zone " + bldg_ext_zone.name + "of building " + bldg_ext.name + "and my mother zone is " + bldg_main_zone.name + " of building " + bldg_main.name)
+                else:
+                    pass
+            bldgs_to_remove.append(bldg_ext)
+
+    # remove building extensions from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
+    for bldg_to_remove in bldgs_to_remove:
+        prj.buildings.remove(bldg_to_remove)
+        # print ("Building extension "+ bldg_to_remove.name+ " is removed from list. List of buildings in prj: ")
+        # print ([bldg.name for bldg in prj.buildings])
+
+    # rename main buildings
+    for bldg in prj.buildings:
+        bldg.name = bldg.name[:-2]
+
+    # print ([bldg.name for bldg in prj.buildings])
+
+def _merge_zone(zone_main, zone_ext):
+
+    zone_main.area += zone_ext.area
+    zone_main.volume += zone_ext.volume
+
+    zone_main.outer_walls += zone_ext.outer_walls
+    zone_main.rooftops += zone_ext.rooftops
+    zone_main.ground_floors += zone_ext.ground_floors
+    zone_main.windows += zone_ext.windows
+    zone_main.inner_walls += zone_ext.inner_walls
+    zone_main.floors += zone_ext.floors
+    zone_main.ceilings += zone_ext.ceilings
+    # print ("Zone " + zone_ext.name + " of building " + zone_ext.parent.name + " was merged with zone " + zone_main.name + " of building " + zone_main.parent.name)
 
 class SurfaceGML(object):
     """Class for calculating attributes of CityGML surfaces

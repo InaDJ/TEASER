@@ -64,6 +64,17 @@ def export_ideas(buildings,
 
     # Then, create building level
     for bldg in buildings:
+        # re-order thermal zones, first dayzone, then nightzone (required for two-zone)
+        if bldg.thermal_zones[0].name == "DayZone":
+            pass
+        else:
+            for zoneindex, zone in enumerate(bldg.thermal_zones):
+                if zone.name == "DayZone":
+                    old_index = zoneindex
+                    new_index = 0
+                    bldg.thermal_zones[old_index], bldg.thermal_zones[new_index] = \
+                        bldg.thermal_zones[new_index], bldg.thermal_zones[old_index]
+
         # Create folders (building, structure)
         bldg_path = utilities.get_full_path(path + "/" + bldg.name + "/")
         utilities.create_path(bldg_path)
@@ -127,6 +138,7 @@ def export_ideas(buildings,
                               "Package of the particular building structure")
                 _help_package_order(structure_path, [bldg], "_Structure", ["Data"], [])
                 count_zonesinbldg = 0
+                elements_from_previous_zone = []
                 for zoneindex, zone in enumerate(bldg.thermal_zones, start=1):
                     count_zonesinbldg +=1
 
@@ -138,6 +150,22 @@ def export_ideas(buildings,
                     count_ceilings = 0
                     count_floors = 0
                     count_elementsinzone = 0
+
+                    if elements_from_previous_zone != []:
+                        for bldg_element in elements_from_previous_zone:
+                            # bldg_element was created in previous zone, just needs to be connected
+                            count_elementsinzone +=1
+                            # Add bldg_element to help_connections
+                            template = Template(filename=template_path + "ideas_ConnectComponents")
+                            help_connections = open((structure_path + "help_connections.txt"), 'a')
+                            help_connections.write(template.render_unicode(
+                                zone=zone,
+                                buildingelement=bldg_element,
+                                index=count_elementsinzone+1,
+                                connect_to_a=False,
+                                connect_to_b=True))
+                            help_connections.close()
+                        elements_from_previous_zone = []
 
                     for bldg_element in zone.outer_walls:
                         count_outerwalls +=1
@@ -156,9 +184,11 @@ def export_ideas(buildings,
                         template = Template(filename=template_path + "ideas_ConnectComponents")
                         help_connections = open((structure_path +"help_connections.txt"), 'a')
                         help_connections.write(template.render_unicode(
+                            zone=zone,
                             buildingelement=bldg_element,
                             index=count_elementsinzone,
-                            is_innerwall=False))
+                            connect_to_a=True,
+                            connect_to_b=False))
                         help_connections.close()
 
                     for bldg_element in zone.windows:
@@ -178,9 +208,11 @@ def export_ideas(buildings,
                         template = Template(filename=template_path + "ideas_ConnectComponents")
                         help_connections = open((structure_path +"help_connections.txt"), 'a')
                         help_connections.write(template.render_unicode(
+                            zone=zone,
                             buildingelement=bldg_element,
                             index=count_elementsinzone,
-                            is_innerwall=False))
+                            connect_to_a=True,
+                            connect_to_b=False))
                         help_connections.close()
 
                     for bldg_element in zone.rooftops:
@@ -200,9 +232,11 @@ def export_ideas(buildings,
                         template = Template(filename=template_path + "ideas_ConnectComponents")
                         help_connections = open((structure_path + "help_connections.txt"), 'a')
                         help_connections.write(template.render_unicode(
+                            zone=zone,
                             buildingelement=bldg_element,
                             index=count_elementsinzone,
-                            is_innerwall=False))
+                            connect_to_a=True,
+                            connect_to_b=False))
                         help_connections.close()
 
                     for bldg_element in zone.ground_floors:
@@ -222,12 +256,14 @@ def export_ideas(buildings,
                         template = Template(filename=template_path + "ideas_ConnectComponents")
                         help_connections = open((structure_path + "help_connections.txt"), 'a')
                         help_connections.write(template.render_unicode(
+                            zone=zone,
                             buildingelement=bldg_element,
                             index=count_elementsinzone,
-                            is_innerwall=False))
+                            connect_to_a=True,
+                            connect_to_b=False))
                         help_connections.close()
 
-                    for bldg_element in zone.inner_walls:
+                    for bldg_element in zone.inner_walls: #always internal in one-zone
                         count_innerwalls +=1
                         count_elementsinzone +=2
                         bldg_element.name = type(bldg_element).__name__ + "_" + str(count_zonesinbldg) + "_" + str(count_innerwalls)
@@ -244,32 +280,69 @@ def export_ideas(buildings,
                         template = Template(filename=template_path + "ideas_ConnectComponents")
                         help_connections = open((structure_path + "help_connections.txt"), 'a')
                         help_connections.write(template.render_unicode(
+                            zone=zone,
                             buildingelement=bldg_element,
                             index=count_elementsinzone,
-                            is_innerwall=True))
+                            connect_to_a=True,
+                            connect_to_b=True))
                         help_connections.close()
 
                     for bldg_element in zone.floors: #ceilings are not created as they are included in the construction record of the floor
-                        count_floors +=1
-                        count_elementsinzone +=2
-                        bldg_element.name = type(bldg_element).__name__ + "_" + str(count_zonesinbldg) + "_" + str(count_outerwalls)
-                        # Add floor to structure.mo
-                        template = Template(filename=template_path + "ideas_InnerWall", lookup=lookup)
-                        out_file = open(structure_filepath, 'a')
-                        out_file.write(
-                            template.render_unicode(
+                        if zone.floor_number == 0:
+                            error = "This ground floor zone has more than 1 floor/ceiling, which is unexpected"
+                            assert len(zone.floors) < 2, error
+
+                            # floor is between two zones (this one and next one)
+                            count_floors +=1
+                            count_elementsinzone += 1
+                            bldg_element.name = type(bldg_element).__name__ + "_" + str(count_zonesinbldg) + "_" + str(
+                                count_floors)
+                            elements_from_previous_zone.append(bldg_element)
+
+                            # Add floor to structure.mo
+                            template = Template(filename=template_path + "ideas_InnerWall", lookup=lookup)
+                            out_file = open(structure_filepath, 'a')
+                            out_file.write(
+                                template.render_unicode(
+                                    buildingelement=bldg_element,
+                                    zoneindex=count_zonesinbldg,
+                                    elementindex=count_elementsinzone))
+                            out_file.close()
+                            # Add floor to help_connections of this zone
+                            template = Template(filename=template_path + "ideas_ConnectComponents")
+                            help_connections = open((structure_path + "help_connections.txt"), 'a')
+                            help_connections.write(template.render_unicode(
+                                zone=zone,
                                 buildingelement=bldg_element,
-                                zoneindex=count_zonesinbldg,
-                                elementindex=count_elementsinzone))
-                        out_file.close()
-                        # Add floor to help_connections
-                        template = Template(filename=template_path + "ideas_ConnectComponents")
-                        help_connections = open((structure_path +"help_connections.txt"), 'a')
-                        help_connections.write(template.render_unicode(
-                            buildingelement=bldg_element,
-                            index=count_elementsinzone,
-                            is_innerwall=True))
-                        help_connections.close()
+                                index=count_elementsinzone,
+                                connect_to_a=True,
+                                connect_to_b=False))
+                            help_connections.close()
+
+                        else:
+                            # floor is internal in zone
+                            count_floors +=1
+                            count_elementsinzone +=2
+                            bldg_element.name = type(bldg_element).__name__ + "_" + str(count_zonesinbldg) + "_" + str(count_floors)
+                            # Add floor to structure.mo
+                            template = Template(filename=template_path + "ideas_InnerWall", lookup=lookup)
+                            out_file = open(structure_filepath, 'a')
+                            out_file.write(
+                                template.render_unicode(
+                                    buildingelement=bldg_element,
+                                    zoneindex=count_zonesinbldg,
+                                    elementindex=count_elementsinzone))
+                            out_file.close()
+                            # Add floor to help_connections
+                            template = Template(filename=template_path + "ideas_ConnectComponents")
+                            help_connections = open((structure_path +"help_connections.txt"), 'a')
+                            help_connections.write(template.render_unicode(
+                                zone=zone,
+                                buildingelement=bldg_element,
+                                index=count_elementsinzone,
+                                connect_to_a=True,
+                                connect_to_b=True))
+                            help_connections.close()
 
                     # Add zone to structure.mo and to help_connections
                     template = Template(filename=template_path + "ideas_Zone")
