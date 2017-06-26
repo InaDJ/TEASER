@@ -27,7 +27,7 @@ protected
   %elif len(bldg.thermal_zones) == 2:
   final parameter Real[3] QDay(unit="W/m2") = {8,20,2}
     "Specific power for dayzone";
-  final parameter Real[3] QNight(unit="W/m2") = {1.286, 1.857, 6}
+  final parameter Real[3] QNight(unit="W/m2") = {1.286,1.857,6}
     "Specific power for nightzone";
   %else:
     ERROR: number of zones is neither 1 nor 2.
