@@ -318,12 +318,7 @@ class Building(object):
                             for zone in self.thermal_zones:
                                 common_area = self.calculate_common_area(gml_surface=gml_surface,
                                                                          neighbour_gml_surface=neighbour_gml_surface)
-                                print("common area is " + str(common_area))
-                                print (zone.area)
-                                print(self.net_leased_area)
-
                                 common_area = common_area * zone.area / self.net_leased_area # reduce total wall area to area allocated to this zone
-                                print("common area is " + str(common_area))
                                 if common_area == 0:
                                     # walls are coplanar, but do not overlap
                                     pass
@@ -337,16 +332,16 @@ class Building(object):
                                             for wall in zone.outer_walls:
                                                if wall.orientation == orientation:
                                                    wall.area += window_area
-                                                   print("A window with orientation " + str(orientation) + " was deleted, area of " + str(window_area) + " was added to the corresponding wall")
+                                                   #print("A window with orientation " + str(orientation) + " was deleted, area of " + str(window_area) + " was added to the corresponding wall")
                                    for wall in zone.outer_walls:
                                        if wall.orientation == orientation:
                                            wall.area -= common_area
                                            self.deleted_surfaces_area += common_area
                                            if wall.area < 0.0001:  # rounding errors are possible (smaller than 1 sq cm is considered to be 0)
-                                                print("An outer wall of " + self.name + " with orientation " + str(orientation) + " was deleted as a whole, common area was " + str(common_area))
+                                                #print("An outer wall of " + self.name + " with orientation " + str(orientation) + " was deleted as a whole, common area was " + str(common_area))
                                                 zone.outer_walls.remove(wall)
                                            else:
-                                               print("An outer wall of " + self.name + " with orientation " + str(orientation) + " was reduced from " + str(wall.area+common_area) + " to " + str(wall.area))
+                                               #print("An outer wall of " + self.name + " with orientation " + str(orientation) + " was reduced from " + str(wall.area+common_area) + " to " + str(wall.area))
                                                pass
 
     def check_if_coplanar(self, gml_surface, neighbour_gml_surface, tolerance=False):

@@ -229,7 +229,9 @@ def _merge_bldg(prj):
     bldgs_to_remove = []
     for bldg in prj.buildings:
         if bldg.name.endswith("_1"):
-            pass
+            # delete building extensions as neighbours from main building neighbour list
+            bldg.list_of_neighbours = [neighbour_name for neighbour_name in bldg.list_of_neighbours \
+                                       if (bldg.name) != (neighbour_name.split('_')[0] + '_' + neighbour_name.split('_')[1] + '_1')]
         else:
             # this is an extension and needs to be merged with its main building
             bldg_ext = bldg

@@ -6,7 +6,9 @@
 """
 
 import teaser.logic.utilities as utilities
+import teaser.data.output.ideas_district_simulation as simulations
 import os
+import time
 
 
 def example_load_citygml():
@@ -28,16 +30,18 @@ def example_load_citygml():
     # import of CityGML underlies some limitations e.g. concerning data
     # given in the file and the way the buildings are modeled.
 
+    starttime = time.time()
+
     prj_gml = Project(load_data=True, used_data_country="Belgium")
-    prj_gml.name = "Genk_Detailed_2"
+    prj_gml.name = "Genk_Detailed_Craenevenne"
     prj_gml.used_library_calc = 'IDEAS'
 
-    prj_gml.load_citygml(path="C:\Users\ina\Box Sync\Onderzoek\UNDER CONSTRUCTION/4DH2017\FME\Real model build up\Waterschei.gml",
+    prj_gml.load_citygml(path="C:\Users\ina\Documents\GRB\Genk_LOD2_3D_VITO\Genk_GML\.gml",
                          checkadjacantbuildings=True,
                          number_of_zones=2,
                          merge_buildings=True)
 
-
+    # "C:\Users\ina\Box Sync\Onderzoek\UNDER CONSTRUCTION/4DH2017\FME\Real model build up\Waterschei_works_better.gml",
     prj_gml.number_of_elements_calc = 4
     prj_gml.merge_windows_calc = False
     prj_gml.weather_file_path = utilities.get_full_path(
@@ -69,6 +73,17 @@ def example_load_citygml():
         internal_id=None,
         path=None,
         building_model="Detailed")
+
+    endtime = time.time()
+    print("Pre-processing lasted: " + str((endtime - starttime) / 60) + " minutes.")
+
+    """
+    Now we define the output directory where the simulation results should be
+    stored, in addition we need to define the path where the exported models
+    are
+    """
+
+    simulations.ideas_district_simulation(project=prj_gml, simulation=False, analyseGeometry=True)
 
     """print(prj_gml.used_library_calc)
     for bldgindex, bldg in enumerate(prj_gml.buildings):

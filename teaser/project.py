@@ -4,7 +4,6 @@
 """This module includes the Project class, which serves as an API for a
 TEASER Project
 """
-
 import warnings
 import os
 import re

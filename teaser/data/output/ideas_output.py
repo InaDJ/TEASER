@@ -560,7 +560,7 @@ def export_ideas(buildings,
                               kindofpackage="MaterialProperties",
                               packagedescription="Library of building envelope constructions")
                 _help_package_order(constructions_path, [], None, bldg_constructions, [])
-    print("Exports can be found here:")
+    print("IDEAS building model export is finished. Exports can be found here:")
     print(path)
 
     if building_model == "ROM":
