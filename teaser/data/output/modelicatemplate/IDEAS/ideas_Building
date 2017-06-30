@@ -10,5 +10,16 @@ model ${bldg.name}_Building
     redeclare IDEAS.Templates.Interfaces.BaseClasses.CausalInhomeFeeder inHomeGrid);
 
     annotation (Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,
-            -100},{100,100}}), graphics));
+            -100},{100,100}}), graphics),
+    experiment(
+      StartTime=-2.592e+006,
+      StopTime=3.1536e+007,
+      Interval=600,
+      __Dymola_Algorithm="Lsodar"),
+    __Dymola_experimentSetupOutput,
+    __Dymola_experimentFlags(
+      Advanced(GenerateVariableDependencies=false, OutputModelicaCode=true),
+      Evaluate=true,
+      OutputCPUtime=true,
+      OutputFlatModelica=true));
 end ${bldg.name}_Building;
