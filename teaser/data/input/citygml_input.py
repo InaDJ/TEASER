@@ -269,14 +269,57 @@ def _merge_zone(zone_main, zone_ext):
 
     zone_main.area += zone_ext.area
     zone_main.volume += zone_ext.volume
-
-    zone_main.outer_walls += zone_ext.outer_walls
-    zone_main.rooftops += zone_ext.rooftops
-    zone_main.ground_floors += zone_ext.ground_floors
-    zone_main.windows += zone_ext.windows
-    zone_main.inner_walls += zone_ext.inner_walls
-    zone_main.floors += zone_ext.floors
-    zone_main.ceilings += zone_ext.ceilings
+    #zone_main.outer_walls += zone_ext.outer_walls
+    for ext_bldg_element in zone_ext.outer_walls:
+        found_element_with_same_orientation = False
+        for main_bldg_element in zone_main.outer_walls:
+            if ext_bldg_element.orientation == main_bldg_element.orientation:
+                main_bldg_element.area += ext_bldg_element.area
+                found_element_with_same_orientation = True
+        if found_element_with_same_orientation == False:
+            zone_main.outer_walls.append(ext_bldg_element)
+    #zone_main.rooftops += zone_ext.rooftops
+    for ext_bldg_element in zone_ext.rooftops:
+        found_element_with_same_orientation = False
+        for main_bldg_element in zone_main.rooftops:
+            if ext_bldg_element.orientation == main_bldg_element.orientation:
+                main_bldg_element.area += ext_bldg_element.area
+                found_element_with_same_orientation = True
+        if found_element_with_same_orientation == False:
+            zone_main.rooftops.append(ext_bldg_element)
+    #zone_main.ground_floors += zone_ext.ground_floors
+    for ext_bldg_element in zone_ext.ground_floors:
+        if len(zone_main.ground_floors)>0:
+            zone_main.ground_floors[0].area += ext_bldg_element.area
+        else:
+            zone_main.ground_floors.append(ext_bldg_element)
+    #zone_main.windows += zone_ext.windows
+    for ext_bldg_element in zone_ext.windows:
+        found_element_with_same_orientation = False
+        for main_bldg_element in zone_main.windows:
+            if ext_bldg_element.orientation == main_bldg_element.orientation:
+                main_bldg_element.area += ext_bldg_element.area
+                found_element_with_same_orientation = True
+        if found_element_with_same_orientation == False:
+            zone_main.windows.append(ext_bldg_element)
+    # zone_main.inner_walls += zone_ext.inner_walls
+    for inner_wall in zone_ext.inner_walls:
+        if len(zone_main.inner_walls) > 0:
+            zone_main.inner_walls[0].area += inner_wall.area
+        else:
+            zone_main.inner_walls.append(ext_bldg_element)
+    #zone_main.floors += zone_ext.floors
+    for floor in zone_ext.floors:
+        if len(zone_main.floors) > 0:
+            zone_main.floors[0].area += floor.area
+        else:
+            zone_main.floors.append(ext_bldg_element)
+    #zone_main.ceilings += zone_ext.ceilings
+    for ceiling in zone_ext.ceilings:
+        if len(zone_main.ceilings) > 0:
+            zone_main.ceilings[0].area += ceiling.area
+        else:
+            zone_main.ceilings.append(ext_bldg_element)
     # print ("Zone " + zone_ext.name + " of building " + zone_ext.parent.name + " was merged with zone " + zone_main.name + " of building " + zone_main.parent.name)
 
 class SurfaceGML(object):
