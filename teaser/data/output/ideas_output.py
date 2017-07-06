@@ -88,13 +88,19 @@ def export_ideas(buildings,
             bldg=bldg))
         out_file.close()
 
+        building_innersim_template = Template(filename=template_path + "ideas_Building_inner_sim")
+        out_file = open((bldg_path + bldg.name + ".mo"), 'w')
+        out_file.write(building_innersim_template.render_unicode(
+            bldg=bldg))
+        out_file.close()
+
         _help_package(bldg_path, bldg.name, within=prj.name)
         _help_package_order(path=bldg_path,
                             package_list_with_addition=[bldg],
                             addition="_Building",
                             extra_list= ["Structure","Occupant"],
                             # not yet "HeatingSystem","VentilationSystem","ElectricalSystem"
-                            package_list_without=[])
+                            package_list_without=[bldg])
 
         if building_model == "Detailed" or building_model == "ROM":
             # Create folder (vent., heat., electr. system and occupant)
@@ -601,7 +607,7 @@ def export_ideas(buildings,
             out_file.close()
 
             _help_package(path=bldg_path,name=bldg.name,within=bldg.parent.name)
-            _help_package_order(path=bldg_path,package_list_with_addition=[],addition=None,extra_list=[bldg.name + "_Building","Structure"])
+            _help_package_order(path=bldg_path,package_list_with_addition=[],addition=None,extra_list=[bldg.name + "_Building","Structure", bldg.name])
 
             for zone in bldg.thermal_zones:
                 out_file = open(utilities.get_full_path(os.path.join(

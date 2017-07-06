@@ -9,6 +9,7 @@ CityGML file format .gml
 import numpy as np
 from numpy import linalg as LA
 import random
+import time
 import pyxb
 import pyxb.utils
 import pyxb.namespace
@@ -28,7 +29,7 @@ from teaser.logic.archetypebuildings.bmvbs.singlefamilydwelling \
                             import SingleFamilyDwelling
 from teaser.logic.archetypebuildings.bmvbs.office import Office
 from teaser.logic.buildingobjects.building import Building
-
+import teaser.logic.utilities as utilities
 
 def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings):
     """This function loads buildings from a CityGML file
@@ -43,6 +44,7 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
     prj: Project()
         Teaser instance of Project()
     """
+    starttime = time.time()
 
     xml_file = open(path, 'r')
     gml_bind = citygml.CreateFromDocument(xml_file.read())
@@ -79,44 +81,68 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
                 elif city_object.Feature.function[0].value() == "1120":
                     bldg = Office(parent=prj,
                                     name=city_object.Feature.id)
+
+                elif city_object.Feature.function[0].value() == "9999":
+                    bldg = None
+
                 else:
                     bldg = Building(parent=prj,
                                     name=city_object.Feature.id)
             else:
-
                 bldg = Building(parent=prj,
                                 name=city_object.Feature.id)
+            if bldg is not None:
+                _create_building(bldg=bldg, city_object=city_object)
+                _set_attributes(bldg=bldg, gml_bldg=city_object.Feature)
+                bldg.set_height_gml()
+                try:
+                    bldg.set_gml_attributes()
+                except UserWarning:
+                    print("bldg.set_gml_attributes() did not work")
+                    pass
+                try:
+                    bldg.generate_from_gml()
+                except UserWarning:
+                    print("bldg.generate_from_gml() did not work")
+                    pass
 
-            _create_building(bldg=bldg, city_object=city_object)
-            _set_attributes(bldg=bldg, gml_bldg=city_object.Feature)
-            bldg.set_height_gml()
-            try:
-                bldg.set_gml_attributes()
-            except UserWarning:
-                print("bldg.set_gml_attributes() did not work")
-                pass
-            try:
-                bldg.generate_from_gml()
-            except UserWarning:
-                print("bldg.generate_from_gml() did not work")
-                pass
+    endtime = time.time()
+    resultspath = "C:\Users\ina\Box Sync\Onderzoek\Results/"+ prj.name.split('_')[0]
+    help_file_name = "/" + prj.name + "_timeKPI.csv"
+    utilities.create_path(resultspath)
+    help_file_simulation = open(resultspath + help_file_name, 'w')
+    help_file_simulation.write("Creating project [s];" + str(endtime - starttime) + ";\n")
+    help_file_simulation.close()
+
+
     # hier moet de functie aangeroepen worden voor alle gebouwen te checken op buren en hun muuroppervlaktes aan te passen
     # bovenstaande for-lus wordt aangeroepen voor elke gebouwobject in de citygml, ze zijn dus nog niet allen aangemaakt,
     # na de for-lus zijn ze wel allen aangemaakt
     if checkadjacantbuildings is True:
         print("Searching for adjacant buildings and deleting shared walls")
+        starttime = time.time()
         for bldg in prj.buildings:
             for surface in bldg.gml_surfaces:
                 if surface.surface_tilt == 90:  # it's an OuterWall
                     bldg.reset_outer_wall_area(surface)
+        endtime = time.time()
+        help_file_simulation = open(resultspath + help_file_name, 'a')
+        help_file_simulation.write("Searching for adjacant buildings [s];" + str(endtime - starttime) + ";\n")
+        help_file_simulation.close()
     else:
         pass
 
     if merge_buildings:
         print ("Merging main buildings with extensions")
+        starttime = time.time()
         _merge_bldg(prj)
+        endtime = time.time()
+        help_file_simulation = open(resultspath + help_file_name, 'a')
+        help_file_simulation.write("Merging main building with extensions [s];" + str(endtime - starttime) + ";\n")
+        help_file_simulation.close()
     else:
         pass
+
 
 def _set_attributes(bldg, gml_bldg):
     """tries to set attributes for type building generation
@@ -127,12 +153,18 @@ def _set_attributes(bldg, gml_bldg):
         print("no name specified in gml file")
         pass
     try:
-        bldg.number_of_floors = gml_bldg.storeysAboveGround
+        if gml_bldg.storeysAboveGround == 0:
+            bldg.number_of_floors = 1
+        else:
+            bldg.number_of_floors = gml_bldg.storeysAboveGround
     except UserWarning:
         print("no storeysAboveGround specified in gml file")
         pass
     try:
-        bldg.height_of_floors = gml_bldg.storeyHeightsAboveGround.value()[0]
+        if gml_bldg.storeyHeightsAboveGround.value()[0] == "inf":
+            bldg.height_of_floors = None
+        else:
+            bldg.height_of_floors = gml_bldg.storeyHeightsAboveGround.value()[0]
     except UserWarning:
         print("no storeyHeightsAboveGround specified in gml file")
         pass
@@ -221,9 +253,6 @@ def _convert_bldg(bldg, function):
     bldg.name = name_help
     bldg.year_of_construction = year_of_construction_help
     bldg.bldg_height = bldg_height_help
-
-    bldg.set_gml_attributes()
-    bldg.generate_from_gml()
 
 def _merge_bldg(prj):
     bldgs_to_remove = []

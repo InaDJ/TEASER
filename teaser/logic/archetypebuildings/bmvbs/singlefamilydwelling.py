@@ -1,6 +1,7 @@
 # created June 2015
 # by TEASER4 Development Team
 
+import math
 from teaser.logic.archetypebuildings.residential \
     import Residential
 from teaser.logic.buildingobjects.boundaryconditions.boundaryconditions \
@@ -495,7 +496,7 @@ class SingleFamilyDwelling(Residential):
             self.zone_area_factors = {"DayZone": [1.0/self.number_of_floors, "Living", 0],
                                       "NightZone": [(self.number_of_floors-1.0)/self.number_of_floors, "Bed room", 1]}
         else:
-            self.zone_area_factors = {"SingleZone": [1, "Living", None]}
+            self.zone_area_factors = {"SingleZone": [1.0, "Living", None]}
 
         type_bldg_area = self.net_leased_area
         self.net_leased_area = 0.0

@@ -7,6 +7,7 @@ import inspect
 import random
 import re
 import warnings
+import math
 import numpy as np
 from decimal import *
 
@@ -242,22 +243,22 @@ class Building(object):
         else:
             pass
 
-        if self.number_of_floors is not None:
+        if self.number_of_floors is not None and self.get_footprint_gml() is not None:
             self.net_leased_area = self.get_footprint_gml() * \
                                     self.number_of_floors
-            return
-
         else:
             self.number_of_floors = int(round((self.bldg_height /
                                                self.height_of_floors)))
             if self.number_of_floors == 0:
                 self.number_of_floors = 1
 
-            self.net_leased_area = self.get_footprint_gml() * \
-                self.number_of_floors
+            if self.get_footprint_gml() is not None:
+                self.net_leased_area = self.get_footprint_gml() * \
+                    self.number_of_floors
 
             if self.net_leased_area < 50.0:
                 self.net_leased_area = 50.0
+                print("Net leased area of building " + self.name + " was less than 50.0 and therefore set to 50.0.")
 
     def set_outer_wall_area(self,
                 new_area,
@@ -327,6 +328,7 @@ class Building(object):
                                    for window in zone.windows:
                                         if window.orientation == orientation:
                                             window_area = window.area
+                                            #print("An window of " + self.name + " with orientation " + str(orientation) + " was deleted as a whole, window area was " + str(window_area))
                                             zone.windows.remove(window)
                                             # add deleted window area to wall area
                                             for wall in zone.outer_walls:
@@ -337,7 +339,7 @@ class Building(object):
                                        if wall.orientation == orientation:
                                            wall.area -= common_area
                                            self.deleted_surfaces_area += common_area
-                                           if wall.area < 0.0001:  # rounding errors are possible (smaller than 1 sq cm is considered to be 0)
+                                           if wall.area < 0.0001 or math.isnan(wall.area):  # rounding errors are possible (smaller than 1 sq cm is considered to be 0)
                                                 #print("An outer wall of " + self.name + " with orientation " + str(orientation) + " was deleted as a whole, common area was " + str(common_area))
                                                 zone.outer_walls.remove(wall)
                                            else:

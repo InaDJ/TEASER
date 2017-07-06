@@ -111,6 +111,7 @@ class Project(object):
         self.load_data = load_data
         self.used_data_country = used_data_country
 
+        self._number_of_zones = 1
         self._number_of_elements_calc = 2
         self._merge_windows_calc = False
         self._used_library_calc = "AixLib"
@@ -1151,6 +1152,7 @@ class Project(object):
                             checkadjacantbuildings=checkadjacantbuildings,
                             number_of_zones=number_of_zones,
                             merge_buildings = merge_buildings)
+        self._number_of_zones = number_of_zones
 
     def load_excel(self, excel_path, python_file_directory, ideas_building_model):
         """Loads buildings from an excel file
@@ -1373,6 +1375,7 @@ class Project(object):
 
         self.load_data = load_data
 
+        self._number_of_zones = 1
         self._number_of_elements_calc = 2
         self._merge_windows_calc = False
         self._used_library_calc = "AixLib"
@@ -1409,6 +1412,18 @@ class Project(object):
 
         for bldg in self.buildings:
             bldg.number_of_elements_calc = value
+    @property
+    def number_of_zones(self):
+        return self._number_of_zones
+
+    @number_of_zones.setter
+    def number_of_elements_calc(self, value):
+
+        ass_error_1 = "number_of_zones has to be 1 or 2"
+
+        assert value != [1, 2], ass_error_1
+
+        self._number_of_zones = value
 
     @property
     def merge_windows_calc(self):
