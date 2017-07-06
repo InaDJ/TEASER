@@ -33,7 +33,7 @@ def example_load_citygml():
     starttime = time.time()
 
     prj_gml = Project(load_data=True, used_data_country="Belgium")
-    prj_gml.name = "Genk_Detailed_Craenevenne"
+    prj_gml.name = "Genk_Detailed_Craenevenne3"
     prj_gml.used_library_calc = 'IDEAS'
 
     prj_gml.load_citygml(path="C:\Users\ina\Documents\GRB\Genk_LOD2_3D_VITO\Genk_GML\.gml",
@@ -82,8 +82,7 @@ def example_load_citygml():
     stored, in addition we need to define the path where the exported models
     are
     """
-
-    simulations.ideas_district_simulation(project=prj_gml, simulation=False, analyseGeometry=True)
+    simulations.ideas_district_simulation(project=prj_gml, simulation=True, analyseGeometry=True)
 
     """print(prj_gml.used_library_calc)
     for bldgindex, bldg in enumerate(prj_gml.buildings):
