@@ -336,6 +336,7 @@ def analyse_simulation_results(project, outputDir, resultsDir, remove_files = Tr
     plt.ylabel('Power [kW]')
     plt.title('Load duration curves for space heating')
     plt.savefig(resultsDir + "/" + project.name + '_LDC.png', bbox_inches = 'tight', dpi = 1000)
+    plt.close()
 
     # print district peak power at the end
     districtpeakpower = df_LDC.loc[0, 'District / W']
