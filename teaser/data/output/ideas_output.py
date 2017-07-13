@@ -48,20 +48,6 @@ def export_ideas(buildings,
     lookup = TemplateLookup(directories=[utilities.get_full_path(
         os.path.join('data', 'output', 'modelicatemplate'))])
 
-    # First, create project level (project.mo, package.mo and package.order)
-    template = Template(
-        filename=template_path + "ideas_Project")
-    out_file = open(utilities.get_full_path(path +"/" +
-                                           prj.name + "_Project.mo"), 'w')
-    out_file.write(template.render_unicode(prj_name=prj.name,
-                    buildings = buildings))
-    out_file.close()
-
-    _help_package(path, prj.name, uses, within=None)
-    _help_package_order(path,
-                        package_list_without=buildings,
-                        extra_list=[prj.name + "_Project"])
-
     # Then, create building level
     for bldg in buildings:
         # Rename building if not already correct
@@ -569,6 +555,20 @@ def export_ideas(buildings,
                               kindofpackage="MaterialProperties",
                               packagedescription="Library of building envelope constructions")
                 _help_package_order(constructions_path, [], None, bldg_constructions, [])
+    # Now, create project level (project.mo, package.mo and package.order) (after buildings are renamed)
+    template = Template(
+        filename=template_path + "ideas_Project")
+    out_file = open(utilities.get_full_path(path +"/" +
+                                           prj.name + "_Project.mo"), 'w')
+    out_file.write(template.render_unicode(prj_name=prj.name,
+                    buildings = buildings))
+    out_file.close()
+
+    _help_package(path, prj.name, uses, within=None)
+    _help_package_order(path,
+                        package_list_without=buildings,
+                        extra_list=[prj.name + "_Project"])
+
     print("IDEAS building model export is finished. Exports can be found here:")
     print(path)
 

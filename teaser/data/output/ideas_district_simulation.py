@@ -18,15 +18,26 @@ from cycler import cycler
 def ideas_district_simulation(project, simulation=True, analyseSimulation=True, analyseGeometry=True, outputDir=None, packageDir=None, resultsDir = None):
     """
     This function simulates a project with buildings.
+    First, the buildings are simulated.
+    Then, the energy KPIs are analysed.
+    Finally, the geometry KPIs are analysed.
 
     Parameters
     ----------
     prj : Project()
         Teaser instance of Project()
+    simulation : bool
+        Do the buildings need to be simulated?
+    analyseSimulation : bool
+        Do the energy KPIs need to be analysed?
+    analyseGeometry : bool
+        Do the geometry KPIs need to be analysed?
     outputDir : string
         complete output directory where the simulation results should be stored
     packageDir : string
         complete output directory where the exported models are (top level package.mo and package.order files)
+    resultsDir : string
+        complete outputdirectory where the analysis results should be stored
     """
     prj = project
 
@@ -72,8 +83,8 @@ def ideas_district_simulation(project, simulation=True, analyseSimulation=True, 
         help_file_simulation.write("Simulating [s];" + str(endtime - starttime) + ";\n")
         help_file_simulation.close()
 
-        if analyseSimulation:
-            analyse_simulation_results(project = prj, outputDir=outputpath, resultsDir = resultspath)
+    if analyseSimulation:
+        analyse_simulation_results(project = prj, outputDir=outputpath, resultsDir = resultspath)
 
     if analyseGeometry:
         analyse_geometry_results(project=prj, outputDir=outputpath, resultsDir = resultspath)
@@ -109,10 +120,8 @@ def analyse_simulation_results(project, outputDir, resultsDir, remove_files = Tr
     starttime = time.time()
     print ("Starting analysis of energy KPIs")
 
-    buildingsmatlist = []  # list with building.mat strings
-    for file in os.listdir(outputDir):
-        if file.endswith(".mat"):
-            buildingsmatlist.append(file)
+    buildingsmatlist = [file for file in os.listdir(outputDir) if
+                        file.endswith(".mat")]  # list with building.mat strings
     print buildingsmatlist
 
     help_file_name = "/" + project.name + "_energyKPI.csv"
@@ -126,192 +135,192 @@ def analyse_simulation_results(project, outputDir, resultsDir, remove_files = Tr
 
     # set number of plots and their colors
     colormap = plt.cm.gist_ncar
-    plt.gca().set_prop_cycle(cycler('color',[colormap(i) for i in numpy.linspace(0, 0.9, len(buildingsmatlist))]))
+    plt.gca().set_prop_cycle(cycler('color',[colormap(i) for i in numpy.linspace(0, 0.6, len(buildingsmatlist))]))
     labels = []
 
-    for buildingindex, building in enumerate(buildingsmatlist):
-        sim = SimRes(outputDir + "/" + building)  # path to .mat file
-        buildingname = building[:-4] #buildingname.mat to buildingname
+    for buildingindex, building in enumerate(project.buildings):
+        if building.name+'.mat' in buildingsmatlist:
+            sim = SimRes(outputDir + "/" + building.name + ".mat")  # path to .mat file
 
-        dayoverheating = 0
-        nightoverheating = 0
-        singleoverheating = 0
+            dayoverheating = 0
+            nightoverheating = 0
+            singleoverheating = 0
 
-        if project.number_of_zones == 1:
-            # First, export csv with useful information, resampled every 600 s
-            aliases = {'sim.Te': "Outside temperature",
-                       buildingname + '_Building.heatingSystem.QHeaSys': "Q heating system building",
-                       buildingname + '_Building.heatingSystem.QHeatZone[1]': "Q heating system singlezone",
-                       buildingname + '_Building.building.TSensor[1]': "TSensor of singlezone",
-                       buildingname + '_Building.building.AZones[1]': "Area of singlezone"}  # name of Dymola variable : name of header of column
-            df = sim.to_pandas(list(aliases), aliases)
-            df = df.loc[lambda df: df.index > 0, :]  # dataframe, starting with time = 0 (more or less)
-            # create column with datetime based on the index (which is in seconds)
-            df['Datetime'] = pandas.to_datetime(df.index, unit='s')
-            # set this new column as index
-            df = df.set_index('Datetime')
-            # resample in 600s (= 10 min) and take the mean value (resample method is only valid with datetime)
-            df = df.resample('600s').mean()
-            # convert the index back to seconds (unix time is in nanoseconds, so divide by 10^9) (required for trapzintegration)
-            df.index = df.index.astype(numpy.int64)
-            df.index = df.index / 10 ** 9
-            df_LDC_index = df.index
-            pandas.DataFrame.to_csv(df, columns=['Outside temperature / K',
-                                                 'Q heating system singlezone / W',
-                                                 'TSensor of singlezone / K'],
-                                    path_or_buf=resultsDir + "/" + project.name + "_" + buildingname + ".csv",
-                                    sep=";")
+            if project.number_of_zones == 2 and building.number_of_floors != 1:
+                # First, export csv with useful information, resampled every 600 s
+                aliases = {'sim.Te': "Outside temperature",
+                           building.name + '_Building.heatingSystem.QHeaSys': "Q heating system building",
+                           building.name + '_Building.heatingSystem.QHeatZone[1]': "Q heating system dayzone",
+                           building.name + '_Building.heatingSystem.QHeatZone[2]': "Q heating system nightzone",
+                           building.name + '_Building.building.TSensor[1]': "TSensor of dayzone",
+                           building.name + '_Building.building.TSensor[2]': "TSensor of nightzone",
+                           building.name + '_Building.building.AZones[1]': "Area of dayzone",
+                           building.name + '_Building.building.AZones[2]': "Area of nightzone"}  # name of Dymola variable : name of header of column
+                df = sim.to_pandas(list(aliases), aliases)
+                df = df.loc[lambda df: df.index > 0, :]  # dataframe, starting with time = 0 (more or less)
+                # create column with datetime based on the index (which is in seconds)
+                df['Datetime'] = pandas.to_datetime(df.index, unit='s')
+                # set this new column as index
+                df = df.set_index('Datetime')
+                # resample in 600s (= 10 min) and take the mean value (resample method is only valid with datetime)
+                df = df.resample('600s').mean()
+                # convert the index back to seconds (unix time is in nanoseconds, so divide by 10^9) (required for trapzintegration)
+                df.index = df.index.astype(numpy.int64)
+                df.index = df.index/10**9
+                df_LDC_index = df.index
+                pandas.DataFrame.to_csv(df, columns= ['Outside temperature / K',
+                                                      'Q heating system dayzone / W',
+                                                      'Q heating system nightzone / W',
+                                                      'TSensor of dayzone / K',
+                                                      'TSensor of nightzone / K'],
+                                        path_or_buf=resultsDir+ "/" + project.name + "_" + building.name + ".csv",
+                                        sep= ";")
 
-            # Second, calculate KPIs to add to TEASER_simulations.csv
-            # calculate energy use for space heating [J = Ws]
-            timearray = df.index.values
-            qarray = df['Q heating system building / W'].values
-            energyuse = numpy.trapz(y=qarray, x=timearray)
-            # calculate energy use for space heating [kWh]
-            energyuse = energyuse / 1000 / 3600
-            # calculate energy use for space heating per floor area [kWh/m2]
-            area = df.loc[0, 'Area of singlezone / m2']
-            specificenergyuse = energyuse / area
-            # calculate overheating of singlezone [Ks] (over 25degC = 298.15 K)
-            singletemparray = df["TSensor of singlezone / K"].values
-            singleoverheatingarray = [(temp - 298.15) for temp in
-                                   singletemparray]  # this array contains all temp - 25degC, if negative, set to 0, then integrate
-            for index, temp in enumerate(singleoverheatingarray):
-                if temp < 0.0:
-                    singleoverheatingarray[index] = 0.0
-            singleoverheating = numpy.trapz(y=singleoverheatingarray, x=timearray)
-            # calculate overheating of singlezone [Kh]
-            singleoverheating = singleoverheating / 3600
-            # calculate peak power building [W]
-            maxvariables = pandas.DataFrame.max(df)  # returns pandas series with max values for all columns
-            peakpower = maxvariables.loc['Q heating system building / W']
-            # calculate peak power building [kW]
-            peakpower = peakpower / 1000
+                # Second, calculate KPIs to add to TEASER_simulations.csv
+                # calculate energy use for space heating [J = Ws]
+                timearray = df.index.values
+                qarray = df['Q heating system building / W'].values
+                energyuse = numpy.trapz(y=qarray, x=timearray)
+                # calculate energy use for space heating [kWh]
+                energyuse = energyuse/1000/3600
+                # calculate energy use for space heating per floor area [kWh/m2]
+                area = df.loc[0, 'Area of dayzone / m2'] + df.loc[0, 'Area of nightzone / m2']
+                specificenergyuse = energyuse/area
+                # calculate overheating of dayzone [Ks] (over 25degC = 298.15 K)
+                daytemparray = df["TSensor of dayzone / K"].values
+                dayoverheatingarray = [(temp - 298.15) for temp in
+                                       daytemparray]  # this array contains all temp - 25degC, if negative, set to 0, then integrate
+                for index, temp in enumerate(dayoverheatingarray):
+                    if temp < 0.0:
+                        dayoverheatingarray[index] = 0.0
+                dayoverheating = numpy.trapz(y=dayoverheatingarray, x=timearray)
+                # calculate overheating of dayzone [Kh]
+                dayoverheating = dayoverheating/3600
+                # calculate overheating of nightzone [Ks] (over 25degC = 298.15 K)
+                nighttemparray = df["TSensor of nightzone / K"].values
+                nightoverheatingarray = [(temp - 298.15) for temp in
+                                         nighttemparray]
+                for index, temp in enumerate(nightoverheatingarray):
+                    if temp < 0.0:
+                        nightoverheatingarray[index] = 0.0
+                nightoverheating = numpy.trapz(y=nightoverheatingarray, x=timearray)
+                # calculate overheating of nightzone [Kh]
+                nightoverheating = nightoverheating / 3600
+                # calculate peak power building [W]
+                maxvariables = pandas.DataFrame.max(df) # returns pandas series with max values for all columns
+                peakpower = maxvariables.loc['Q heating system building / W']
+                # calculate peak power building [kW]
+                peakpower = peakpower/1000
 
-            # Third, create dataframe for all Q heating system of the district > Load Duration Curve
-            # dataframe with unsorted Q of all buildings > required to determine Q district
-            df_district_new_col = df['Q heating system building / W'].tolist()
-            if df_district is None:
-                df_district = pandas.DataFrame()
-                df_district['Time / s'] = df_LDC_index
-                df_district[buildingname + ' / W'] = df_district_new_col
-                df_district = df_district.set_index('Time / s')
-            else:
-                df_district[buildingname + ' / W'] = df_district_new_col
+                # Third, create dataframe for all Q heating system of the district > Load Duration Curve
+                # dataframe with unsorted Q of all buildings > required to determine Q district
+                df_district_new_col = df['Q heating system building / W'].tolist()
+                if df_district is None:
+                    df_district = pandas.DataFrame()
+                    df_district['Time / s'] = df_LDC_index
+                    df_district[building.name + ' / W'] = df_district_new_col
+                    df_district = df_district.set_index('Time / s')
+                else:
+                    df_district[building.name + ' / W'] = df_district_new_col
 
-            # dataframe with sorted Q of all buildings > required for LDC of all buildings
-            df = df.sort_values(by=['Q heating system building / W'], ascending=False)
-            df_LDC_new_col = df['Q heating system building / W'].tolist()
-            if df_LDC is None:
-                df_LDC = pandas.DataFrame()
-                df_LDC['Time / s'] = df_LDC_index
-                df_LDC[buildingname + ' / W'] = df_LDC_new_col
-                df_LDC = df_LDC.set_index('Time / s')
-            else:
-                df_LDC[buildingname + ' / W'] = df_LDC_new_col
+                # dataframe with sorted Q of all buildings > required for LDC of all buildings
+                df = df.sort_values(by = ['Q heating system building / W'], ascending = False)
+                df_LDC_new_col = df['Q heating system building / W'].tolist()
+                if df_LDC is None:
+                    df_LDC = pandas.DataFrame()
+                    df_LDC['Time / s'] = df_LDC_index
+                    df_LDC[building.name + ' / W'] = df_LDC_new_col
+                    df_LDC = df_LDC.set_index('Time / s')
+                else:
+                    df_LDC[building.name + ' / W'] = df_LDC_new_col
 
-        elif project.number_of_zones == 2:
-            # First, export csv with useful information, resampled every 600 s
-            aliases = {'sim.Te': "Outside temperature",
-                       buildingname + '_Building.heatingSystem.QHeaSys': "Q heating system building",
-                       buildingname + '_Building.heatingSystem.QHeatZone[1]': "Q heating system dayzone",
-                       buildingname + '_Building.heatingSystem.QHeatZone[2]': "Q heating system nightzone",
-                       buildingname + '_Building.building.TSensor[1]': "TSensor of dayzone",
-                       buildingname + '_Building.building.TSensor[2]': "TSensor of nightzone",
-                       buildingname + '_Building.building.AZones[1]': "Area of dayzone",
-                       buildingname + '_Building.building.AZones[2]': "Area of nightzone"}  # name of Dymola variable : name of header of column
-            df = sim.to_pandas(list(aliases), aliases)
-            df = df.loc[lambda df: df.index > 0, :]  # dataframe, starting with time = 0 (more or less)
-            # create column with datetime based on the index (which is in seconds)
-            df['Datetime'] = pandas.to_datetime(df.index, unit='s')
-            # set this new column as index
-            df = df.set_index('Datetime')
-            # resample in 600s (= 10 min) and take the mean value (resample method is only valid with datetime)
-            df = df.resample('600s').mean()
-            # convert the index back to seconds (unix time is in nanoseconds, so divide by 10^9) (required for trapzintegration)
-            df.index = df.index.astype(numpy.int64)
-            df.index = df.index/10**9
-            df_LDC_index = df.index
-            pandas.DataFrame.to_csv(df, columns= ['Outside temperature / K',
-                                                  'Q heating system dayzone / W',
-                                                  'Q heating system nightzone / W',
-                                                  'TSensor of dayzone / K',
-                                                  'TSensor of nightzone / K'],
-                                    path_or_buf=resultsDir+ "/" + project.name + "_" + buildingname + ".csv",
-                                    sep= ";")
+            elif project.number_of_zones == 1 or building.number_of_floors == 1:
+                # First, export csv with useful information, resampled every 600 s
+                aliases = {'sim.Te': "Outside temperature",
+                           building.name + '_Building.heatingSystem.QHeaSys': "Q heating system building",
+                           building.name + '_Building.heatingSystem.QHeatZone[1]': "Q heating system singlezone",
+                           building.name + '_Building.building.TSensor[1]': "TSensor of singlezone",
+                           building.name + '_Building.building.AZones[1]': "Area of singlezone"}  # name of Dymola variable : name of header of column
+                df = sim.to_pandas(list(aliases), aliases)
+                df = df.loc[lambda df: df.index > 0, :]  # dataframe, starting with time = 0 (more or less)
+                # create column with datetime based on the index (which is in seconds)
+                df['Datetime'] = pandas.to_datetime(df.index, unit='s')
+                # set this new column as index
+                df = df.set_index('Datetime')
+                # resample in 600s (= 10 min) and take the mean value (resample method is only valid with datetime)
+                df = df.resample('600s').mean()
+                # convert the index back to seconds (unix time is in nanoseconds, so divide by 10^9) (required for trapzintegration)
+                df.index = df.index.astype(numpy.int64)
+                df.index = df.index / 10 ** 9
+                df_LDC_index = df.index
+                pandas.DataFrame.to_csv(df, columns=['Outside temperature / K',
+                                                     'Q heating system singlezone / W',
+                                                     'TSensor of singlezone / K'],
+                                        path_or_buf=resultsDir + "/" + project.name + "_" + building.name + ".csv",
+                                        sep=";")
 
-            # Second, calculate KPIs to add to TEASER_simulations.csv
-            # calculate energy use for space heating [J = Ws]
-            timearray = df.index.values
-            qarray = df['Q heating system building / W'].values
-            energyuse = numpy.trapz(y=qarray, x=timearray)
-            # calculate energy use for space heating [kWh]
-            energyuse = energyuse/1000/3600
-            # calculate energy use for space heating per floor area [kWh/m2]
-            area = df.loc[0, 'Area of dayzone / m2'] + df.loc[0, 'Area of nightzone / m2']
-            specificenergyuse = energyuse/area
-            # calculate overheating of dayzone [Ks] (over 25degC = 298.15 K)
-            daytemparray = df["TSensor of dayzone / K"].values
-            dayoverheatingarray = [(temp - 298.15) for temp in
-                                   daytemparray]  # this array contains all temp - 25degC, if negative, set to 0, then integrate
-            for index, temp in enumerate(dayoverheatingarray):
-                if temp < 0.0:
-                    dayoverheatingarray[index] = 0.0
-            dayoverheating = numpy.trapz(y=dayoverheatingarray, x=timearray)
-            # calculate overheating of dayzone [Kh]
-            dayoverheating = dayoverheating/3600
-            # calculate overheating of nightzone [Ks] (over 25degC = 298.15 K)
-            nighttemparray = df["TSensor of nightzone / K"].values
-            nightoverheatingarray = [(temp - 298.15) for temp in
-                                     nighttemparray]
-            for index, temp in enumerate(nightoverheatingarray):
-                if temp < 0.0:
-                    nightoverheatingarray[index] = 0.0
-            nightoverheating = numpy.trapz(y=nightoverheatingarray, x=timearray)
-            # calculate overheating of nightzone [Kh]
-            nightoverheating = nightoverheating / 3600
-            # calculate peak power building [W]
-            maxvariables = pandas.DataFrame.max(df) # returns pandas series with max values for all columns
-            peakpower = maxvariables.loc['Q heating system building / W']
-            # calculate peak power building [kW]
-            peakpower = peakpower/1000
+                # Second, calculate KPIs to add to TEASER_simulations.csv
+                # calculate energy use for space heating [J = Ws]
+                timearray = df.index.values
+                qarray = df['Q heating system building / W'].values
+                energyuse = numpy.trapz(y=qarray, x=timearray)
+                # calculate energy use for space heating [kWh]
+                energyuse = energyuse / 1000 / 3600
+                # calculate energy use for space heating per floor area [kWh/m2]
+                area = df.loc[0, 'Area of singlezone / m2']
+                specificenergyuse = energyuse / area
+                # calculate overheating of singlezone [Ks] (over 25degC = 298.15 K)
+                singletemparray = df["TSensor of singlezone / K"].values
+                singleoverheatingarray = [(temp - 298.15) for temp in
+                                       singletemparray]  # this array contains all temp - 25degC, if negative, set to 0, then integrate
+                for index, temp in enumerate(singleoverheatingarray):
+                    if temp < 0.0:
+                        singleoverheatingarray[index] = 0.0
+                singleoverheating = numpy.trapz(y=singleoverheatingarray, x=timearray)
+                # calculate overheating of singlezone [Kh]
+                singleoverheating = singleoverheating / 3600
+                # calculate peak power building [W]
+                maxvariables = pandas.DataFrame.max(df)  # returns pandas series with max values for all columns
+                peakpower = maxvariables.loc['Q heating system building / W']
+                # calculate peak power building [kW]
+                peakpower = peakpower / 1000
 
-            # Third, create dataframe for all Q heating system of the district > Load Duration Curve
-            # dataframe with unsorted Q of all buildings > required to determine Q district
-            df_district_new_col = df['Q heating system building / W'].tolist()
-            if df_district is None:
-                df_district = pandas.DataFrame()
-                df_district['Time / s'] = df_LDC_index
-                df_district[buildingname + ' / W'] = df_district_new_col
-                df_district = df_district.set_index('Time / s')
-            else:
-                df_district[buildingname + ' / W'] = df_district_new_col
+                # Third, create dataframe for all Q heating system of the district > Load Duration Curve
+                # dataframe with unsorted Q of all buildings > required to determine Q district
+                df_district_new_col = df['Q heating system building / W'].tolist()
+                if df_district is None:
+                    df_district = pandas.DataFrame()
+                    df_district['Time / s'] = df_LDC_index
+                    df_district[building.name + ' / W'] = df_district_new_col
+                    df_district = df_district.set_index('Time / s')
+                else:
+                    df_district[building.name + ' / W'] = df_district_new_col
 
-            # dataframe with sorted Q of all buildings > required for LDC of all buildings
-            df = df.sort_values(by = ['Q heating system building / W'], ascending = False)
-            df_LDC_new_col = df['Q heating system building / W'].tolist()
-            if df_LDC is None:
-                df_LDC = pandas.DataFrame()
-                df_LDC['Time / s'] = df_LDC_index
-                df_LDC[buildingname + ' / W'] = df_LDC_new_col
-                df_LDC = df_LDC.set_index('Time / s')
-            else:
-                df_LDC[buildingname + ' / W'] = df_LDC_new_col
+                # dataframe with sorted Q of all buildings > required for LDC of all buildings
+                df = df.sort_values(by=['Q heating system building / W'], ascending=False)
+                df_LDC_new_col = df['Q heating system building / W'].tolist()
+                if df_LDC is None:
+                    df_LDC = pandas.DataFrame()
+                    df_LDC['Time / s'] = df_LDC_index
+                    df_LDC[building.name + ' / W'] = df_LDC_new_col
+                    df_LDC = df_LDC.set_index('Time / s')
+                else:
+                    df_LDC[building.name + ' / W'] = df_LDC_new_col
 
-        # append LDC of this building to plot
-        plt.plot([i/3600 for i in df_LDC_index], [i/1000 for i in df_LDC[buildingname + ' / W']])
-        labels.append(buildingname.replace("_", " "))
-        # print all results of this building (1- or 2-zone)
-        help_file_simulation = open(resultsDir + help_file_name, 'a')
-        help_file_simulation.write(
-            buildingname + ";" +
-            str(peakpower) + ";" +
-            str(energyuse) + ";" +
-            str(specificenergyuse) + ";" +
-            str(singleoverheating) + ";" +
-            str(dayoverheating)+ ";" +
-            str(nightoverheating) + ";\n")
-        help_file_simulation.close()
+            # append LDC of this building to plot
+            plt.plot([i/3600 for i in df_LDC_index], [i/1000 for i in df_LDC[building.name + ' / W']])
+            labels.append(building.name.replace("_", " "))
+            # print all results of this building (1- or 2-zone)
+            help_file_simulation = open(resultsDir + help_file_name, 'a')
+            help_file_simulation.write(
+                building.name + ";" +
+                str(peakpower) + ";" +
+                str(energyuse) + ";" +
+                str(specificenergyuse) + ";" +
+                str(singleoverheating) + ";" +
+                str(dayoverheating)+ ";" +
+                str(nightoverheating) + ";\n")
+            help_file_simulation.close()
 
     # create csv file with all buildings and their LDC as well as LDC of district
     df_district['District / W'] = df_district.sum(axis = 1)
@@ -342,7 +351,7 @@ def analyse_simulation_results(project, outputDir, resultsDir, remove_files = Tr
     districtpeakpower = df_LDC.loc[0, 'District / W']
     districtpeakpower = districtpeakpower / 1000 # W to kW
     help_file_simulation = open(resultsDir + help_file_name, 'a')
-    help_file_simulation.write("\n \n \n District peak power [kW];" + str(districtpeakpower))
+    help_file_simulation.write("\n\n\nDistrict peak power [kW];" + str(districtpeakpower))
     help_file_simulation.close()
 
     # remove all .mat files
@@ -387,9 +396,9 @@ def analyse_geometry_results(project, outputDir, resultsDir):
     help_file_name =  "/" + project.name + "_geometryKPI.csv"
     help_file_geometry = open(resultsDir + help_file_name, 'w')
     help_file_geometry.write(
-        "Name of building;Number of neighbours;Number of floors;Volume of building;\
-        Area of building;Groundfloor area;Outerwall area;Window area;\
-        Deleted wall area;Innerwall area;Floor area;Total loss area (walls+windows+roof+groundfloor);Total loss area (every house is detached);\n")
+        "Name of building;Number of neighbours;Number of floors;Volume of building[m3];\
+        Area of building[m2];Groundfloor area[m2];Outerwall area[m2];Window area[m2];\
+        Deleted wall area[m2];Innerwall area[m2];Floor area[m2];Total loss area (walls+windows+roof+groundfloor)[m2];Total loss area (every house is detached)[m2];\n")
     help_file_geometry.close()
 
     for bldgindex, bldg in enumerate(project.buildings):

@@ -3,16 +3,14 @@ model ${bldg.name}
     inner IDEAS.BoundaryConditions.SimInfoManager sim
         annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
     ${bldg.parent.name}.${bldg.name}.${bldg.name}_Building ${bldg.name}_Building
-        annotation (Placement(transformation(extent={{0,0},{20,20}})),
-        experiment(
-          StartTime=-2.592e+006,
-          StopTime=3.1536e+007,
-          Interval=600,
-          __Dymola_Algorithm="Lsodar"),
-          __Dymola_experimentSetupOutput,
-          __Dymola_experimentFlags(
-          Advanced(GenerateVariableDependencies=false, OutputModelicaCode=true),
-          Evaluate=true,
-          OutputCPUtime=true,
-          OutputFlatModelica=true));
+        annotation (Placement(transformation(extent={{0,0},{20,20}})));
+ annotation (experiment(
+      StartTime=-2.592e+006,
+      StopTime=3.1536e+007,
+      Interval=600,
+      __Dymola_Algorithm="Lsodar"), __Dymola_experimentFlags(
+      Advanced(GenerateVariableDependencies=false, OutputModelicaCode=true),
+      Evaluate=true,
+      OutputCPUtime=true,
+      OutputFlatModelica=true));
 end ${bldg.name};

@@ -111,7 +111,7 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
     help_file_name = "/" + prj.name + "_timeKPI.csv"
     utilities.create_path(resultspath)
     help_file_simulation = open(resultspath + help_file_name, 'w')
-    help_file_simulation.write("Creating project [s];" + str(endtime - starttime) + ";\n")
+    help_file_simulation.write("Number of building [-];" + str(len(prj.buildings)) + ";\nCreating project [s];" + str(endtime - starttime) + ";\n")
     help_file_simulation.close()
 
 
