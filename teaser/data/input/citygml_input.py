@@ -31,7 +31,7 @@ from teaser.logic.archetypebuildings.bmvbs.office import Office
 from teaser.logic.buildingobjects.building import Building
 import teaser.logic.utilities as utilities
 
-def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings):
+def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings, group_by_orientation = False, orientation_number = 4):
     """This function loads buildings from a CityGML file
 
     This function is a proof of concept, be careful using it.
@@ -107,11 +107,11 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
                     pass
 
     endtime = time.time()
-    resultspath = "C:\Users\ina\Box Sync\Onderzoek\Results/"+ prj.name.split('_')[0]
+    resultspath = utilities.get_default_path() + "/Results/" + prj.name.split('_')[0]
     help_file_name = "/" + prj.name + "_timeKPI.csv"
     utilities.create_path(resultspath)
     help_file_simulation = open(resultspath + help_file_name, 'w')
-    help_file_simulation.write("Number of building [-];" + str(len(prj.buildings)) + ";\nCreating project [s];" + str(endtime - starttime) + ";\n")
+    help_file_simulation.write("Number of buildings [-];" + str(len(prj.buildings)) + ";\nCreating project [s];" + str(endtime - starttime) + ";\n")
     help_file_simulation.close()
 
 
@@ -138,11 +138,27 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
         _merge_bldg(prj)
         endtime = time.time()
         help_file_simulation = open(resultspath + help_file_name, 'a')
-        help_file_simulation.write("Merging main building with extensions [s];" + str(endtime - starttime) + ";\n")
+        help_file_simulation.write("Merging main building with extensions [s];" + str(endtime - starttime) + ";\nNumber of buildings after merging [-];" + str(len(prj.buildings)) + ";\n")
         help_file_simulation.close()
     else:
         pass
 
+    if group_by_orientation:
+        print ("Grouping wall and roofs by orientation") # orientations are always between 0 and 360 degC
+        starttime = time.time()
+        if orientation_number == 4:
+            orientation_array = {'North': []}
+            _group_by_orientation(prj)
+        elif orientation_number == 8:
+            _group_by_orientation(prj)
+        else:
+            print('This was not a valid number of orientations. Please enter either 4 or 8.')
+        endtime = time.time()
+        help_file_simulation = open(resultspath + help_file_name, 'a')
+        help_file_simulation.write("Merging main building with extensions [s];" + str(endtime - starttime) + ";\n")
+        help_file_simulation.close()
+    else:
+        pass
 
 def _set_attributes(bldg, gml_bldg):
     """tries to set attributes for type building generation
@@ -350,6 +366,16 @@ def _merge_zone(zone_main, zone_ext):
         else:
             zone_main.ceilings.append(ext_bldg_element)
     # print ("Zone " + zone_ext.name + " of building " + zone_ext.parent.name + " was merged with zone " + zone_main.name + " of building " + zone_main.parent.name)
+
+def _group_by_orientation(prj, orientation_array):
+    """
+
+    :param prj:
+    :param orientation_array:
+    :return:
+    """
+
+
 
 class SurfaceGML(object):
     """Class for calculating attributes of CityGML surfaces

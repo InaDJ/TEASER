@@ -54,7 +54,7 @@ def ideas_district_simulation(project, simulation=True, analyseSimulation=True, 
     utilities.create_path(outputpath)
 
     if resultsDir is None: # where analysis .csv files should come
-        resultspath = "C:\Users\ina\Box Sync\Onderzoek\Results/" + prj.name.split('_')[0] # folder with streetname
+        resultspath = utilities.get_default_path() + "/Results/" + prj.name.split('_')[0] # folder with streetname
     else:
         resultspath = resultsDir
     utilities.create_path(resultspath)

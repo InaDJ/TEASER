@@ -45,9 +45,10 @@ def get_default_path():
 
     '''
 
-    home_path = os.path.expanduser('~')
+    home_path = "C:\Users\ina\Documents\Simulations" #os.path.expanduser('~')
 
-    teaser_default_path = os.path.join(home_path, 'TEASEROutput')
+    teaser_default_path = os.path.join(home_path, 'Models')
+    create_path(teaser_default_path)
 
     # directory = os.path.dirname(__file__)
     # src = "teaser"
