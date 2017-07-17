@@ -1,5 +1,10 @@
 within ${bldg.parent.name}.${bldg.name};
 model ${bldg.name}
+    Modelica.SIunits.Temperature[${bldg.name}_Building.building.nZones] TSensor = ${bldg.name}_Building.building.TSensor;
+    Modelica.SIunits.Power[${bldg.name}_Building.building.nZones] QHeatZone = ${bldg.name}_Building.heatingSystem.QHeatZone;
+    Modelica.SIunits.Power QHeaSys = ${bldg.name}_Building.heatingSystem.QHeaSys;
+    Modelica.SIunits.Area[${bldg.name}_Building.building.nZones] AZones = ${bldg.name}_Building.building.AZones;
+protected
     inner IDEAS.BoundaryConditions.SimInfoManager sim
         annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
     ${bldg.parent.name}.${bldg.name}.${bldg.name}_Building ${bldg.name}_Building
