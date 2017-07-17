@@ -29,12 +29,12 @@ def example_load_citygml():
     # The last option to import data into TEASER is using a CityGML file. The
     # import of CityGML underlies some limitations e.g. concerning data
     # given in the file and the way the buildings are modeled.
-    LOD2 = False
+    LOD2 = True
     LOD1_ridge = False
     LOD1_halfroof = False
     path = "C:\Users\ina\Box Sync\Onderzoek\GRB/"
 
-    streetnames = ["Boxbergstraat", "Berenbroekstraat"] #, "Bremstraat", "Brikkenovenstraat", "Broeder Juulstraat", "Broedersstraat", "Buitenlaan", "Clematitenstraat", "C-Mine", "Coghenstraat", "Congostraat", "Craenevenne"]
+    streetnames = ["Bandstraat"] #, "Bremstraat", "Brikkenovenstraat", "Broeder Juulstraat", "Broedersstraat", "Buitenlaan", "Clematitenstraat", "C-Mine", "Coghenstraat", "Congostraat", "Craenevenne"]
     #['Ankerstraat', 'Bandstraat', 'Berm', 'Boekrakelaan', 'Boogstraat', 'Boxbergstraat', 'Bremstraat', 'Congostraat', 'Craenevenne', 'De Bek', 'De Heuvel', 'De Mierlik', 'De Roten', 'De Vroente', 'Drijtap', 'Gansenwijer', 'Genkerhei', 'Gilissenweier', 'Gracht', 'Groenven', 'Gruisweg', 'Hasseltweg', 'Hazelnootstraat', 'Heiblok', 'Heidebos', 'Heilapstraat', 'Heiweier', 'Hennepstraat', 'Hoevenhaag', 'Holeven', 'Houtwal', 'Huiskensweier', 'Ijzerven', 'Keistraat', 'Kennipstraat', 'Kievitstraat', 'Kleinven', 'Klotstraat', 'Kneippstraat', 'Krommestraat', 'Landwaartslaan', 'Leemstraat', 'Middenkruis', 'Oosterwennel', 'Oude Heide', 'Oude Zonhoverweg', 'Peerdsdiefweier', 'Plaggenstraat', 'Ploegstraat', 'Rietbeemdstraat', 'Rockxweier', 'Roerstraat', 'Ruisstraat', 'Schalmstraat', 'Sintelstraat', 'Slagmolenweg', 'Spoorstraat', 'Strijphout', 'Turfstraat', 'Vogelzangstraat', 'Wennel', 'Westerwennel', 'Wiekstraat', 'Zandoerstraat', 'Zijgracht', 'Zodenstraat', 'Zonhoverweg', 'Zouwstraat']
     if streetnames == []:
         path_to_excel = "C:\Users\ina\Box Sync\Onderzoek\Projects\Gemeenschappelijke case Genk\Neighbourhood model 0.0.1\Number of buildings in districts\StreetsGenkPerDistrict.xlsx"
@@ -52,9 +52,18 @@ def example_load_citygml():
                                      number_of_zones=2,
                                      merge_buildings=True)
                 prj_LOD2.calc_all_buildings(raise_errors=True) # moet aangeroepen worden, anders wordt volume van gebouw niet goed gezet
-                prj_LOD2.export_ideas(internal_id=None,path=None,building_model="Detailed")
-                prj_LOD2.save_project(file_name=None, path=None)
-                simulations.ideas_district_simulation(project=prj_LOD2, simulation=False, analyseSimulation=True, analyseGeometry=True)
+                for bldg in prj_LOD2.buildings:
+                    for zone in bldg.thermal_zones:
+                        for wall in zone.outer_walls:
+                            print ("Outer wall orientation: " + str(wall.orientation))
+                            print ("Outer wall tilt: " + str(wall.tilt))
+                        for roof in zone.rooftops:
+                            print ("Roof orientation: " + str(roof.orientation))
+                            print ("Roof tilt: " + str(roof.tilt))
+
+                #prj_LOD2.export_ideas(internal_id=None,path=None,building_model="Detailed")
+                #prj_LOD2.save_project(file_name=None, path=None)
+                #simulations.ideas_district_simulation(project=prj_LOD2, simulation=False, analyseSimulation=True, analyseGeometry=True)
             except:
                 pass
         if LOD1_ridge:
