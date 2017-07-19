@@ -107,6 +107,7 @@ class Project(object):
                 "DEU_BW_Mannheim_107290_TRY2010_12_Jahr_BBSR.mos"))
 
         self.buildings = []
+        self.structure_dict = {}
 
         self.load_data = load_data
         self.used_data_country = used_data_country
@@ -1125,7 +1126,7 @@ class Project(object):
 
         citygml_out.save_gml(self, new_path)
 
-    def load_citygml(self, path=None, checkadjacantbuildings=False, number_of_zones=1, merge_buildings=False):
+    def load_citygml(self, path=None, checkadjacantbuildings=False, number_of_zones=1, merge_buildings=False, merge_orientations=False, number_of_orientations = 4):
         """Loads buildings from a citygml file
 
         calls the function load_gml in data.CityGML we make use of CityGML core
@@ -1151,7 +1152,9 @@ class Project(object):
                             self,
                             checkadjacantbuildings=checkadjacantbuildings,
                             number_of_zones=number_of_zones,
-                            merge_buildings = merge_buildings)
+                            merge_buildings = merge_buildings,
+                            merge_orientations=merge_orientations,
+                            number_of_orientations=number_of_orientations)
         self._number_of_zones = number_of_zones
 
     def load_excel(self, excel_path, python_file_directory, ideas_building_model):
@@ -1372,6 +1375,7 @@ class Project(object):
                 "DEU_BW_Mannheim_107290_TRY2010_12_Jahr_BBSR.mos"))
 
         self.buildings = []
+        self.structure_dict = {}
 
         self.load_data = load_data
 

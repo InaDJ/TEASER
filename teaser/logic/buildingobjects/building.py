@@ -143,6 +143,7 @@ class Building(object):
         self.number_of_floors = None
         self.height_of_floors = None
         self.internal_id = random.random()
+        self.structure_id = None
         self._year_of_retrofit = None
         self.type_of_building = type(self).__name__
         self.building_id = None
@@ -888,6 +889,14 @@ class Building(object):
 
         if value is None:
             self._thermal_zones = []
+
+    @property
+    def structure_id(self):
+        return self._structure_id
+
+    @structure_id.setter
+    def structure_id(self, value):
+        self._structure_id = value
 
     @property
     def outer_area(self):
