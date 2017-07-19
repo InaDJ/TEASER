@@ -24,7 +24,7 @@ def example_save():
 
     from teaser.project import Project
 
-    prj = Project()
+    '''prj = Project()
 
     load_xml = os.path.join(
         utilities.get_default_path(),
@@ -40,7 +40,7 @@ def example_save():
 
     # To reload data from a pickle file, we do not need to instantiate an
     # API, as pickle will automatically instantiate all classes as they have
-    # been saved. The saved file from example e4 is called ´teaser_pickle.p´
+    # been saved. The saved file from example e4 is called teaser_pickle.p
 
     import pickle
 
@@ -48,20 +48,20 @@ def example_save():
         utilities.get_default_path(),
         'teaser_pickle.p')
 
-    pickle_prj = pickle.load(open(load_pickle, "rb"))
+    pickle_prj = pickle.load(open(load_pickle, "rb"))'''
 
     # The last option to import data into TEASER is using a CityGML file. The
     # import of CityGML underlies some limitations e.g. concerning data
     # given in the file and the way the buildings are modeled.
 
-    prj_gml = Project()
+    prj_gml = Project(load_data=True)
 
     load_gml = utilities.get_full_path(os.path.join(
         'examples',
         'examplefiles',
-        'CityGMLSample.gml'))
+        'CityGMLSample_adjacantbuildings.gml'))
 
-    prj_gml.load_citygml(path=load_gml)
+    prj_gml.load_citygml(path=load_gml, checkadjacantbuildings=True)
 
     # After you imported your teaser project one or another way into you
     # python environment you can access variables and functions.
