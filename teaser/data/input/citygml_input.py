@@ -30,7 +30,7 @@ from teaser.logic.archetypebuildings.bmvbs.office import Office
 from teaser.logic.buildingobjects.building import Building
 
 
-def load_gml(path, prj, checkadjacantbuildings=False):
+def load_gml(path, prj, checkadjacentbuildings=False):
     """This function loads buildings from a CityGML file
 
     This function is a proof of concept, be careful using it.
@@ -99,8 +99,8 @@ def load_gml(path, prj, checkadjacantbuildings=False):
                 print("bldg.generate_from_gml() did not work")
                 pass
 
-    if checkadjacantbuildings is True:
-        print("Searching for adjacant buildings and deleting shared walls")
+    if checkadjacentbuildings is True:
+        print("Searching for adjacent buildings and deleting shared walls")
         for bldg in prj.buildings:
             for surface in bldg.gml_surfaces:
                 if surface.surface_tilt == 90:  # it's an OuterWall
@@ -251,7 +251,7 @@ class SurfaceGML(object):
         self.surface_orientation = self.get_gml_orientation()
         self.surface_tilt = self.get_gml_tilt()
 
-        # required to check for adjacant buildings (neighbours)
+        # required to check for adjacent buildings (neighbours)
         split_surface = list(zip(*[iter(self.gml_surface)] * 3))
         self.unit_normal_vector = self.unit_normal(a=split_surface[0], b=split_surface[1], c=split_surface[2])
         self.plane_equation_constant = self.unit_normal_vector[0] * self.gml_surface[0] + self.unit_normal_vector[1] * \

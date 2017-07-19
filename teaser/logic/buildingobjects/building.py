@@ -389,7 +389,7 @@ class Building(object):
         gml_surface : SurfaceGML()
             gml_surface that represents the basewall
         neighbour_gml_surface : SurfaceGML()
-            gml_surface that represents the wall of the adjacant building
+            gml_surface that represents the wall of the adjacent building
         tolerance : bool
             if false, then surfaces need to be an exact match, if true, then there is some tolerance allowed
             (tolerance is still in dummy version)
@@ -467,7 +467,7 @@ class Building(object):
         gml_surface : SurfaceGML()
             gml_surface that represents the basewall
         neighbour_gml_surface : SurfaceGML()
-            gml_surface that represents the wall of the adjacant building
+            gml_surface that represents the wall of the adjacent building
 
         Returns
         ----------

@@ -59,9 +59,9 @@ def example_save():
     load_gml = utilities.get_full_path(os.path.join(
         'examples',
         'examplefiles',
-        'CityGMLSample_adjacantbuildings.gml'))
+        'CityGMLSample_adjacentbuildings.gml'))
 
-    prj_gml.load_citygml(path=load_gml, checkadjacantbuildings=True)
+    prj_gml.load_citygml(path=load_gml, checkadjacentbuildings=True)
 
     # After you imported your teaser project one or another way into you
     # python environment you can access variables and functions.
