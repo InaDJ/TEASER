@@ -278,13 +278,22 @@ class Building(object):
         for zone in self.thermal_zones:
             for wall in zone.outer_walls:
                 if wall.orientation == orientation:
-                    wall.area = ((new_area / self.net_leased_area) * zone.area)
+                    if wall.area == None:
+                        wall.area = ((new_area / self.net_leased_area) * zone.area)
+                    else:
+                        wall.area += ((new_area / self.net_leased_area) * zone.area)
             for roof in zone.rooftops:
                 if roof.orientation == orientation:
-                    roof.area = ((new_area / self.net_leased_area) * zone.area)
+                    if roof.area == None:
+                        roof.area = ((new_area / self.net_leased_area) * zone.area)
+                    else:
+                        roof.area += ((new_area / self.net_leased_area) * zone.area)
             for ground in zone.ground_floors:
                 if ground.orientation == orientation:
-                    ground.area = ((new_area / self.net_leased_area) * zone.area)
+                    if ground.area == None:
+                        ground.area = ((new_area / self.net_leased_area) * zone.area)
+                    else:
+                        ground.area += ((new_area / self.net_leased_area) * zone.area)
 
     def set_window_area(
             self,
