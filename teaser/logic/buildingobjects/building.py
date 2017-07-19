@@ -380,6 +380,24 @@ class Building(object):
                                                 pass
 
     def check_if_coplanar(self, gml_surface, neighbour_gml_surface, tolerance=False):
+        ''' Coplanarity checker
+
+        checks if two gml_surfaces are coplanar or not
+
+        Parameters
+        ----------
+        gml_surface : SurfaceGML()
+            gml_surface that represents the basewall
+        neighbour_gml_surface : SurfaceGML()
+            gml_surface that represents the wall of the adjacant building
+        tolerance : bool
+            if false, then surfaces need to be an exact match, if true, then there is some tolerance allowed
+            (tolerance is still in dummy version)
+        Returns
+        ----------
+        is_coplanar : bool
+            true is both gml_surfaces are coplanar
+        '''
         basewall_unit_normal = gml_surface.unit_normal_vector  # this is the unit normal vector of the considered wall
         basewall_constant = gml_surface.plane_equation_constant  # this is the plane equation constant of the considered wall
         basewall_equation = [elem for elem in basewall_unit_normal]
@@ -415,9 +433,9 @@ class Building(object):
             # check if equal
             if ((((-1) * tolerance_normal) <= angle_between <= tolerance_normal) \
                         and (((-1) * tolerance_constant) <= dist_to_surface <= tolerance_constant)):
-                return True
+                is_coplanar = True
             else:
-                return False
+                is_coplanar =  False
         else:
             # NO tolerance on surface > exact match ! Watch out for floats > Decimals
             # elements from the equations arrays are floats, we convert them to decimal (correct comparison test)
@@ -432,12 +450,30 @@ class Building(object):
                         and b_eq[3] == (-1) * n_eq[3]) or (
                                     b_eq[0] == n_eq[0] and b_eq[1] == n_eq[1] and b_eq[2] == n_eq[2] \
                             and b_eq[3] == n_eq[3]):  # actually, we know surface normals should point outwards, but we check both
-                return True
+                is_coplanar = True
             else:
-                return False
+                is_coplanar = False
+
+        return is_coplanar
 
     def calculate_common_area(self, gml_surface, neighbour_gml_surface):
-        # only call this function if you are sure that gml_surface and neighbour_gml_surface are coplanar
+        ''' calculator of common area between 2 gml_surfaces
+        !!! ONLY CALL THIS FUNCTION IF YOU ARE SURE THAT THE SURFACES ARE COPLANAR
+
+        calculates common area between 2 gml_surfaces
+
+        Parameters
+        ----------
+        gml_surface : SurfaceGML()
+            gml_surface that represents the basewall
+        neighbour_gml_surface : SurfaceGML()
+            gml_surface that represents the wall of the adjacant building
+
+        Returns
+        ----------
+        common_area : float
+            area of common part of the two gml_surfaces
+        '''
         import teaser.data.input.citygml_input as citygml_in
         from shapely.geometry import Polygon
 
@@ -476,6 +512,8 @@ class Building(object):
             # return the projection, so we have real coordinate list of the intersection polygon
             intersection = [self.project_inv(x, proj_axis, basewall_unit_normal, basewall_constant) for x in
                             proj_intersection_better]
+            print basewall_unit_normal
+            print basewall_constant
             # we make an SurfaceGML() for this intersection, other representation is required [x0, y0, z0, ...]
             intersection_better = [coordinate for tuplepair in intersection for coordinate in tuplepair]
             intersection_gml = citygml_in.SurfaceGML(intersection_better)
@@ -484,11 +522,41 @@ class Building(object):
 
     # some helper functions for calculate_common_area
     def project(self, x, proj_axis):
+        ''' projects the coordinates of a point along a projection axis
+
+        Parameters
+        ----------
+        x : tuple
+            tuple with coordinates of a point in the format (x0,y0,z0)
+        proj_axis : int
+            int that represents the position of the projection axis in the coordinate tuple
+        Returns
+        ----------
+        tuple of 2 coordinates in the projection plane
+        '''
         # Project onto either the xy, yz, or xz plane.
         # (We choose the one that avoids degenerate configurations, which is the purpose of proj_axis)
         return tuple(c for i, c in enumerate(x) if i != proj_axis)
 
     def project_inv(self, x, proj_axis, unit_normal, plane_equation_constant):
+        ''' projects the coordinates of a projectec point back to 3D
+
+        Parameters
+        ----------
+        x : tuple
+            tuple with coordinates of a point in the format (_,_)
+            (not always (x,y), (y,z) or (x,z), depends on proj_axis)
+        proj_axis : int
+            int that represents the position of the projection axis in the coordinate tuple
+        unit_normal: list
+            unit normal vector as a list
+        plane_equation_constant: int
+            constant in the equation of the plane
+
+        Returns
+        ----------
+        tuple of 3 coordinates
+        '''
         # Returns the vector w in the walls' plane such that project(w) equals x.
         w = list(x)
         w[proj_axis:proj_axis] = [0.0]
