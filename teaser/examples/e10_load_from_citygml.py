@@ -33,7 +33,7 @@ def example_load_citygml():
     starttime = time.time()
 
     prj_gml = Project(load_data=True, used_data_country="Belgium")
-    prj_gml.name = "Berm_merge"
+    prj_gml.name = "Berm_merge2"
     prj_gml.used_library_calc = 'IDEAS'
 
     prj_gml.load_citygml(path= "C:\Users\ina\Box Sync\Onderzoek\GRB\Streets_LOD1_Ridge_based\Berm.gml",
