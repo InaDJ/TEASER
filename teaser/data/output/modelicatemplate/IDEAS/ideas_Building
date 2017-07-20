@@ -3,7 +3,13 @@ model ${bldg.name}_Building
     extends IDEAS.Templates.Interfaces.Building(
         redeclare ${bldg.parent.name}.${bldg.name}.Structure.${bldg.name}_Structure building,
         redeclare IDEAS.Templates.Ventilation.None ventilationSystem,
+        %if occupant_model == "ISO13790":
         redeclare ${bldg.parent.name}.${bldg.name}.Occupant.ISO13790 occupant,
+        %elif occupant_model == "StROBe":
+        redeclare IDEAS.BoundaryConditions.Occupants.Extern.StROBe occupant(id=1, VZones=building.VZones),
+        %else:
+        ERROR: occupant_model should be either "ISO13790" or "StROBe"
+        %endif
         redeclare IDEAS.Templates.Heating.IdealRadiatorHeating heatingSystem(
             QNom = building.Q_design,
             VZones = building.VZones),

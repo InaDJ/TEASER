@@ -6,15 +6,17 @@
 This module contains function to call Templates for IDEAS model generation
 """
 import os
-import re
+import random
 import teaser.logic.utilities as utilities
 from mako.template import Template
 from mako.lookup import TemplateLookup
+from shutil import copyfile
 
 def export_ideas(buildings,
                  prj,
                  path=None,
-                 building_model="Detailed"):
+                 building_model="Detailed",
+                 occupant_model="StROBe"):
     """Exports models for IDEAS library
 
         Exports a building for detailed IDEAS Building model.
@@ -40,6 +42,8 @@ def export_ideas(buildings,
         """
 
     assert building_model in ["Detailed","ROM", "GenkNET"]
+    assert occupant_model in ["ISO13790", "StROBe"]
+
     uses = ['Modelica(version="' + prj.modelica_info.version + '")',
             'IDEAS(version="1.0.0")']
 
@@ -48,8 +52,37 @@ def export_ideas(buildings,
     lookup = TemplateLookup(directories=[utilities.get_full_path(
         os.path.join('data', 'output', 'modelicatemplate'))])
 
+    if occupant_model == "StROBe":
+        strobe_origin_path = utilities.get_full_path(
+                                "data/input/inputdata/occupancydata/")
+        strobe_ids_available = [file[:-9] for file in os.listdir(strobe_origin_path)
+                                if file.endswith("_info.txt")] # id = number in front of _info.txt
+        strobe_ids = []
+
+        # fill strobe_ids with available strobe_ids
+        random.seed(0) #this way building_ids for strobe will always have the same random order
+        index = 0
+        while index < len(buildings):
+            strobe_ids.append(random.choice(strobe_ids_available))
+            index +=1
+
+        # copy used strobe_profiles to output folder
+        files_to_be_copied = []
+        strobe_destination_path = utilities.get_full_path(path + "/StROBe/")
+        utilities.create_path(strobe_destination_path)
+        for strobe_id in list(set(strobe_ids)):
+            # 1 profile can be used multiple times, thus remove duplicates from list
+            # all files that start with the ID should be copied
+            files_to_be_copied += [file for file in os.listdir(strobe_origin_path)
+                                   if file.startswith(strobe_id)]
+        for file in files_to_be_copied:
+            copyfile(strobe_origin_path+file, strobe_destination_path+file)
+    elif occupant_model != "StROBe":
+        strobe_ids = [0]*len(buildings)
+        strobe_destination_path = ""
+    print strobe_destination_path
     # Then, create building level
-    for bldg in buildings:
+    for bldgindex, bldg in enumerate(buildings, start=0):
         # Rename building if not already correct
         if len(bldg.name.split('_')) == 3:
             bldg.name = bldg.name.split('_')[0]+"_"+bldg.name.split('_')[1]
@@ -74,20 +107,24 @@ def export_ideas(buildings,
         building_template = Template(filename=template_path + "ideas_Building")
         out_file = open((bldg_path + bldg.name + "_Building.mo"), 'w')
         out_file.write(building_template.render_unicode(
-            bldg=bldg))
+            bldg=bldg,
+            occupant_model=occupant_model))
         out_file.close()
 
         building_innersim_template = Template(filename=template_path + "ideas_Building_inner_sim")
         out_file = open((bldg_path + bldg.name + ".mo"), 'w')
         out_file.write(building_innersim_template.render_unicode(
-            bldg=bldg))
+            bldg=bldg,
+            occupant_model=occupant_model,
+            strobe_destination_path=strobe_destination_path,
+            bldg_id=strobe_ids[bldgindex]))
         out_file.close()
 
         _help_package(bldg_path, bldg.name, within=prj.name)
         _help_package_order(path=bldg_path,
                             package_list_with_addition=[bldg],
                             addition="_Building",
-                            extra_list= ["Structure","Occupant"],
+                            extra_list=["Structure", "Occupant"],
                             # not yet "HeatingSystem","VentilationSystem","ElectricalSystem"
                             package_list_without=[bldg])
 
@@ -565,7 +602,12 @@ def export_ideas(buildings,
     out_file.close()
 
     _help_package(path, prj.name, uses, within=None)
-    _help_package_order(path,
+    if occupant_model == "StROBe":
+        _help_package_order(path,
+                        package_list_without=buildings,
+                        extra_list=[prj.name + "_Project", "StROBe"])
+    else:
+        _help_package_order(path,
                         package_list_without=buildings,
                         extra_list=[prj.name + "_Project"])
 

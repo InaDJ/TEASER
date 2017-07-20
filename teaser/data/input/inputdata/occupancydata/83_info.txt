@@ -1,0 +1,9 @@
+Household-object created and parameterized.
+ - Employment types are ['FTE', 'FTE', 'U12']
+ - Set of clusters is [2, 3, 4, 6]
+ - Total presence time is 4240.5 out of 8760 hours
+	being 48.4 percent)
+ - Receptacle load is 1303 kWh
+ - Lighting load is 415 kWh
+ - Draw-off is 62 l/pp.day
+ - Average comfort setting is 18.67 Celsius
