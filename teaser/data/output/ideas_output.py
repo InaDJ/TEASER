@@ -80,7 +80,7 @@ def export_ideas(buildings,
     elif occupant_model != "StROBe":
         strobe_ids = [0]*len(buildings)
         strobe_destination_path = ""
-    print strobe_destination_path
+
     # Then, create building level
     for bldgindex, bldg in enumerate(buildings, start=0):
         # Rename building if not already correct
@@ -602,12 +602,7 @@ def export_ideas(buildings,
     out_file.close()
 
     _help_package(path, prj.name, uses, within=None)
-    if occupant_model == "StROBe":
-        _help_package_order(path,
-                        package_list_without=buildings,
-                        extra_list=[prj.name + "_Project", "StROBe"])
-    else:
-        _help_package_order(path,
+    _help_package_order(path,
                         package_list_without=buildings,
                         extra_list=[prj.name + "_Project"])
 

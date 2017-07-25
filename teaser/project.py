@@ -1281,7 +1281,8 @@ class Project(object):
             self,
             internal_id=None,
             path=None,
-            building_model="Detailed"):
+            building_model="Detailed",
+            occupant_model="ISO13790"):
 
         """Exports values to a record file for Modelica simulation
 
@@ -1314,7 +1315,8 @@ class Project(object):
                 buildings=self.buildings,
                 prj=self,
                 path=path,
-                building_model=building_model)
+                building_model=building_model,
+                occupant_model=occupant_model)
         else:
             for bldg in self.buildings:
                 if bldg.internal_id == internal_id:
@@ -1322,7 +1324,8 @@ class Project(object):
                         buildings=[bldg],
                         prj=self,
                         path=path,
-                        building_model=building_model)
+                        building_model=building_model,
+                        occupant_model=occupant_model)
                 else:
                     pass
 

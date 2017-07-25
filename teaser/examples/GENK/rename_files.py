@@ -13,16 +13,7 @@ Two different modes:
 
 """
 
-import buildingspy.simulate.Simulator as Si
-import time
-from multiprocessing import Pool
-import teaser.logic.utilities as utilities
 import os
-import pandas
-import numpy
-from modelicares import SimRes
-import matplotlib.pyplot as plt
-from cycler import cycler
 
 def rename_files():
     """

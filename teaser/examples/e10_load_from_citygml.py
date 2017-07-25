@@ -33,14 +33,14 @@ def example_load_citygml():
     starttime = time.time()
 
     prj_gml = Project(load_data=True, used_data_country="Belgium")
-    prj_gml.name = "Berm_merge2"
+    prj_gml.name = "Talingpark_str_1"
     prj_gml.used_library_calc = 'IDEAS'
 
-    prj_gml.load_citygml(path= "C:\Users\ina\Box Sync\Onderzoek\GRB\Streets_LOD1_Ridge_based\Berm.gml",
+    prj_gml.load_citygml(path= "C:\Users\ina\Box Sync\Onderzoek\Work packages\Examining data sources\CityGML Example files\Talingpark_6_7.gml",
                          checkadjacantbuildings=True,
-                         number_of_zones=2,
+                         number_of_zones=1,
                          merge_buildings=True,
-                         merge_orientations=True,
+                         merge_orientations=False,
                          number_of_orientations=8)
 
     # "C:\Users\ina\Box Sync\Onderzoek\UNDER CONSTRUCTION/4DH2017\FME\Real model build up\Waterschei_works_better.gml",
@@ -74,7 +74,8 @@ def example_load_citygml():
     prj_gml.export_ideas(
         internal_id=None,
         path=None,
-        building_model="Detailed")
+        building_model="Detailed",
+        occupant_model="StROBe")
 
     endtime = time.time()
     print("Pre-processing lasted: " + str((endtime - starttime) / 60) + " minutes.")
@@ -86,7 +87,7 @@ def example_load_citygml():
     """
     #simulations.ideas_district_simulation(project=prj_gml, simulation=True, analyseGeometry=True)
 
-    for bldgindex, bldg in enumerate(prj_gml.buildings):
+    """for bldgindex, bldg in enumerate(prj_gml.buildings):
         print("Building name: " + bldg.name)
         for zoneindex, zone in enumerate(bldg.thermal_zones, start=1):
             print("Zone name: " + str(zone.name) + " " + str(zone.internal_id))
@@ -105,7 +106,7 @@ def example_load_citygml():
             count_windows_area = 0
             for elementindex, buildingelement in enumerate(buildingelements, start=1):
                 print(buildingelement.name + " has a tilt of " + str(buildingelement.tilt) + " and an orient of " + str(
-                    buildingelement.orientation) + " and an area of " + str(buildingelement.area))
+                    buildingelement.orientation) + " and an area of " + str(buildingelement.area))"""
 
     """
         print("Printing gml_surfaces for building " + str(bldg.name))
