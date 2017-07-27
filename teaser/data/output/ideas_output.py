@@ -84,8 +84,8 @@ def export_ideas(buildings,
     # Then, create building level
     for bldgindex, bldg in enumerate(buildings, start=0):
         # Rename building if not already correct
-        if len(bldg.name.split('_')) == 4:
-            bldg.name = bldg.name.split('_')[0]+"_"+bldg.name.split('_')[1]+"_"+bldg.name.split('_')[2]
+        if len(bldg.name.split('_')) == 3:
+            bldg.name = bldg.name.split('_')[0]+"_"+bldg.name.split('_')[1]# +"_"+bldg.name.split('_')[2] change also == 4
         # Re-order thermal zones, first dayzone, then nightzone (required for two-zone)
         if bldg.thermal_zones[0].name == "DayZone":
             pass
