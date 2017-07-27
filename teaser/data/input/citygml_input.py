@@ -405,6 +405,7 @@ def _merge_orientations(prj, orientation_dict):
     orientations = [0.0]
     for orientation, value in orientation_dict.items():
         orientations.append(value[2])
+    bldgs_to_remove = []
 
     for bldg in prj.buildings:
         for zone in bldg.thermal_zones:
@@ -414,7 +415,11 @@ def _merge_orientations(prj, orientation_dict):
             for bldg_elem in zone.outer_walls:  # !!!
                 total_area += bldg_elem.area
                 total_areatilt += (bldg_elem.area * bldg_elem.tilt)
-            tilt_weighted_by_area = total_areatilt / total_area
+            if total_area !=0:
+                tilt_weighted_by_area = total_areatilt / total_area
+            else:
+                print ('No outerwalls were defined for ' + bldg.name + '. Therefore, it will be deleted.')
+                bldgs_to_remove.append(bldg.name)
 
             for buildingelement in zone.outer_walls: #!!!
                 elem_is_merged = False
@@ -468,7 +473,10 @@ def _merge_orientations(prj, orientation_dict):
             for bldg_elem in zone.windows: #!!!
                 total_area += bldg_elem.area
                 total_areatilt += (bldg_elem.area * bldg_elem.tilt)
-            tilt_weighted_by_area = total_areatilt / total_area
+            if total_area !=0:
+                tilt_weighted_by_area = total_areatilt / total_area
+            else:
+                tilt_weighted_by_area = 90.0
 
             for buildingelement in zone.windows: #!!!
                 elem_is_merged = False
@@ -575,7 +583,10 @@ def _merge_orientations(prj, orientation_dict):
                             bldg_elem.orientation = new_orientation
                             bldg_elem.area = buildingelement.area
             zone.rooftops[:] = [roof for roof in zone.rooftops if roof.orientation in orientations]
-
+    # remove building without any outerwalls from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
+    for bldg_to_remove in bldgs_to_remove:
+        prj.buildings[:] = [bldg for bldg in prj.buildings if bldg.name not in bldg_to_remove]
+        
 def _allocate_structureID(prj):
     # Allocate structure_id to all buildings
     for bldg in prj.buildings:
