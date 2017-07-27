@@ -257,9 +257,9 @@ class Building(object):
                 self.net_leased_area = self.get_footprint_gml() * \
                     self.number_of_floors
 
-            if self.net_leased_area < 50.0:
-                self.net_leased_area = 50.0
-                print("Net leased area of building " + self.name + " was less than 50.0 and therefore set to 50.0.")
+            if self.net_leased_area < 1.0:
+                self.parent.buildings[:] = [bldg for bldg in self.parent.buildings if bldg.name != self.name]
+                print("Net leased area of building " + self.name + " was less than 1.0 m2 and this building was therefore deleted.")
 
     def set_outer_wall_area(self,
                 new_area,
