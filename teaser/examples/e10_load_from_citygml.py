@@ -33,12 +33,12 @@ def example_load_citygml():
     starttime = time.time()
 
     prj_gml = Project(load_data=True, used_data_country="Belgium")
-    prj_gml.name = "Talingpark_str_1"
+    prj_gml.name = "Acacialaan"
     prj_gml.used_library_calc = 'IDEAS'
 
-    prj_gml.load_citygml(path= "C:\Users\ina\Box Sync\Onderzoek\Work packages\Examining data sources\CityGML Example files\Talingpark_6_7.gml",
+    prj_gml.load_citygml(path= "C:\Users\ina\Box Sync\Onderzoek\GRB\Streets_LOD2\Acacialaan.gml",
                          checkadjacantbuildings=True,
-                         number_of_zones=1,
+                         number_of_zones=2,
                          merge_buildings=True,
                          merge_orientations=False,
                          number_of_orientations=8)
@@ -75,7 +75,7 @@ def example_load_citygml():
         internal_id=None,
         path=None,
         building_model="Detailed",
-        occupant_model="StROBe")
+        occupant_model="ISO13790")
 
     endtime = time.time()
     print("Pre-processing lasted: " + str((endtime - starttime) / 60) + " minutes.")
