@@ -122,15 +122,25 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
     # bovenstaande for-lus wordt aangeroepen voor elke gebouwobject in de citygml, ze zijn dus nog niet allen aangemaakt,
     # na de for-lus zijn ze wel allen aangemaakt
     if checkadjacantbuildings is True:
-        print("Searching for adjacant buildings and deleting shared walls")
+        print("Searching for adjacent buildings and deleting shared walls")
         starttime = time.time()
+        bldgs_to_remove = []
         for bldg in prj.buildings:
-            for surface in bldg.gml_surfaces:
-                if surface.surface_tilt == 90:  # it's an OuterWall
-                    bldg.reset_outer_wall_area(surface)
+            try:
+                for surface in bldg.gml_surfaces:
+                    if surface.surface_tilt == 90:  # it's an OuterWall
+                        bldg.reset_outer_wall_area(surface)
+            except:
+                bldgs_to_remove.append(bldg)
+                print(bldg.name + " resulted in an error while searching for adjacent buildings and was therefore deleted.")
+
+        # remove building extensions from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
+        for bldg_to_remove in bldgs_to_remove:
+            prj.buildings.remove(bldg_to_remove)
+
         endtime = time.time()
         help_file_simulation = open(resultspath + help_file_name, 'a')
-        help_file_simulation.write("Searching for adjacant buildings [s];" + str(endtime - starttime) + ";\n")
+        help_file_simulation.write("Searching for adjacent buildings [s];" + str(endtime - starttime) + ";\n")
         help_file_simulation.close()
     else:
         pass
