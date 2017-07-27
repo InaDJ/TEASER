@@ -131,12 +131,12 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
                     if surface.surface_tilt == 90:  # it's an OuterWall
                         bldg.reset_outer_wall_area(surface)
             except:
-                bldgs_to_remove.append(bldg)
+                bldgs_to_remove.append(bldg.name)
                 print(bldg.name + " resulted in an error while searching for adjacent buildings and was therefore deleted.")
 
         # remove building extensions from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
         for bldg_to_remove in bldgs_to_remove:
-            prj.buildings.remove(bldg_to_remove)
+            prj.buildings[:] = [bldg for bldg in prj.buildings if bldg.name not in bldg_to_remove]
 
         endtime = time.time()
         help_file_simulation = open(resultspath + help_file_name, 'a')
