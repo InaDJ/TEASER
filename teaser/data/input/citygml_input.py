@@ -121,6 +121,12 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
     # bovenstaande for-lus wordt aangeroepen voor elke gebouwobject in de citygml, ze zijn dus nog niet allen aangemaakt,
     # na de for-lus zijn ze wel allen aangemaakt
     bldgs_to_remove = []
+
+    # if no geometry is defined, then net leased area is zero. As this results in errors, it is set to 1.0, but this buildings and their main buildings should be deleted, this is done here.
+    for bldg in prj.buildings:
+        if bldg.net_leased_area == int(1):
+            bldgs_to_remove.append(bldg.name)
+
     if checkadjacantbuildings is True:
         print("Searching for adjacent buildings and deleting shared walls")
         starttime = time.time()
@@ -132,18 +138,17 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
             except:
                 bldgs_to_remove.append(bldg.name)
                 print(bldg.name + " resulted in an error while searching for adjacent buildings and was therefore deleted.")
-
-        # remove building extensions from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
-        # if a building extension is removed, also remove its main building (see merge_buildings)
-        for bldg_to_remove in bldgs_to_remove:
-            prj.buildings[:] = [bldg for bldg in prj.buildings if bldg.name not in bldg_to_remove]
-
         endtime = time.time()
         help_file_simulation = open(resultspath + help_file_name, 'a')
         help_file_simulation.write("Searching for adjacent buildings [s];" + str(endtime - starttime) + ";\n")
         help_file_simulation.close()
     else:
         pass
+
+    # remove building extensions from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
+    # if a building extension is removed, also remove its main building (see merge_buildings)
+    for bldg_to_remove in bldgs_to_remove:
+        prj.buildings[:] = [bldg for bldg in prj.buildings if bldg.name not in bldg_to_remove]
 
     if merge_buildings:
         print ("Merging main buildings with extensions")
