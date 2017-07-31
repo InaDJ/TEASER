@@ -259,7 +259,9 @@ class Building(object):
 
             if self.net_leased_area < 1.0:
                 self.parent.buildings[:] = [bldg for bldg in self.parent.buildings if bldg.name != self.name]
-                print("Net leased area of building " + self.name + " was less than 1.0 m2 and this building was therefore deleted.")
+                self.net_leased_area = int(1)
+                print("Net leased area of building " + self.name + " was less than 1.0 m2 and this building will therefore be deleted.")
+                # actual removal of building happens in citygml_input.py
 
     def set_outer_wall_area(self,
                 new_area,
