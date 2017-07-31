@@ -32,9 +32,9 @@ def example_load_citygml():
     LOD2 = True
     LOD1_ridge = False
     LOD1_halfroof = False
-    path = "C:\Users\ina\Box Sync\Onderzoek\GRB/"
+    path = "D:\Ina\GRB\"
 
-    streetnames = ["Bandstraat"] #, "Bremstraat", "Brikkenovenstraat", "Broeder Juulstraat", "Broedersstraat", "Buitenlaan", "Clematitenstraat", "C-Mine", "Coghenstraat", "Congostraat", "Craenevenne"]
+    streetnames = ["DeBek"] #, "Bremstraat", "Brikkenovenstraat", "Broeder Juulstraat", "Broedersstraat", "Buitenlaan", "Clematitenstraat", "C-Mine", "Coghenstraat", "Congostraat", "Craenevenne"]
     #['Ankerstraat', 'Bandstraat', 'Berm', 'Boekrakelaan', 'Boogstraat', 'Boxbergstraat', 'Bremstraat', 'Congostraat', 'Craenevenne', 'De Bek', 'De Heuvel', 'De Mierlik', 'De Roten', 'De Vroente', 'Drijtap', 'Gansenwijer', 'Genkerhei', 'Gilissenweier', 'Gracht', 'Groenven', 'Gruisweg', 'Hasseltweg', 'Hazelnootstraat', 'Heiblok', 'Heidebos', 'Heilapstraat', 'Heiweier', 'Hennepstraat', 'Hoevenhaag', 'Holeven', 'Houtwal', 'Huiskensweier', 'Ijzerven', 'Keistraat', 'Kennipstraat', 'Kievitstraat', 'Kleinven', 'Klotstraat', 'Kneippstraat', 'Krommestraat', 'Landwaartslaan', 'Leemstraat', 'Middenkruis', 'Oosterwennel', 'Oude Heide', 'Oude Zonhoverweg', 'Peerdsdiefweier', 'Plaggenstraat', 'Ploegstraat', 'Rietbeemdstraat', 'Rockxweier', 'Roerstraat', 'Ruisstraat', 'Schalmstraat', 'Sintelstraat', 'Slagmolenweg', 'Spoorstraat', 'Strijphout', 'Turfstraat', 'Vogelzangstraat', 'Wennel', 'Westerwennel', 'Wiekstraat', 'Zandoerstraat', 'Zijgracht', 'Zodenstraat', 'Zonhoverweg', 'Zouwstraat']
     if streetnames == []:
         path_to_excel = "C:\Users\ina\Box Sync\Onderzoek\Projects\Gemeenschappelijke case Genk\Neighbourhood model 0.0.1\Number of buildings in districts\StreetsGenkPerDistrict.xlsx"
