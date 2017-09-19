@@ -74,7 +74,7 @@ def ideas_district_simulation(project, simulation=True, analyseSimulation=True, 
             s = Si.Simulator(name, "dymola", outputpath, packagepath)
             li.append(s)
 
-        po = Pool()
+        po = Pool(15)
         po.map(simulate_case, li)
 
         endtime = time.time()
