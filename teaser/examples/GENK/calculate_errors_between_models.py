@@ -13,6 +13,7 @@ import pandas
 import numpy as np
 from modelicares import SimRes
 import matplotlib.pyplot as plt
+import statsmodels.api as sm
 from cycler import cycler
 
 def report_errors():
@@ -31,27 +32,31 @@ def report_errors():
      'Roerstraat', 'Vogelzangstraat', 'Zandoerstraat']
     # [] #leave empty if you want to the whole directory
 
-    # calculate all errors
-    outputDirdistr = outputDir + "ALL/"
-    if not os.path.exists(outputDirdistr):
-        os.makedirs(outputDirdistr)
-    calculate_errors_between_models(inputDir=inputDir, outputDir=outputDirdistr, variants=variants, streetnames=streetnames)
+    analysisALL = True
+    analysisPERSTREET = False
 
-    # calculate errors per street
-    for streetname in streetnames:
-        outputDirstreet = outputDir + streetname + "/"
-        streetnamestreet = [streetname]
-        if not os.path.exists(outputDirstreet):
-            os.makedirs(outputDirstreet)
-        calculate_errors_between_models(inputDir=inputDir, outputDir=outputDirstreet, variants=variants, streetnames=streetnamestreet)
+    if analysisALL:
+        # calculate all errors
+        outputDirdistr = outputDir + "ALL/"
+        if not os.path.exists(outputDirdistr):
+            os.makedirs(outputDirdistr)
+        calculate_errors_between_models(inputDir=inputDir, outputDir=outputDirdistr, variants=variants, streetnames=streetnames)
+
+    if analysisPERSTREET:
+        # calculate errors per street
+        for streetname in streetnames:
+            outputDirstreet = outputDir + streetname + "/"
+            streetnamestreet = [streetname]
+            if not os.path.exists(outputDirstreet):
+                os.makedirs(outputDirstreet)
+            calculate_errors_between_models(inputDir=inputDir, outputDir=outputDirstreet, variants=variants, streetnames=streetnamestreet)
 
 def calculate_errors_between_models(inputDir=None, outputDir=None, variants=None, streetnames=None):
     '''
-
     How to work with multi-index:
     #print df
     #print df['LOD2'] # returns subdataframe with all KPI's of this variant
-    #print df['LOD2', 'Number of floors'] # returns subsubdataframe (= series) with the specified KPI of this variant
+    #print df['LOD2', 'Number of floors'] # returns subsubdataframe (= series) with the specified KPI of this variant = 1 column
     #print df.loc['Dwarsstraat'] #returns subdataframe, based on row: all buildings of this street
     #print df.loc['Dwarsstraat', 'Dwarsstraat_1'] return subsubdataframe (=series) with the specified building of this street
     #print df[variant].loc[street] #returns one street in one variant
@@ -69,6 +74,7 @@ def calculate_errors_between_models(inputDir=None, outputDir=None, variants=None
     # Create dataframe with all variants and all streets (buildings with no simulation results were already deleted)
     df = create_dataframe(variants=variants, streetnames=streetnames, inputDir=inputDir)
     df = cleanup_dataframe(df=df, outputDir=outputDir)
+    df.rename(columns={'Total loss area (walls+windows+roof+groundfloor)[m2]':'Total loss area [m2]'}, inplace=True)
 
     # Analyse on building level
     df_buildings = None
@@ -113,31 +119,67 @@ def calculate_errors_between_models(inputDir=None, outputDir=None, variants=None
     print ('Number of buildings in buildings PE dataframe: ' + str(df_buildings.shape[0]))
 
     params = {'legend.fontsize': 'small',
-              'figure.figsize': (15, 5),
+              'figure.figsize': (15, 10),
               'axes.labelsize': 'small',
               'axes.titlesize': 'small',
               'xtick.labelsize': 'small',
               'ytick.labelsize': 'small'}
     plt.rcParams.update(params)
 
-    for variantindex, variant in enumerate(variants, start = 1):
-        if variantindex==1:
-            pass
-        else:
-            df_buildings.boxplot(column=[variant])
-            plt.savefig(outputDir + variant + "_boxplot.png", bbox_inches = 'tight', dpi = 1000)
-            plt.close()
+    boxplots = False
+    histograms = False
+    scatter = True
 
-    for variantindex, variant in enumerate(variants, start=1):
-        if variantindex == 1:
-            pass
-        else:
-            df_buildings.hist(column=[variant], bins = 100)
-            plt.tight_layout()
-            plt.savefig(outputDir + variant + "_graph.png", bbox_inches='tight', dpi=1000)
-            plt.close()
+    if boxplots:
+        print("Creating boxplots")
+        for variantindex, variant in enumerate(variants, start = 1):
+            if variantindex==1:
+                pass
+            else:
+                df_buildings[variant].boxplot()
+                plt.xticks(rotation=90)
+                plt.tight_layout()
+                plt.savefig(outputDir + variant + "_boxplot.png", dpi = 1000)
+                plt.close()
 
-    # Analyse on street level
+    if histograms:
+        print("Creating histograms")
+        for variantindex, variant in enumerate(variants, start=1):
+            if variantindex == 1:
+                pass
+            else:
+                df_buildings.hist(column=[variant], bins = 100)
+                plt.tight_layout()
+                plt.savefig(outputDir + variant + "_graph.png", dpi=1000)
+                plt.close()
+
+    if scatter:
+        print("Creating scatterplots")
+        df_buildings_absolute = df.loc[df_buildings.index] # only keep buildings that are in df_buildings as well
+        kpis_scatter = ['Volume of building[m3]', 'Total loss area [m2]']
+        for variantindex, variant in enumerate(variants, start=1):
+            if variantindex == 1:
+                pass
+            else:
+                for kpi in kpis_scatter:
+                    df_buildings_absolute.plot.scatter(x=('LOD2', kpi), y=(variant, kpi))
+                    # calculate regression line
+                    X = sm.add_constant(df_buildings_absolute[('LOD2', kpi)])
+                    model = sm.OLS(df_buildings_absolute[(variant, kpi)], X, missing='drop')  # ignores entires where x or y is NaN
+                    result = model.fit()
+                    print result.params
+                    print result.summary()
+                    # plot regression line
+                    m = result.params[1]
+                    b = result.params[0]
+                    N = 100  # could be just 2 if you are only drawing a straight line...
+                    points = np.linspace(df_buildings_absolute[('LOD2', 'Volume of building[m3]')].min(), df_buildings_absolute[('LOD2', 'Volume of building[m3]')].max(), N)
+                    plt.plot(points, m * points + b, color='k')
+                    plt.text(0, 1,'matplotlib', horizontalalignment='center', verticalalignment='center', bbox=dict(facecolor='black', alpha=0.5))
+                    plt.savefig(outputDir + variant + "_" + kpi[:-5] + "_scatter.png", bbox_inches='tight', dpi=1000)
+                    plt.close()
+
+            # Analyse on street level
     df_streets = None
     for streetname in streetnames:
         df_street_pe = df_buildings.loc[streetname]
