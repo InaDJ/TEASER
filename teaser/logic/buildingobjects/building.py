@@ -238,9 +238,11 @@ class Building(object):
 
         if self.height_of_floors is None and self.number_of_floors is None:
             self.height_of_floors = height_of_floor
+            print(self.name + " has no proper floor height defined, floor height was therefore set to 3.5m.")
         elif self.height_of_floors is None and self.number_of_floors is not \
                 None:
             self.height_of_floors = self.bldg_height/self.number_of_floors
+            print(self.name + " has no proper floor height defined, floor height was therefore set to building height/number of floors.")
         else:
             pass
 
