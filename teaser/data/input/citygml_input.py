@@ -24,6 +24,9 @@ import teaser.data.bindings.opengis.raw.gml as gml
 import teaser.data.bindings.opengis.raw._nsgroup as nsgroup
 import teaser.data.bindings.opengis.raw.smil20 as smil
 import teaser.data.bindings.opengis.misc.raw.xAL as xal
+from teaser.logic.buildingobjects.buildingphysics.outerwall import OuterWall
+from teaser.logic.buildingobjects.buildingphysics.rooftop import Rooftop
+from teaser.logic.buildingobjects.buildingphysics.window import Window
 
 from teaser.logic.archetypebuildings.bmvbs.singlefamilydwelling \
                             import SingleFamilyDwelling
@@ -31,7 +34,7 @@ from teaser.logic.archetypebuildings.bmvbs.office import Office
 from teaser.logic.buildingobjects.building import Building
 import teaser.logic.utilities as utilities
 
-def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings, group_by_orientation = False, orientation_number = 4):
+def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings, merge_orientations = False, number_of_orientations = 4):
     """This function loads buildings from a CityGML file
 
     This function is a proof of concept, be careful using it.
@@ -114,28 +117,43 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
     help_file_simulation.write("Number of buildings [-];" + str(len(prj.buildings)) + ";\nCreating project [s];" + str(endtime - starttime) + ";\n")
     help_file_simulation.close()
 
-
     # hier moet de functie aangeroepen worden voor alle gebouwen te checken op buren en hun muuroppervlaktes aan te passen
     # bovenstaande for-lus wordt aangeroepen voor elke gebouwobject in de citygml, ze zijn dus nog niet allen aangemaakt,
     # na de for-lus zijn ze wel allen aangemaakt
+    bldgs_to_remove = []
+
+    # if no geometry is defined, then net leased area is zero. As this results in errors, it is set to 1.0, but this buildings and their main buildings should be deleted, this is done here.
+    for bldg in prj.buildings:
+        if bldg.net_leased_area == int(1):
+            bldgs_to_remove.append(bldg.name)
+
     if checkadjacantbuildings is True:
-        print("Searching for adjacant buildings and deleting shared walls")
+        print("Searching for adjacent buildings and deleting shared walls")
         starttime = time.time()
         for bldg in prj.buildings:
-            for surface in bldg.gml_surfaces:
-                if surface.surface_tilt == 90:  # it's an OuterWall
-                    bldg.reset_outer_wall_area(surface)
+            try:
+                for surface in bldg.gml_surfaces:
+                    if surface.surface_tilt == 90:  # it's an OuterWall
+                        bldg.reset_outer_wall_area(surface)
+            except:
+                bldgs_to_remove.append(bldg.name)
+                print(bldg.name + " resulted in an error while searching for adjacent buildings and was therefore deleted.")
         endtime = time.time()
         help_file_simulation = open(resultspath + help_file_name, 'a')
-        help_file_simulation.write("Searching for adjacant buildings [s];" + str(endtime - starttime) + ";\n")
+        help_file_simulation.write("Searching for adjacent buildings [s];" + str(endtime - starttime) + ";\n")
         help_file_simulation.close()
     else:
         pass
 
+    # remove building extensions from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
+    # if a building extension is removed, also remove its main building (see merge_buildings)
+    for bldg_to_remove in bldgs_to_remove:
+        prj.buildings[:] = [bldg for bldg in prj.buildings if bldg.name not in bldg_to_remove]
+
     if merge_buildings:
         print ("Merging main buildings with extensions")
         starttime = time.time()
-        _merge_bldg(prj)
+        _merge_bldg(prj, bldgs_to_remove) # if building extension was removed: whole building needs to be removed
         endtime = time.time()
         help_file_simulation = open(resultspath + help_file_name, 'a')
         help_file_simulation.write("Merging main building with extensions [s];" + str(endtime - starttime) + ";\nNumber of buildings after merging [-];" + str(len(prj.buildings)) + ";\n")
@@ -143,16 +161,31 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
     else:
         pass
 
-    if group_by_orientation:
-        print ("Grouping wall and roofs by orientation") # orientations are always between 0 and 360 degC
+    if merge_orientations: # buildings already have been merged and renamed
+        print ("Grouping walls, windows and roofs by orientation") # orientations are always between 0 and 360 degC
         starttime = time.time()
-        if orientation_number == 4:
-            orientation_array = {'North': []}
-            _group_by_orientation(prj)
-        elif orientation_number == 8:
-            _group_by_orientation(prj)
+        if number_of_orientations == 4:
+            orientation_dict = {#'North': [315,45,0], if not anything else, then it's north (bc north is 0, so does not follow logic of rest)
+                                 #'Orientation': [ lower limit angle, upper limit angle, replacement angle]
+                                 'East': [45.0,135.0,90.0],
+                                 'South': [135.0,225.0,180.0],
+                                 'West': [225.0,315.0,270.0]}
+            _merge_orientations(prj=prj, orientation_dict=orientation_dict)
+        elif number_of_orientations == 8:
+            orientation_dict = {
+                # 'North': if not anything else, then it's north (bc north is 0, so does not follow logic of rest)
+                # 'Orientation': [ lower limit angle, upper limit angle, replacement angle]
+                'North east': [22.5, 67.5, 45.0],
+                'East': [67.5, 110.5, 90.0],
+                'South east': [110.5, 157.5, 135.0],
+                'South': [157.5, 202.5, 180.0],
+                'South west': [202.5, 247.5, 225.0],
+                'West': [247.5, 292.5, 270.0],
+                'North west': [292.5, 337.5, 315.0]}
+            _merge_orientations(prj=prj, orientation_dict=orientation_dict)
         else:
             print('This was not a valid number of orientations. Please enter either 4 or 8.')
+        _allocate_structureID(prj=prj)
         endtime = time.time()
         help_file_simulation = open(resultspath + help_file_name, 'a')
         help_file_simulation.write("Merging main building with extensions [s];" + str(endtime - starttime) + ";\n")
@@ -270,18 +303,20 @@ def _convert_bldg(bldg, function):
     bldg.year_of_construction = year_of_construction_help
     bldg.bldg_height = bldg_height_help
 
-def _merge_bldg(prj):
-    bldgs_to_remove = []
+def _merge_bldg(prj, bldgs_to_remove):
+    # delete main building if one of its extensions has been removed (extensions are only being removed in the search for adjacent buildings function)
+    bldgs_to_remove = [(bldgname.split('_')[0] + '_' + bldgname.split('_')[1] + '_' + bldgname.split('_')[2] + '_1') for bldgname in bldgs_to_remove]
+
     for bldg in prj.buildings:
         if bldg.name.endswith("_1"):
             # delete building extensions as neighbours from main building neighbour list
             bldg.list_of_neighbours = [neighbour_name for neighbour_name in bldg.list_of_neighbours \
-                                       if (bldg.name) != (neighbour_name.split('_')[0] + '_' + neighbour_name.split('_')[1] + '_1')]
+                                       if (bldg.name) != (neighbour_name.split('_')[0] + '_' + neighbour_name.split('_')[1] +'_' + neighbour_name.split('_')[2] + '_1')]
         else:
             # this is an extension and needs to be merged with its main building
             bldg_ext = bldg
             for bldg_main in prj.buildings:
-                if (bldg_main.name) == (bldg_ext.name.split('_')[0] + '_' + bldg_ext.name.split('_')[1] + '_1'):
+                if (bldg_main.name) == (bldg_ext.name.split('_')[0] + '_' + bldg_ext.name.split('_')[1] + '_' + bldg_ext.name.split('_')[2] +'_1'):
                     # print (bldg_ext.name + ' was found to be a building extension of ' + bldg_main.name)
                     # don't add net leased area of building on building level (is automatically summed up based on zones)
                     for bldg_ext_zone in bldg_ext.thermal_zones:
@@ -296,17 +331,17 @@ def _merge_bldg(prj):
                                     # print ("I have found my mother zone. I'm zone " + bldg_ext_zone.name + "of building " + bldg_ext.name + "and my mother zone is " + bldg_main_zone.name + " of building " + bldg_main.name)
                 else:
                     pass
-            bldgs_to_remove.append(bldg_ext)
+            bldgs_to_remove.append(bldg_ext.name)
 
     # remove building extensions from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
     for bldg_to_remove in bldgs_to_remove:
-        prj.buildings.remove(bldg_to_remove)
+        prj.buildings[:] = [bldg for bldg in prj.buildings if bldg.name not in bldg_to_remove]
         # print ("Building extension "+ bldg_to_remove.name+ " is removed from list. List of buildings in prj: ")
         # print ([bldg.name for bldg in prj.buildings])
 
     # rename main buildings
     for bldg in prj.buildings:
-        bldg.name = bldg.name[:-2]
+        bldg.name = bldg.name.split('_')[0] + '_' + bldg.name.split('_')[1]  + '_' + bldg.name.split('_')[2]
 
     # print ([bldg.name for bldg in prj.buildings])
 
@@ -367,15 +402,228 @@ def _merge_zone(zone_main, zone_ext):
             zone_main.ceilings.append(ext_bldg_element)
     # print ("Zone " + zone_ext.name + " of building " + zone_ext.parent.name + " was merged with zone " + zone_main.name + " of building " + zone_main.parent.name)
 
-def _group_by_orientation(prj, orientation_array):
+def _merge_orientations(prj, orientation_dict):
     """
 
     :param prj:
-    :param orientation_array:
+    :param orientation_dict:
     :return:
     """
+    orientations = [0.0]
+    for orientation, value in orientation_dict.items():
+        orientations.append(value[2])
+    bldgs_to_remove = []
 
+    for bldg in prj.buildings:
+        for zone in bldg.thermal_zones:
+            ## OUTER WALLS
+            total_area = 0
+            total_areatilt = 0
+            for bldg_elem in zone.outer_walls:  # !!!
+                total_area += bldg_elem.area
+                total_areatilt += (bldg_elem.area * bldg_elem.tilt)
+            if total_area !=0:
+                tilt_weighted_by_area = total_areatilt / total_area
+            else:
+                print ('No outerwalls were defined for ' + bldg.name + '. Therefore, it will be deleted.')
+                bldgs_to_remove.append(bldg.name)
 
+            for buildingelement in zone.outer_walls: #!!!
+                elem_is_merged = False
+                for orientation, value in orientation_dict.items():
+                    if buildingelement.orientation >= value[0] and buildingelement.orientation < value[1]:
+                        elem_is_merged = True
+                        new_orientation = value[2]
+                        if buildingelement.orientation == new_orientation:
+                            pass
+                        else:
+                            elem_orientation_exists = False
+                            for correct_orient_elem in zone.outer_walls: #!!!
+                                if correct_orient_elem.orientation == new_orientation:
+                                    elem_orientation_exists = True
+                                    correct_orient_elem.area += buildingelement.area
+                            if not elem_orientation_exists:  # then the building element needs to be created
+                                bldg_elem = OuterWall(zone) #!!!
+                                bldg_elem.load_type_element(
+                                    year=bldg.year_of_construction,
+                                    construction=bldg.construction_type,
+                                    data_class=prj.data)
+                                bldg_elem.name = None
+                                bldg_elem.tilt = tilt_weighted_by_area
+                                bldg_elem.orientation = new_orientation
+                                bldg_elem.area = buildingelement.area
+                if not elem_is_merged:  # then the orientation was not in the dict, so north
+                    new_orientation = 0.0
+                    if buildingelement.orientation == new_orientation:
+                        pass
+                    else:
+                        elem_orientation_exists = False
+                        for correct_orient_elem in zone.outer_walls: #!!!
+                            if correct_orient_elem.orientation == new_orientation:
+                                elem_orientation_exists = True
+                                correct_orient_elem.area += buildingelement.area
+                        if not elem_orientation_exists:  # then the building element needs to be created
+                            bldg_elem = OuterWall(zone) #!!!
+                            bldg_elem.load_type_element(
+                                year=bldg.year_of_construction,
+                                construction=bldg.construction_type,
+                                data_class=prj.data)
+                            bldg_elem.name = None
+                            bldg_elem.tilt = tilt_weighted_by_area
+                            bldg_elem.orientation = new_orientation
+                            bldg_elem.area = buildingelement.area
+            zone.outer_walls[:] = [outer_wall for outer_wall in zone.outer_walls if outer_wall.orientation in orientations]
+
+            ## WINDOWS
+            total_area = 0
+            total_areatilt = 0
+            for bldg_elem in zone.windows: #!!!
+                total_area += bldg_elem.area
+                total_areatilt += (bldg_elem.area * bldg_elem.tilt)
+            if total_area !=0:
+                tilt_weighted_by_area = total_areatilt / total_area
+            else:
+                tilt_weighted_by_area = 90.0
+
+            for buildingelement in zone.windows: #!!!
+                elem_is_merged = False
+                for orientation, value in orientation_dict.items():
+                    if buildingelement.orientation >= value[0] and buildingelement.orientation < value[1]:
+                        elem_is_merged = True
+                        new_orientation = value[2]
+                        if buildingelement.orientation == new_orientation:
+                            pass
+                        else:
+                            elem_orientation_exists = False
+                            for correct_orient_elem in zone.windows: #!!!
+                                if correct_orient_elem.orientation == new_orientation:
+                                    elem_orientation_exists = True
+                                    correct_orient_elem.area += buildingelement.area
+                            if not elem_orientation_exists:  # then the building element needs to be created
+                                bldg_elem = Window(zone) #!!!
+                                bldg_elem.load_type_element(
+                                    year=bldg.year_of_construction,
+                                    construction="Kunststofffenster, "
+                                                     "Isolierverglasung",
+                                    data_class=prj.data)
+
+                                bldg_elem.name = None
+                                bldg_elem.tilt = tilt_weighted_by_area
+                                bldg_elem.orientation = new_orientation
+                                bldg_elem.area = buildingelement.area
+                if not elem_is_merged:  # then the orientation was not in the dict, so north
+                    new_orientation = 0.0
+                    if buildingelement.orientation == new_orientation:
+                        pass
+                    else:
+                        elem_orientation_exists = False
+                        for correct_orient_elem in zone.windows: #!!!
+                            if correct_orient_elem.orientation == new_orientation:
+                                elem_orientation_exists = True
+                                correct_orient_elem.area += buildingelement.area
+                        if not elem_orientation_exists:  # then the building element needs to be created
+                            bldg_elem = Window(zone) #!!!
+                            bldg_elem.load_type_element(
+                                year=bldg.year_of_construction,
+                                construction="Kunststofffenster, "
+                                                     "Isolierverglasung",
+                                data_class=prj.data)
+                            bldg_elem.name = None
+                            bldg_elem.tilt = tilt_weighted_by_area
+                            bldg_elem.orientation = new_orientation
+                            bldg_elem.area = buildingelement.area
+            zone.windows[:] = [window for window in zone.windows if window.orientation in orientations]
+
+            ## ROOFTOPS
+            total_area = 0
+            total_areatilt = 0
+            for bldg_elem in zone.rooftops:
+                total_area += bldg_elem.area
+                total_areatilt += (bldg_elem.area * bldg_elem.tilt)
+            if total_area !=0:
+                tilt_weighted_by_area = total_areatilt / total_area
+            else:
+                tilt_weighted_by_area = 0.0
+
+            for buildingelement in zone.rooftops: #!!!
+                elem_is_merged = False
+                for orientation, value in orientation_dict.items():
+                    if buildingelement.orientation >= value[0] and buildingelement.orientation < value[1]:
+                        elem_is_merged = True
+                        new_orientation = value[2]
+                        if buildingelement.orientation == new_orientation:
+                            pass
+                        else:
+                            elem_orientation_exists = False
+                            for correct_orient_elem in zone.rooftops: #!!!
+                                if correct_orient_elem.orientation == new_orientation:
+                                    elem_orientation_exists = True
+                                    correct_orient_elem.area += buildingelement.area
+                            if not elem_orientation_exists:  # then the building element needs to be created
+                                bldg_elem = Rooftop(zone) #!!!
+                                bldg_elem.load_type_element(
+                                    year=bldg.year_of_construction,
+                                    construction=bldg.construction_type,
+                                    data_class=prj.data)
+                                bldg_elem.name = None
+                                bldg_elem.tilt = tilt_weighted_by_area
+                                bldg_elem.orientation = new_orientation
+                                bldg_elem.area = buildingelement.area
+                if not elem_is_merged:  # then the orientation was not in the dict, so north
+                    new_orientation = 0.0
+                    if buildingelement.orientation == new_orientation:
+                        pass
+                    else:
+                        elem_orientation_exists = False
+                        for correct_orient_elem in zone.rooftops: #!!!
+                            if correct_orient_elem.orientation == new_orientation:
+                                elem_orientation_exists = True
+                                correct_orient_elem.area += buildingelement.area
+                        if not elem_orientation_exists:  # then the building element needs to be created
+                            bldg_elem = Rooftop(zone) #!!!
+                            bldg_elem.load_type_element(
+                                year=bldg.year_of_construction,
+                                construction=bldg.construction_type,
+                                data_class=prj.data)
+                            bldg_elem.name = None
+                            bldg_elem.tilt = tilt_weighted_by_area
+                            bldg_elem.orientation = new_orientation
+                            bldg_elem.area = buildingelement.area
+            zone.rooftops[:] = [roof for roof in zone.rooftops if roof.orientation in orientations]
+
+    # remove building without any outerwalls from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
+    for bldg_to_remove in bldgs_to_remove:
+        prj.buildings[:] = [bldg for bldg in prj.buildings if bldg.name not in bldg_to_remove]
+
+def _allocate_structureID(prj):
+    # Allocate structure_id to all buildings
+    for bldg in prj.buildings:
+        # first zone in id must be dayzone or singlezone > rerank zones!
+        if bldg.thermal_zones[0].name == "DayZone":
+            pass
+        else:
+            for zoneindex, zone in enumerate(bldg.thermal_zones):
+                if zone.name == "DayZone":
+                    old_index = zoneindex
+                    new_index = 0
+                    bldg.thermal_zones[old_index], bldg.thermal_zones[new_index] = \
+                        bldg.thermal_zones[new_index], bldg.thermal_zones[old_index]
+        # create structure_id for this building
+        structure_id = ''
+        for zone in bldg.thermal_zones:
+            wall_no = str(len(zone.outer_walls))
+            window_no = str(len(zone.windows))
+            roof_no = str(len(zone.rooftops))
+            structure_id = structure_id + wall_no + window_no + roof_no
+        if len(bldg.thermal_zones) == 1: #if only 1 zone, then 2nd part of ID is zero
+            structure_id = structure_id + '000'
+        bldg.structure_id = structure_id
+        # add structure_id if not already in project.structure_dict
+        if structure_id not in prj.structure_dict:
+            prj.structure_dict[structure_id] = bldg.name
+
+    # Sort buildings in prj.buildings numerically descending
+    prj.buildings.sort(key=lambda x: x.structure_id, reverse=True)
 
 class SurfaceGML(object):
     """Class for calculating attributes of CityGML surfaces

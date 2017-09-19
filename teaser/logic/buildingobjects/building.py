@@ -143,6 +143,7 @@ class Building(object):
         self.number_of_floors = None
         self.height_of_floors = None
         self.internal_id = random.random()
+        self.structure_id = None
         self._year_of_retrofit = None
         self.type_of_building = type(self).__name__
         self.building_id = None
@@ -237,9 +238,11 @@ class Building(object):
 
         if self.height_of_floors is None and self.number_of_floors is None:
             self.height_of_floors = height_of_floor
+            print(self.name + " has no proper floor height defined, floor height was therefore set to 3.5m.")
         elif self.height_of_floors is None and self.number_of_floors is not \
                 None:
             self.height_of_floors = self.bldg_height/self.number_of_floors
+            print(self.name + " has no proper floor height defined, floor height was therefore set to building height/number of floors.")
         else:
             pass
 
@@ -256,9 +259,11 @@ class Building(object):
                 self.net_leased_area = self.get_footprint_gml() * \
                     self.number_of_floors
 
-            if self.net_leased_area < 50.0:
-                self.net_leased_area = 50.0
-                print("Net leased area of building " + self.name + " was less than 50.0 and therefore set to 50.0.")
+            if self.net_leased_area < 1.0:
+                self.parent.buildings[:] = [bldg for bldg in self.parent.buildings if bldg.name != self.name]
+                self.net_leased_area = int(1)
+                print("Net leased area of building " + self.name + " was less than 1.0 m2 and this building will therefore be deleted.")
+                # actual removal of building happens in citygml_input.py
 
     def set_outer_wall_area(self,
                 new_area,
@@ -888,6 +893,14 @@ class Building(object):
 
         if value is None:
             self._thermal_zones = []
+
+    @property
+    def structure_id(self):
+        return self._structure_id
+
+    @structure_id.setter
+    def structure_id(self, value):
+        self._structure_id = value
 
     @property
     def outer_area(self):

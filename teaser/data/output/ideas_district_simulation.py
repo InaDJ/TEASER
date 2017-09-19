@@ -74,7 +74,7 @@ def ideas_district_simulation(project, simulation=True, analyseSimulation=True, 
             s = Si.Simulator(name, "dymola", outputpath, packagepath)
             li.append(s)
 
-        po = Pool(3)
+        po = Pool(15)
         po.map(simulate_case, li)
 
         endtime = time.time()
@@ -148,14 +148,13 @@ def analyse_simulation_results(project, outputDir, resultsDir, remove_files = Tr
 
             if project.number_of_zones == 2 and building.number_of_floors != 1:
                 # First, export csv with useful information, resampled every 600 s
-                aliases = {'sim.Te': "Outside temperature",
-                           building.name + '_Building.heatingSystem.QHeaSys': "Q heating system building",
-                           building.name + '_Building.heatingSystem.QHeatZone[1]': "Q heating system dayzone",
-                           building.name + '_Building.heatingSystem.QHeatZone[2]': "Q heating system nightzone",
-                           building.name + '_Building.building.TSensor[1]': "TSensor of dayzone",
-                           building.name + '_Building.building.TSensor[2]': "TSensor of nightzone",
-                           building.name + '_Building.building.AZones[1]': "Area of dayzone",
-                           building.name + '_Building.building.AZones[2]': "Area of nightzone"}  # name of Dymola variable : name of header of column
+                aliases = {'QHeaSys': "Q heating system building",
+                           'QHeatZone[1]': "Q heating system dayzone",
+                           'QHeatZone[2]': "Q heating system nightzone",
+                           'TSensor[1]': "TSensor of dayzone",
+                           'TSensor[2]': "TSensor of nightzone",
+                           'AZones[1]': "Area of dayzone",
+                           'AZones[2]': "Area of nightzone"}  # name of Dymola variable : name of header of column
                 df = sim.to_pandas(list(aliases), aliases)
                 df = df.loc[lambda df: df.index > 0, :]  # dataframe, starting with time = 0 (more or less)
                 # create column with datetime based on the index (which is in seconds)
@@ -168,8 +167,7 @@ def analyse_simulation_results(project, outputDir, resultsDir, remove_files = Tr
                 df.index = df.index.astype(numpy.int64)
                 df.index = df.index/10**9
                 df_LDC_index = df.index
-                pandas.DataFrame.to_csv(df, columns= ['Outside temperature / K',
-                                                      'Q heating system dayzone / W',
+                pandas.DataFrame.to_csv(df, columns= ['Q heating system dayzone / W',
                                                       'Q heating system nightzone / W',
                                                       'TSensor of dayzone / K',
                                                       'TSensor of nightzone / K'],
@@ -236,11 +234,10 @@ def analyse_simulation_results(project, outputDir, resultsDir, remove_files = Tr
 
             elif project.number_of_zones == 1 or building.number_of_floors == 1:
                 # First, export csv with useful information, resampled every 600 s
-                aliases = {'sim.Te': "Outside temperature",
-                           building.name + '_Building.heatingSystem.QHeaSys': "Q heating system building",
-                           building.name + '_Building.heatingSystem.QHeatZone[1]': "Q heating system singlezone",
-                           building.name + '_Building.building.TSensor[1]': "TSensor of singlezone",
-                           building.name + '_Building.building.AZones[1]': "Area of singlezone"}  # name of Dymola variable : name of header of column
+                aliases = {'QHeaSys': "Q heating system building",
+                           'QHeatZone[1]': "Q heating system singlezone",
+                           'TSensor[1]': "TSensor of singlezone",
+                           'AZones[1]': "Area of singlezone"}  # name of Dymola variable : name of header of column
                 df = sim.to_pandas(list(aliases), aliases)
                 df = df.loc[lambda df: df.index > 0, :]  # dataframe, starting with time = 0 (more or less)
                 # create column with datetime based on the index (which is in seconds)
@@ -253,8 +250,7 @@ def analyse_simulation_results(project, outputDir, resultsDir, remove_files = Tr
                 df.index = df.index.astype(numpy.int64)
                 df.index = df.index / 10 ** 9
                 df_LDC_index = df.index
-                pandas.DataFrame.to_csv(df, columns=['Outside temperature / K',
-                                                     'Q heating system singlezone / W',
+                pandas.DataFrame.to_csv(df, columns=['Q heating system singlezone / W',
                                                      'TSensor of singlezone / K'],
                                         path_or_buf=resultsDir + "/" + project.name + "_" + building.name + ".csv",
                                         sep=";")

@@ -2,7 +2,7 @@
         nSurf=${count_elementsinzone},
         V=${zone.volume},
         A=${zone.area},
-        n50=${zone.infiltration_rate},
+        n50=${zone.infiltration_rate*12},
         fRH=45,
         allowFlowReversal=false,
         redeclare package Medium = Medium) "Thermal zone: ${zone.name}"

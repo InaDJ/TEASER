@@ -1,0 +1,9 @@
+Household-object created and parameterized.
+ - Employment types are ['Unemployed', 'Retired']
+ - Set of clusters is [1, 2, 4, 6]
+ - Total presence time is 3518.3 out of 8760 hours
+	being 40.2 percent)
+ - Receptacle load is 1016 kWh
+ - Lighting load is 480 kWh
+ - Draw-off is 55 l/pp.day
+ - Average comfort setting is 12.0 Celsius

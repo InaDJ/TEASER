@@ -13,25 +13,55 @@ import pandas
 import numpy as np
 from modelicares import SimRes
 import matplotlib.pyplot as plt
+import statsmodels.api as sm
 from cycler import cycler
 
-def calculate_errors_between_models():
-    '''
+def report_errors():
+    inputDir = "D:\Ina\Simulations\Models\Results/"
+    outputDir = "D:\Ina/Results/"
+    variants = ['LOD2', 'LOD1_ridge', 'LOD1_halfroof', 'LOD2_4', 'LOD2_8']
+    streetnames = ['Acacialaan', 'Achterstraat', 'AdolfGreinerstraat', 'Akkerstraat', 'AlbertForgeurstraat',
+     'Aldebiezenstraat', 'AlfredWautersstraat', 'Alsemstraat',
+     'Anijsstraat', 'Arbeidsstraat', 'ArmandMaclotlaan',
+     'AugustCollonstraat', 'Bandstraat', 'Basculestraat',
+     'Berm', 'Boogstraat',
+     'Boxbergstraat', 'Bremstraat', 'Congostraat', 'DeBek', 'DeHeuvel', 'DeRoten', 'DeVroente', 'Drijtap',
+     'Gansenwijer', 'Genkerhei', 'Gracht', 'Groenven', 'Gruisweg', 'Hazelnootstraat', 'Heiblok',
+     'Heidebos', 'Heilapstraat', 'Hennepstraat', 'Holeven', 'Houtwal', 'Ijzerven', 'Keistraat',
+     'Kennipstraat', 'Klotstraat', 'OudeHeide', 'Ploegstraat', 'Rietbeemdstraat',
+     'Roerstraat', 'Vogelzangstraat', 'Zandoerstraat']
+    # [] #leave empty if you want to the whole directory
 
+    analysisALL = True
+    analysisPERSTREET = False
+
+    if analysisALL:
+        # calculate all errors
+        outputDirdistr = outputDir + "ALL/"
+        if not os.path.exists(outputDirdistr):
+            os.makedirs(outputDirdistr)
+        calculate_errors_between_models(inputDir=inputDir, outputDir=outputDirdistr, variants=variants, streetnames=streetnames)
+
+    if analysisPERSTREET:
+        # calculate errors per street
+        for streetname in streetnames:
+            outputDirstreet = outputDir + streetname + "/"
+            streetnamestreet = [streetname]
+            if not os.path.exists(outputDirstreet):
+                os.makedirs(outputDirstreet)
+            calculate_errors_between_models(inputDir=inputDir, outputDir=outputDirstreet, variants=variants, streetnames=streetnamestreet)
+
+def calculate_errors_between_models(inputDir=None, outputDir=None, variants=None, streetnames=None):
+    '''
     How to work with multi-index:
     #print df
     #print df['LOD2'] # returns subdataframe with all KPI's of this variant
-    #print df['LOD2', 'Number of floors'] # returns subsubdataframe (= series) with the specified KPI of this variant
+    #print df['LOD2', 'Number of floors'] # returns subsubdataframe (= series) with the specified KPI of this variant = 1 column
     #print df.loc['Dwarsstraat'] #returns subdataframe, based on row: all buildings of this street
     #print df.loc['Dwarsstraat', 'Dwarsstraat_1'] return subsubdataframe (=series) with the specified building of this street
     #print df[variant].loc[street] #returns one street in one variant
     #print df.xs('Number of floors', level='KPI', axis=1, drop_level=False) #prints the number of floors-column of all variants for all streets
     '''
-
-    inputDir = "C:\Users\ina\Desktop\Results/"
-    outputDir = "C:\Users\ina\Desktop/"
-    variants = ['LOD2', 'LOD1_ridge', 'LOD1_halfroof']
-    streetnames = [] #leave empty if you want to the whole directory
 
     if streetnames == []:
         streetnames = [name for name in os.listdir(inputDir)]
@@ -44,6 +74,7 @@ def calculate_errors_between_models():
     # Create dataframe with all variants and all streets (buildings with no simulation results were already deleted)
     df = create_dataframe(variants=variants, streetnames=streetnames, inputDir=inputDir)
     df = cleanup_dataframe(df=df, outputDir=outputDir)
+    df.rename(columns={'Total loss area (walls+windows+roof+groundfloor)[m2]':'Total loss area [m2]'}, inplace=True)
 
     # Analyse on building level
     df_buildings = None
@@ -56,7 +87,7 @@ def calculate_errors_between_models():
                 df_reference = df[variant].loc[streetname]
             else:
                 df_comparison = df[variant].loc[streetname]
-                df_pe = percentage_error(df_actual=df_reference, df_forecast=df_comparison)
+                df_pe = percentage_error(df_actual=df_reference, df_forecast=df_comparison, checkbuildings=True)
                 bldg_nan_neigh += df_pe[1]
                 bldg_nan_gf += df_pe[2]
                 df_pe = df_pe[0]
@@ -87,7 +118,68 @@ def calculate_errors_between_models():
     print list(set(bldg_nan_gf))
     print ('Number of buildings in buildings PE dataframe: ' + str(df_buildings.shape[0]))
 
-    # Analyse on street level
+    params = {'legend.fontsize': 'small',
+              'figure.figsize': (15, 10),
+              'axes.labelsize': 'small',
+              'axes.titlesize': 'small',
+              'xtick.labelsize': 'small',
+              'ytick.labelsize': 'small'}
+    plt.rcParams.update(params)
+
+    boxplots = False
+    histograms = False
+    scatter = True
+
+    if boxplots:
+        print("Creating boxplots")
+        for variantindex, variant in enumerate(variants, start = 1):
+            if variantindex==1:
+                pass
+            else:
+                df_buildings[variant].boxplot()
+                plt.xticks(rotation=90)
+                plt.tight_layout()
+                plt.savefig(outputDir + variant + "_boxplot.png", dpi = 1000)
+                plt.close()
+
+    if histograms:
+        print("Creating histograms")
+        for variantindex, variant in enumerate(variants, start=1):
+            if variantindex == 1:
+                pass
+            else:
+                df_buildings.hist(column=[variant], bins = 100)
+                plt.tight_layout()
+                plt.savefig(outputDir + variant + "_graph.png", dpi=1000)
+                plt.close()
+
+    if scatter:
+        print("Creating scatterplots")
+        df_buildings_absolute = df.loc[df_buildings.index] # only keep buildings that are in df_buildings as well
+        kpis_scatter = ['Volume of building[m3]', 'Total loss area [m2]']
+        for variantindex, variant in enumerate(variants, start=1):
+            if variantindex == 1:
+                pass
+            else:
+                for kpi in kpis_scatter:
+                    df_buildings_absolute.plot.scatter(x=('LOD2', kpi), y=(variant, kpi))
+                    # calculate regression line
+                    X = sm.add_constant(df_buildings_absolute[('LOD2', kpi)])
+                    model = sm.OLS(df_buildings_absolute[(variant, kpi)], X, missing='drop')  # ignores entires where x or y is NaN
+                    result = model.fit()
+                    print result.params
+                    print result.summary()
+                    # plot regression line
+                    m = result.params[1]
+                    b = result.params[0]
+                    N = 100  # could be just 2 if you are only drawing a straight line...
+                    points = np.linspace(df_buildings_absolute[('LOD2', 'Volume of building[m3]')].min(), df_buildings_absolute[('LOD2', 'Volume of building[m3]')].max(), N)
+                    plt.plot(points, m * points + b, color='k')
+                    plt.text(0, 1,'matplotlib', horizontalalignment='center', verticalalignment='center', bbox=dict(facecolor='black', alpha=0.5))
+                    plt.savefig(outputDir + variant + "_" + kpi[:-5] + "_scatter.png", bbox_inches='tight', dpi=1000)
+                    plt.close()
+
+            # Analyse on street level
     df_streets = None
     for streetname in streetnames:
         df_street_pe = df_buildings.loc[streetname]
@@ -111,12 +203,45 @@ def calculate_errors_between_models():
     df_district['District'] = 'District'
     df_district.set_index(['District'], inplace=True) #set index for this street
 
+    # Analyse timeKPI on street level
+    df_time = time_dataframe(variants=variants, streetnames=streetnames, inputDir=inputDir, outputDir=outputDir)
+    df_variants = None
+    for variantindex, variant in enumerate(variants, start=0):
+        if variantindex == 0:
+                df_reference = df_time[variant]
+        else:
+            df_comparison = df_time[variant]
+            df_pe = percentage_error(df_actual=df_reference, df_forecast=df_comparison, checkbuildings=False)
+            df_pe = df_pe[0]
+            # first set column indices right (highest level is variant, lower level is KPI)
+            df_pe_trans = df_pe.T  # we need to transpose
+            df_pe_trans['KPI'] = df_pe_trans.index  # create column based on indices of transpose
+            df_pe_trans['Variant'] = [variant] * df_pe.shape[1]  # create column with variant name
+            df_pe_trans.set_index(['Variant', 'KPI'], inplace=True)  # set indices to transpose
+            df_pe = df_pe_trans.T  # transpose back to normal df_pe
+            if df_variants is None:
+                # append to df_variants with all variants for this street
+                df_variants = df_pe
+            else:
+                # append to df_variants with all existing variants for this street
+                df_variants = df_variants.merge(df_pe, how='inner', left_index=True, right_index=True)
+    df_time_pe = df_variants
+    df_time_pe['General', 'Number of buildings'] = df_streets['General','Number of buildings'] # merges on index = OK
+    print ('Number of streets for timeKPI analysis: ' + str(df_time.shape[0]))
+    # Analyse timeKPI on district level and add to street level
+    df_time_district = df_time_pe.iloc[:, 0:-1].mul(df_time_pe.iloc[:, -1], axis=0)
+    df_time_district['General', 'Number of buildings'] = df_time_pe['General', 'Number of buildings']
+    df_time_district.loc['District'] = df_time_district.sum()
+    df_time_district = df_time_district.div(df_time_district.iloc[-1, -1])
+    df_time_pe.loc['District (weighted by number of buildings'] = df_time_district.iloc[-1].T
+
     # Create results excel
     variantnames = '_'.join(variants) # converts variants list to string, separated by _
     writer = pandas.ExcelWriter(outputDir+'/District_'+variantnames+".xlsx")
     df_district.to_excel(writer, 'District')
     df_streets.to_excel(writer, 'Streets')
     df_buildings.to_excel(writer, 'Buildings')
+    df_time_pe.to_excel(writer, 'Time')
     writer.save()
     writer.close()
 
@@ -214,6 +339,52 @@ def cleanup_dataframe(df, outputDir):
 
     return df
 
+def time_dataframe(variants, streetnames, inputDir, outputDir):
+    """ """
+    # Create dataframe with timeKPIs for the streets
+    df_all = None
+    for streetname in streetnames:
+        df_variants = None
+        for variant in variants:
+            # df with buildingnames as indices, geometryKPI and energyKPI as columns
+            df_street_time = pandas.read_csv(
+                inputDir + streetname + "/" + streetname + "_" + variant + "_timeKPI.csv",
+                sep=";", index_col=0, na_values=['inf']) # this df is already "transposed" (rows are columns)
+            # first set column indices right (highest level is variant, lower level is KPI)
+            if 'Merging main building with extensions [s]' in df_street_time.index: #LOD1 is nog merged
+                df_street_time.drop('Merging main building with extensions [s]', inplace=True)
+            if 'Number of buildings after merging [-]' in df_street_time.index:
+                df_street_time.drop('Number of buildings after merging [-]', inplace=True)
+            df_street_time['KPI'] = df_street_time.index  # create column based on indices of transpose
+            df_street_time['Variant'] = [variant] * df_street_time.shape[0]  # create column with variant name
+            df_street_time.set_index(['Variant', 'KPI'], inplace=True)  # set indices to transpose
+            df_street_time = df_street_time.T  # transpose to wanted format of df_street
+            df_street_time['Street'] = streetname
+            df_street_time.set_index(['Street'], inplace=True) # this row has its streetname as index
+            df_street_time.dropna(inplace=True)
+            if df_variants is None:
+                # append to df_variants with all variants for this street
+                df_variants = df_street_time
+            else:
+                # append to df_variants with all existing variants for this street
+                df_variants = df_variants.merge(df_street_time, how='outer', left_index=True, right_index=True)
+        # All variants for this street are created, now append to df_all with all streets and all variants
+        if df_all is None:
+            df_all = df_variants
+        else:
+            df_all = pandas.concat([df_all, df_variants])
+
+    # Delete streets that are incomplete
+    street_na = list(df_all[df_all.isnull().any(axis=1)].index)
+    print ('Streets whose timeKPIs were incomplete: ' + str(len(street_na)))
+    print street_na
+    df_all = df_all.dropna()
+
+    # Print df to excel
+    df_all.to_excel(outputDir + "df_time.xlsx")
+
+    return df_all
+
 def error(df_actual, df_forecast):
     """"This function demonstrates different loading options of TEASER"""
     df_error = df_actual.subtract(df_forecast)  # does it on index
@@ -231,20 +402,21 @@ def mean_absolute_error(df_actual, df_forecast):
     df_mae = df_ae.mean()
     return df_mae
 
-def percentage_error(df_actual, df_forecast):
+def percentage_error(df_actual, df_forecast, checkbuildings = True):
     """"This function demonstrates different loading options of TEASER"""
     df_pe = error(df_actual=df_actual, df_forecast=df_forecast).divide(df_actual)  # does it on index
-
-    # buildings with a different number of neighbours between variants
-    df_pe = df_pe.replace([np.nan],0) # 0/0 results in nan, number/0 results in inf > so keep nan, drop inf
-    df_pe = df_pe.replace([np.inf, -np.inf], np.nan)
-    bldg_nan_neigh = list(df_pe[df_pe.isnull().any(axis=1)].index)
-    bldg_nan_neigh += list(df_pe.loc[df_pe['Number of neighbours'] != 0].index)
-    df_pe = df_pe.drop(bldg_nan_neigh)
-
-    # buildings with a different ground floor area between variants
-    bldg_nan_gf = list(df_pe.loc[df_pe['Groundfloor area[m2]'] != 0].index)
-    df_pe = df_pe.drop(bldg_nan_gf)
+    bldg_nan_neigh = []
+    bldg_nan_gf = []
+    if checkbuildings:
+        # buildings with a different number of neighbours between variants
+        df_pe = df_pe.replace([np.nan],0) # 0/0 results in nan, number/0 results in inf > so keep nan, drop inf
+        df_pe = df_pe.replace([np.inf, -np.inf], np.nan)
+        bldg_nan_neigh = list(df_pe[df_pe.isnull().any(axis=1)].index)
+        bldg_nan_neigh += list(df_pe.loc[df_pe['Number of neighbours'] != 0].index)
+        df_pe = df_pe.drop(bldg_nan_neigh)
+        # buildings with a different ground floor area between variants
+        bldg_nan_gf = list(df_pe.loc[df_pe['Groundfloor area[m2]'] != 0].index)
+        df_pe = df_pe.drop(bldg_nan_gf)
     return [df_pe, bldg_nan_neigh, bldg_nan_gf]
 
 def absolute_percentage_error(df_actual=None, df_forecast=None, df_pe=None):
@@ -283,5 +455,5 @@ def root_mean_square_percentage_error(df_actual, df_forecast):
     return df_rmspe
 
 if __name__ == '__main__':
-    calculate_errors_between_models()
+    report_errors()
     print("That's it! :)")

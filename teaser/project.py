@@ -107,6 +107,7 @@ class Project(object):
                 "DEU_BW_Mannheim_107290_TRY2010_12_Jahr_BBSR.mos"))
 
         self.buildings = []
+        self.structure_dict = {}
 
         self.load_data = load_data
         self.used_data_country = used_data_country
@@ -1125,7 +1126,7 @@ class Project(object):
 
         citygml_out.save_gml(self, new_path)
 
-    def load_citygml(self, path=None, checkadjacantbuildings=False, number_of_zones=1, merge_buildings=False):
+    def load_citygml(self, path=None, checkadjacantbuildings=False, number_of_zones=1, merge_buildings=False, merge_orientations=False, number_of_orientations = 4):
         """Loads buildings from a citygml file
 
         calls the function load_gml in data.CityGML we make use of CityGML core
@@ -1151,7 +1152,9 @@ class Project(object):
                             self,
                             checkadjacantbuildings=checkadjacantbuildings,
                             number_of_zones=number_of_zones,
-                            merge_buildings = merge_buildings)
+                            merge_buildings = merge_buildings,
+                            merge_orientations=merge_orientations,
+                            number_of_orientations=number_of_orientations)
         self._number_of_zones = number_of_zones
 
     def load_excel(self, excel_path, python_file_directory, ideas_building_model):
@@ -1278,7 +1281,8 @@ class Project(object):
             self,
             internal_id=None,
             path=None,
-            building_model="Detailed"):
+            building_model="Detailed",
+            occupant_model="ISO13790"):
 
         """Exports values to a record file for Modelica simulation
 
@@ -1311,7 +1315,8 @@ class Project(object):
                 buildings=self.buildings,
                 prj=self,
                 path=path,
-                building_model=building_model)
+                building_model=building_model,
+                occupant_model=occupant_model)
         else:
             for bldg in self.buildings:
                 if bldg.internal_id == internal_id:
@@ -1319,7 +1324,8 @@ class Project(object):
                         buildings=[bldg],
                         prj=self,
                         path=path,
-                        building_model=building_model)
+                        building_model=building_model,
+                        occupant_model=occupant_model)
                 else:
                     pass
 
@@ -1372,6 +1378,7 @@ class Project(object):
                 "DEU_BW_Mannheim_107290_TRY2010_12_Jahr_BBSR.mos"))
 
         self.buildings = []
+        self.structure_dict = {}
 
         self.load_data = load_data
 
@@ -1417,7 +1424,7 @@ class Project(object):
         return self._number_of_zones
 
     @number_of_zones.setter
-    def number_of_elements_calc(self, value):
+    def number_of_zones(self, value):
 
         ass_error_1 = "number_of_zones has to be 1 or 2"
 

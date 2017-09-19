@@ -33,13 +33,15 @@ def example_load_citygml():
     starttime = time.time()
 
     prj_gml = Project(load_data=True, used_data_country="Belgium")
-    prj_gml.name = "TRY_new_building"
+    prj_gml.name = "Acacialaan"
     prj_gml.used_library_calc = 'IDEAS'
 
-    prj_gml.load_citygml(path="C:\Users\ina\Box Sync\Onderzoek\GRB\Streets_LOD2\Bandstraat.gml",
+    prj_gml.load_citygml(path= "C:\Users\ina\Box Sync\Onderzoek\GRB\Streets_LOD2\Acacialaan.gml",
                          checkadjacantbuildings=True,
                          number_of_zones=2,
-                         merge_buildings=True)
+                         merge_buildings=True,
+                         merge_orientations=False,
+                         number_of_orientations=8)
 
     # "C:\Users\ina\Box Sync\Onderzoek\UNDER CONSTRUCTION/4DH2017\FME\Real model build up\Waterschei_works_better.gml",
     prj_gml.number_of_elements_calc = 4
@@ -54,7 +56,7 @@ def example_load_citygml():
 
     # To make sure the parameters are calculated correctly we recommend to
     # run calc_all_buildings() function
-    prj_gml.calc_all_buildings(raise_errors=True) # moet aangeroepen worden, anders wordt volume van gebouw niet goed gezet
+    #prj_gml.calc_all_buildings(raise_errors=True) # moet aangeroepen worden, anders wordt volume van gebouw niet goed gezet
     # To export the ready-to-run models simply call Project.export_ibpsa().
     # First specify the IBPSA related library you want to export the models
     # for. The models are identical in each library, but IBPSA Modelica
@@ -72,7 +74,8 @@ def example_load_citygml():
     prj_gml.export_ideas(
         internal_id=None,
         path=None,
-        building_model="Detailed")
+        building_model="Detailed",
+        occupant_model="ISO13790")
 
     endtime = time.time()
     print("Pre-processing lasted: " + str((endtime - starttime) / 60) + " minutes.")
@@ -84,8 +87,7 @@ def example_load_citygml():
     """
     #simulations.ideas_district_simulation(project=prj_gml, simulation=True, analyseGeometry=True)
 
-    """print(prj_gml.used_library_calc)
-    for bldgindex, bldg in enumerate(prj_gml.buildings):
+    """for bldgindex, bldg in enumerate(prj_gml.buildings):
         print("Building name: " + bldg.name)
         for zoneindex, zone in enumerate(bldg.thermal_zones, start=1):
             print("Zone name: " + str(zone.name) + " " + str(zone.internal_id))
@@ -104,8 +106,8 @@ def example_load_citygml():
             count_windows_area = 0
             for elementindex, buildingelement in enumerate(buildingelements, start=1):
                 print(buildingelement.name + " has a tilt of " + str(buildingelement.tilt) + " and an orient of " + str(
-                    buildingelement.orientation) + " and an area of " + str(buildingelement.area))
-        """
+                    buildingelement.orientation) + " and an area of " + str(buildingelement.area))"""
+
     """
         print("Printing gml_surfaces for building " + str(bldg.name))
         for gml_surface in bldg.gml_surfaces:

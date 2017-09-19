@@ -7,6 +7,22 @@ model ${bldg.name}
 protected
     inner IDEAS.BoundaryConditions.SimInfoManager sim
         annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
+    %if occupant_model == "StROBe":
+    inner IDEAS.BoundaryConditions.Occupants.Extern.StrobeInfoManager strobe(
+    filDir=Modelica.Utilities.Files.fullPathName("${strobe_destination_path}"),
+        nOcc=1,
+        final StROBe_P=true,
+        final StROBe=true,
+        FilNam_P="${bldg_id}_P.txt",
+        FilNam_Q="${bldg_id}_Q.txt",
+        FilNam_mDHW="${bldg_id}_mDHW.txt",
+        FilNam_QCon="${bldg_id}_QCon.txt",
+        FilNam_QRad="${bldg_id}_QRad.txt",
+        FilNam_TSet="${bldg_id}_sh_day.txt",
+        FilNam_TSet2="${bldg_id}_sh_night.txt",
+        PPv=false)
+    annotation (Placement(transformation(extent={{-80,80},{-60,100}})));
+    %endif
     ${bldg.parent.name}.${bldg.name}.${bldg.name}_Building ${bldg.name}_Building
         annotation (Placement(transformation(extent={{0,0},{20,20}})));
  annotation (experiment(
