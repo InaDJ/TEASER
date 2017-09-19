@@ -305,18 +305,18 @@ def _convert_bldg(bldg, function):
 
 def _merge_bldg(prj, bldgs_to_remove):
     # delete main building if one of its extensions has been removed (extensions are only being removed in the search for adjacent buildings function)
-    bldgs_to_remove = [(bldgname.split('_')[0] + '_' + bldgname.split('_')[1]  + '_1') for bldgname in bldgs_to_remove] #+ '_' + bldgname.split('_')[2]
+    bldgs_to_remove = [(bldgname.split('_')[0] + '_' + bldgname.split('_')[1] + '_' + bldgname.split('_')[2] + '_1') for bldgname in bldgs_to_remove]
 
     for bldg in prj.buildings:
         if bldg.name.endswith("_1"):
             # delete building extensions as neighbours from main building neighbour list
             bldg.list_of_neighbours = [neighbour_name for neighbour_name in bldg.list_of_neighbours \
-                                       if (bldg.name) != (neighbour_name.split('_')[0] + '_' + neighbour_name.split('_')[1] + '_1')] # '_' + neighbour_name.split('_')[2] +
+                                       if (bldg.name) != (neighbour_name.split('_')[0] + '_' + neighbour_name.split('_')[1] +'_' + neighbour_name.split('_')[2] + '_1')]
         else:
             # this is an extension and needs to be merged with its main building
             bldg_ext = bldg
             for bldg_main in prj.buildings:
-                if (bldg_main.name) == (bldg_ext.name.split('_')[0] + '_' + bldg_ext.name.split('_')[1]  +'_1'): #+ '_' + bldg_ext.name.split('_')[2]
+                if (bldg_main.name) == (bldg_ext.name.split('_')[0] + '_' + bldg_ext.name.split('_')[1] + '_' + bldg_ext.name.split('_')[2] +'_1'):
                     # print (bldg_ext.name + ' was found to be a building extension of ' + bldg_main.name)
                     # don't add net leased area of building on building level (is automatically summed up based on zones)
                     for bldg_ext_zone in bldg_ext.thermal_zones:
@@ -341,7 +341,7 @@ def _merge_bldg(prj, bldgs_to_remove):
 
     # rename main buildings
     for bldg in prj.buildings:
-        bldg.name = bldg.name.split('_')[0] + '_' + bldg.name.split('_')[1] #+ '_' + bldg.name.split('_')[2]
+        bldg.name = bldg.name.split('_')[0] + '_' + bldg.name.split('_')[1]  + '_' + bldg.name.split('_')[2]
 
     # print ([bldg.name for bldg in prj.buildings])
 
@@ -590,6 +590,7 @@ def _merge_orientations(prj, orientation_dict):
                             bldg_elem.orientation = new_orientation
                             bldg_elem.area = buildingelement.area
             zone.rooftops[:] = [roof for roof in zone.rooftops if roof.orientation in orientations]
+
     # remove building without any outerwalls from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
     for bldg_to_remove in bldgs_to_remove:
         prj.buildings[:] = [bldg for bldg in prj.buildings if bldg.name not in bldg_to_remove]
