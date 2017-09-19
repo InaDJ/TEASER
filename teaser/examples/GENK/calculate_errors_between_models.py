@@ -15,7 +15,37 @@ from modelicares import SimRes
 import matplotlib.pyplot as plt
 from cycler import cycler
 
-def calculate_errors_between_models():
+def report_errors():
+    inputDir = "D:\Ina\Simulations\Models\Results/"
+    outputDir = "D:\Ina/Results/"
+    variants = ['LOD2', 'LOD1_ridge', 'LOD1_halfroof', 'LOD2_4', 'LOD2_8']
+    streetnames = ['Acacialaan', 'Achterstraat', 'AdolfGreinerstraat', 'Akkerstraat', 'AlbertForgeurstraat',
+     'Aldebiezenstraat', 'AlfredWautersstraat', 'Alsemstraat',
+     'Anijsstraat', 'Arbeidsstraat', 'ArmandMaclotlaan',
+     'AugustCollonstraat', 'Bandstraat', 'Basculestraat',
+     'Berm', 'Boogstraat',
+     'Boxbergstraat', 'Bremstraat', 'Congostraat', 'DeBek', 'DeHeuvel', 'DeRoten', 'DeVroente', 'Drijtap',
+     'Gansenwijer', 'Genkerhei', 'Gracht', 'Groenven', 'Gruisweg', 'Hazelnootstraat', 'Heiblok',
+     'Heidebos', 'Heilapstraat', 'Hennepstraat', 'Holeven', 'Houtwal', 'Ijzerven', 'Keistraat',
+     'Kennipstraat', 'Klotstraat', 'OudeHeide', 'Ploegstraat', 'Rietbeemdstraat',
+     'Roerstraat', 'Vogelzangstraat', 'Zandoerstraat']
+    # [] #leave empty if you want to the whole directory
+
+    # calculate all errors
+    outputDirdistr = outputDir + "ALL/"
+    if not os.path.exists(outputDirdistr):
+        os.makedirs(outputDirdistr)
+    calculate_errors_between_models(inputDir=inputDir, outputDir=outputDirdistr, variants=variants, streetnames=streetnames)
+
+    # calculate errors per street
+    for streetname in streetnames:
+        outputDirstreet = outputDir + streetname + "/"
+        streetnamestreet = [streetname]
+        if not os.path.exists(outputDirstreet):
+            os.makedirs(outputDirstreet)
+        calculate_errors_between_models(inputDir=inputDir, outputDir=outputDirstreet, variants=variants, streetnames=streetnamestreet)
+
+def calculate_errors_between_models(inputDir=None, outputDir=None, variants=None, streetnames=None):
     '''
 
     How to work with multi-index:
@@ -27,13 +57,6 @@ def calculate_errors_between_models():
     #print df[variant].loc[street] #returns one street in one variant
     #print df.xs('Number of floors', level='KPI', axis=1, drop_level=False) #prints the number of floors-column of all variants for all streets
     '''
-
-    inputDir = "D:\Ina\FINAL\Results/"
-    outputDir = "D:\Ina/"
-    variants = ['LOD2', 'LOD1_ridge', 'LOD1_halfroof', 'LOD2_4', 'LOD2_8']
-    streetnames = ['Bandstraat', 'Berm', 'Boogstraat', 'Bremstraat', 'Congostraat', 'DeBek', 'DeHeuvel', 'DeRoten', 'Drijtap', 'Gansenwijer', 'Gracht', 'Groenven', 'Gruisweg', 'Hazelnootstraat', 'Heiblok', 'Heidebos', 'Heilapstraat',
-                    'Hennepstraat', 'Holeven', 'Houtwal', 'Huiskensweier', 'Ijzerven', 'Keistraat', 'Kennipstraat', 'Klotstraat', 'Leemstraat', 'Plaggenstraat', 'Ploegstraat', 'Rietbeemdstraat',
-                    'Roerstraat', 'Spoorstraat', 'Vogelzangstraat', 'Zandoerstraat'] #[] #leave empty if you want to the whole directory
 
     if streetnames == []:
         streetnames = [name for name in os.listdir(inputDir)]
@@ -88,6 +111,31 @@ def calculate_errors_between_models():
     print ('Buildings who differed in groundfloor area: ' + str(len(list(set(bldg_nan_gf)))))
     print list(set(bldg_nan_gf))
     print ('Number of buildings in buildings PE dataframe: ' + str(df_buildings.shape[0]))
+
+    params = {'legend.fontsize': 'small',
+              'figure.figsize': (15, 5),
+              'axes.labelsize': 'small',
+              'axes.titlesize': 'small',
+              'xtick.labelsize': 'small',
+              'ytick.labelsize': 'small'}
+    plt.rcParams.update(params)
+
+    for variantindex, variant in enumerate(variants, start = 1):
+        if variantindex==1:
+            pass
+        else:
+            df_buildings.boxplot(column=[variant])
+            plt.savefig(outputDir + variant + "_boxplot.png", bbox_inches = 'tight', dpi = 1000)
+            plt.close()
+
+    for variantindex, variant in enumerate(variants, start=1):
+        if variantindex == 1:
+            pass
+        else:
+            df_buildings.hist(column=[variant], bins = 100)
+            plt.tight_layout()
+            plt.savefig(outputDir + variant + "_graph.png", bbox_inches='tight', dpi=1000)
+            plt.close()
 
     # Analyse on street level
     df_streets = None
@@ -365,5 +413,5 @@ def root_mean_square_percentage_error(df_actual, df_forecast):
     return df_rmspe
 
 if __name__ == '__main__':
-    calculate_errors_between_models()
+    report_errors()
     print("That's it! :)")
