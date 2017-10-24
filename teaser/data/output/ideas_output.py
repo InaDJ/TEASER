@@ -377,6 +377,7 @@ def export_ideas(buildings,
                             help_connections.close()
 
                     # Add zone to structure.mo and to help_connections
+                    zone.infiltration_rate = 0.4
                     template = Template(filename=template_path + "ideas_Zone")
                     out_file = open(structure_filepath, 'a')
                     out_file.write(
