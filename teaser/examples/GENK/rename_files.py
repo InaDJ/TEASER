@@ -14,6 +14,8 @@ Two different modes:
 """
 
 import os
+import shutil
+import numpy as np
 
 def rename_files():
     """
@@ -49,11 +51,11 @@ def check_files_in_folder():
     ----------
 
     """
-    compare_between_folders = True
+    compare_between_folders = True #checks if streets are in multiple folders and merges these files
     merge_specified_files = False
     rename_files = False
 
-    path = "D:\Ina\Data\GRB\GML/"
+    path = "D:\Ina\Data\GRB2\GML/"
     gml_1 = "Genk_Streets_1_2/"
     gml_3 = "Genk_Streets_3_4_5/"
     gml_6 = "Genk_Streets_6_7_8/"
@@ -61,8 +63,9 @@ def check_files_in_folder():
     variant1 = "Streets_LOD2"
     variant2 = "Streets_LOD1_Ridge_based"
     variant3 = "Streets_LOD1_Half_roof_based"
-    variants = [variant1, variant2, variant3]
-    "D:\Ina\Data\GRB\GML\Genk_Streets_3_4_5\Streets_LOD2\Akkerstraat.gml"
+    variant4 = "Streets_LOD1_Extended"
+    variants = [variant1, variant4] #variant2, variant3
+
     if compare_between_folders: #run multiple times in case streets are in more than 2 folders
         list_1 = [file for file in os.listdir(path+gml_1+variant1+"/") if file.endswith(".gml")]
         list_3 = [file for file in os.listdir(path+gml_3+variant1+"/") if file.endswith(".gml")]
@@ -229,16 +232,19 @@ def check_files_in_folder():
         current_area = gml_9
         current_folder = path + current_area
 
-        current_names = ["Bethaniastraat.gml", "Bethanidstraat.gml", "Bethaninstraat.gml", "Bethaniostraat.gml", "Bethanirstraat.gml", "Bethanitstraat.gml"]
-        correct_name = 'Bethaniestraat.gml'
         current_names = ['EvenceCoppaeplaats.gml', 'EvenceCoppteplaats.gml']
-        correct_name = 'EvenceCoppeeplaats.gml'
-        current_names = ['EvenceCoppeelaan.gml', 'EvenceCopprelaan.gml', 'EvenceCoppselaan.gml']
-        correct_name = 'EvenceCoppeelaan.gml'
+        correct_name = 'EvenceCoppeeplaats.gml' #gml_9
         current_names = ['AndreDumontlaan.gml', 'Andr1Dumontlaan.gml', 'Andr2Dumontlaan.gml', 'Andr3Dumontlaan.gml', 'Andr4Dumontlaan.gml', 'Andr5Dumontlaan.gml', 'Andr6Dumontlaan.gml', 'Andr8Dumontlaan.gml', 'AndrdDumontlaan.gml']
-        correct_name = 'AndreDumontlaan.gml'
-        current_names = ['EvenceCoppeelaan.gml', 'EvenceCopp.gml', 'EvenceCoppaelaan.gml', 'EvenceCopprelaan.gml', 'EvenceCoppselaan.gml', 'EvenceCopptelaan.gml']
-        correct_name = 'EvenceCoppeelaan.gml'
+        correct_name = 'AndreDumontlaan.gml' #gml_9
+        current_names = ['EvenceCoppeelaan.gml', 'EvenceCopprelaan.gml', 'EvenceCoppselaan.gml']
+        correct_name = 'EvenceCoppeelaan.gml' #gml_9
+        current_names = ["Bethaniastraat.gml", "Bethanidstraat.gml", "Bethaninstraat.gml", "Bethaniostraat.gml", "Bethanirstraat.gml", "Bethanitstraat.gml"]
+        correct_name = 'Bethaniestraat.gml' #gml 1
+        current_names = ['EvenceCopp.gml', 'EvenceCoppaelaan.gml', 'EvenceCopprelaan.gml', 'EvenceCoppselaan.gml', 'EvenceCopptelaan.gml']
+        correct_name = 'EvenceCoppeelaan.gml' #gml_6
+        current_names = ['EvenceCoppaeplaats.gml', 'EvenceCoppteplaats.gml']
+        correct_name = 'EvenceCoppeeplaats.gml' #gml_6
+
 
         for streetindex, streetname in enumerate(current_names, start=0):
             if streetindex==0:
@@ -278,16 +284,18 @@ def check_files_in_folder():
         current_area = gml_9
         file_needs_to_renamed = False
 
-        current_names = ["Bethaniastraat.gml", "Bethanidstraat.gml", "Bethaninstraat.gml", "Bethaniostraat.gml", "Bethanirstraat.gml", "Bethanitstraat.gml"]
-        correct_name = 'Bethaniestraat.gml'
-        current_names = ['EvenceCopp.gml', 'EvenceCoppaelaan.gml', 'EvenceCoppkelaan.gml', 'EvenceCopptelaan.gml', 'EvenceCoppwelaan.gml']
-        correct_name = 'EvenceCoppeelaan.gml'
         current_names = ['EvenceCoppaeplaats.gml', 'EvenceCoppteplaats.gml']
-        correct_name = 'EvenceCoppeeplaats.gml'
+        correct_name = 'EvenceCoppeeplaats.gml' #gml_9
         current_names = ['AndreDumontlaan.gml', 'Andr1Dumontlaan.gml', 'Andr2Dumontlaan.gml', 'Andr3Dumontlaan.gml', 'Andr4Dumontlaan.gml', 'Andr5Dumontlaan.gml', 'Andr6Dumontlaan.gml', 'Andr8Dumontlaan.gml', 'AndrdDumontlaan.gml']
-        correct_name = 'AndreDumontlaan.gml'
-        current_names = ['EvenceCoppeelaan.gml', 'EvenceCopp.gml', 'EvenceCoppaelaan.gml', 'EvenceCopprelaan.gml', 'EvenceCoppselaan.gml', 'EvenceCopptelaan.gml']
-        correct_name = 'EvenceCoppeelaan.gml'
+        correct_name = 'AndreDumontlaan.gml' #gml_9
+        current_names = ['EvenceCoppeelaan.gml', 'EvenceCopprelaan.gml', 'EvenceCoppselaan.gml']
+        correct_name = 'EvenceCoppeelaan.gml' #gml_9
+        current_names = ["Bethaniastraat.gml", "Bethanidstraat.gml", "Bethaninstraat.gml", "Bethaniostraat.gml", "Bethanirstraat.gml", "Bethanitstraat.gml"]
+        correct_name = 'Bethaniestraat.gml' #gml 1
+        current_names = ['EvenceCopp.gml', 'EvenceCoppaelaan.gml', 'EvenceCopprelaan.gml', 'EvenceCoppselaan.gml', 'EvenceCopptelaan.gml']
+        correct_name = 'EvenceCoppeelaan.gml' #gml_6
+        current_names = ['EvenceCoppaeplaats.gml', 'EvenceCoppteplaats.gml']
+        correct_name = 'EvenceCoppeeplaats.gml' #gml_6
 
         for old_name in current_names:
             for variant in variants:
@@ -315,7 +323,56 @@ def check_files_in_folder():
                         #with open(variant_path+new_filename, 'w') as file:
                             #file.write(filedata)
                         #print (old_filename + " has been changed to " + new_filename)
+def delete_results():
+    streetnames = ['Achterstraat', 'AdolfGreinerstraat', 'Akkerstraat', 'AlbertForgeurstraat',
+                   'Aldebiezenstraat', 'AlfredWautersstraat', 'Alsemstraat', 'Anijsstraat', 'Arbeidsstraat',
+                   'ArmandMaclotlaan',
+                   'AugustCollonstraat', 'Bandstraat', 'Basculestraat', 'Berm', 'Boogstraat',
+                   'Boxbergstraat', 'Bremstraat', 'Congostraat', 'DeBek', 'DeHeuvel', 'DeRoten', 'DeVroente', 'Drijtap',
+                   'Gansenwijer', 'Genkerhei', 'Gracht', 'Groenven', 'Gruisweg', 'Hazelnootstraat', 'Heiblok',
+                   'Heidebos', 'Heilapstraat', 'Hennepstraat', 'Holeven', 'Houtwal', 'Ijzerven', 'Keistraat',
+                   'Kennipstraat', 'Klotstraat', 'OudeHeide', 'Ploegstraat', 'Rietbeemdstraat',
+                   'Roerstraat', 'Vogelzangstraat', 'Zandoerstraat']
+    variant = "LOD2"
+    for streetname in streetnames:
+        for file in os.listdir("D:\Ina\Simulations\Models\Results/"+streetname):
+            if variant in file:
+                os.remove(os.path.join("D:\Ina\Simulations\Models\Results/"+streetname,file))
+        for folder in os.listdir("D:\Ina\Simulations\Models/"):
+            if streetname+"_"+variant in folder:
+                print folder
+                if folder.endswith(".teaserXML"):
+                    os.remove(os.path.join("D:\Ina\Simulations\Models/", folder))
+                else:
+                    shutil.rmtree(os.path.join("D:\Ina\Simulations\Models/", folder))
+
+
+def delete_results_from_incomplete_streets():
+    completestreets = ['Acacialaan','Achterstraat', 'AdolfGreinerstraat', 'Akkerstraat', 'AlbertForgeurstraat',
+                   'Aldebiezenstraat', 'AlfredWautersstraat', 'Alsemstraat', 'Anijsstraat', 'Arbeidsstraat',
+                   'ArmandMaclotlaan', 'Bandstraat', 'Basculestraat', 'Berm', 'Boogstraat',
+                   'Boxbergstraat', 'Bremstraat', 'Congostraat', 'DeBek', 'DeHeuvel', 'DeRoten', 'DeVroente', 'Drijtap',
+                   'Gansenwijer', 'Genkerhei', 'Gracht', 'Groenven', 'Gruisweg', 'Hazelnootstraat', 'Heiblok',
+                   'Heidebos', 'Heilapstraat', 'Hennepstraat', 'Holeven', 'Houtwal', 'Ijzerven', 'Keistraat',
+                   'Kennipstraat', 'Klotstraat', 'OudeHeide', 'Ploegstraat', 'Rietbeemdstraat',
+                   'Roerstraat', 'Vogelzangstraat', 'Zandoerstraat']
+    triedstreets = [name for name in os.listdir("D:\Ina\Simulations\Models\Results")]
+
+    failedstreets = np.setdiff1d(triedstreets, completestreets) # elements in tried but not in complete
+
+    for street in failedstreets:
+        for folder in os.listdir("D:\Ina\Simulations\Models/"):
+            if street in folder:
+                print folder
+                if folder.endswith(".teaserXML"):
+                    os.remove(os.path.join("D:\Ina\Simulations\Models/", folder))
+                else:
+                    shutil.rmtree(os.path.join("D:\Ina\Simulations\Models/", folder))
+    for street in failedstreets:
+        shutil.rmtree(os.path.join("D:\Ina\Simulations\Models/Results", street))
 
 if __name__ == '__main__':
-    check_files_in_folder()
+    #check_files_in_folder()
+    #delete_results()
+    delete_results_from_incomplete_streets()
     print("That's it! :)")
