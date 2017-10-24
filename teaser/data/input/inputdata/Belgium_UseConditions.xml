@@ -109,7 +109,7 @@
 			<max_ahu>2.6</max_ahu>
 			<with_ahu>false</with_ahu>
 			<use_constant_ach_rate>false</use_constant_ach_rate>
-			<base_ach>0.2</base_ach>
+			<base_ach>0.5</base_ach>
 			<max_user_ach>1.0</max_user_ach>
 			<max_overheating_ach>3.0 2.0</max_overheating_ach>
 			<max_summer_ach>1.0 283.15 290.15</max_summer_ach>
@@ -167,7 +167,7 @@
 			<max_ahu>3.6</max_ahu>
 			<with_ahu>false</with_ahu>
 			<use_constant_ach_rate>false</use_constant_ach_rate>
-			<base_ach>0.2</base_ach>
+			<base_ach>0.5</base_ach>
 			<max_user_ach>1.0</max_user_ach>
 			<max_overheating_ach>3.0 2.0</max_overheating_ach>
 			<max_summer_ach>1.0 283.15 290.15</max_summer_ach>
@@ -225,7 +225,7 @@
 			<max_ahu>12.0</max_ahu>
 			<with_ahu>false</with_ahu>
 			<use_constant_ach_rate>false</use_constant_ach_rate>
-			<base_ach>0.2</base_ach>
+			<base_ach>0.5</base_ach>
 			<max_user_ach>1.0</max_user_ach>
 			<max_overheating_ach>3.0 2.0</max_overheating_ach>
 			<max_summer_ach>1.0 283.15 290.15</max_summer_ach>
@@ -283,7 +283,7 @@
 			<max_ahu>2.5</max_ahu>
 			<with_ahu>false</with_ahu>
 			<use_constant_ach_rate>false</use_constant_ach_rate>
-			<base_ach>0.2</base_ach>
+			<base_ach>0.5</base_ach>
 			<max_user_ach>1.0</max_user_ach>
 			<max_overheating_ach>3.0 2.0</max_overheating_ach>
 			<max_summer_ach>1.0 283.15 290.15</max_summer_ach>
@@ -341,7 +341,7 @@
 			<max_ahu>0.0</max_ahu>
 			<with_ahu>false</with_ahu>
 			<use_constant_ach_rate>false</use_constant_ach_rate>
-			<base_ach>0.2</base_ach>
+			<base_ach>0.5</base_ach>
 			<max_user_ach>1.0</max_user_ach>
 			<max_overheating_ach>3.0 2.0</max_overheating_ach>
 			<max_summer_ach>1.0 283.15 290.15</max_summer_ach>
@@ -399,7 +399,7 @@
 			<max_ahu>0.0</max_ahu>
 			<with_ahu>false</with_ahu>
 			<use_constant_ach_rate>false</use_constant_ach_rate>
-			<base_ach>0.2</base_ach>
+			<base_ach>0.5</base_ach>
 			<max_user_ach>1.0</max_user_ach>
 			<max_overheating_ach>3.0 2.0</max_overheating_ach>
 			<max_summer_ach>1.0 283.15 290.15</max_summer_ach>
@@ -457,7 +457,7 @@
 			<max_ahu>0.0</max_ahu>
 			<with_ahu>false</with_ahu>
 			<use_constant_ach_rate>false</use_constant_ach_rate>
-			<base_ach>0.2</base_ach>
+			<base_ach>0.5</base_ach>
 			<max_user_ach>1.0</max_user_ach>
 			<max_overheating_ach>3.0 2.0</max_overheating_ach>
 			<max_summer_ach>1.0 283.15 290.15</max_summer_ach>
@@ -515,7 +515,7 @@
 			<max_ahu>15.0</max_ahu>
 			<with_ahu>false</with_ahu>
 			<use_constant_ach_rate>false</use_constant_ach_rate>
-			<base_ach>0.2</base_ach>
+			<base_ach>0.5</base_ach>
 			<max_user_ach>1.0</max_user_ach>
 			<max_overheating_ach>3.0 2.0</max_overheating_ach>
 			<max_summer_ach>1.0 283.15 290.15</max_summer_ach>
