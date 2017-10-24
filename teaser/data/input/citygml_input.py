@@ -121,6 +121,12 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
     # bovenstaande for-lus wordt aangeroepen voor elke gebouwobject in de citygml, ze zijn dus nog niet allen aangemaakt,
     # na de for-lus zijn ze wel allen aangemaakt
     bldgs_to_remove = []
+
+    # if no geometry is defined, then net leased area is zero. As this results in errors, it is set to 1.0, but this buildings and their main buildings should be deleted, this is done here.
+    for bldg in prj.buildings:
+        if bldg.net_leased_area == int(1):
+            bldgs_to_remove.append(bldg.name)
+
     if checkadjacantbuildings is True:
         print("Searching for adjacent buildings and deleting shared walls")
         starttime = time.time()
@@ -132,18 +138,17 @@ def load_gml(path, prj, checkadjacantbuildings, number_of_zones, merge_buildings
             except:
                 bldgs_to_remove.append(bldg.name)
                 print(bldg.name + " resulted in an error while searching for adjacent buildings and was therefore deleted.")
-
-        # remove building extensions from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
-        # if a building extension is removed, also remove its main building (see merge_buildings)
-        for bldg_to_remove in bldgs_to_remove:
-            prj.buildings[:] = [bldg for bldg in prj.buildings if bldg.name not in bldg_to_remove]
-
         endtime = time.time()
         help_file_simulation = open(resultspath + help_file_name, 'a')
         help_file_simulation.write("Searching for adjacent buildings [s];" + str(endtime - starttime) + ";\n")
         help_file_simulation.close()
     else:
         pass
+
+    # remove building extensions from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
+    # if a building extension is removed, also remove its main building (see merge_buildings)
+    for bldg_to_remove in bldgs_to_remove:
+        prj.buildings[:] = [bldg for bldg in prj.buildings if bldg.name not in bldg_to_remove]
 
     if merge_buildings:
         print ("Merging main buildings with extensions")
@@ -300,18 +305,18 @@ def _convert_bldg(bldg, function):
 
 def _merge_bldg(prj, bldgs_to_remove):
     # delete main building if one of its extensions has been removed (extensions are only being removed in the search for adjacent buildings function)
-    bldgs_to_remove = [(bldgname.split('_')[0] + '_' + bldgname.split('_')[1]  + '_1') for bldgname in bldgs_to_remove] #+ '_' + bldgname.split('_')[2]
+    bldgs_to_remove = [(bldgname.split('_')[0] + '_' + bldgname.split('_')[1] + '_' + bldgname.split('_')[2] + '_1') for bldgname in bldgs_to_remove]
 
     for bldg in prj.buildings:
         if bldg.name.endswith("_1"):
             # delete building extensions as neighbours from main building neighbour list
             bldg.list_of_neighbours = [neighbour_name for neighbour_name in bldg.list_of_neighbours \
-                                       if (bldg.name) != (neighbour_name.split('_')[0] + '_' + neighbour_name.split('_')[1] + '_1')] # '_' + neighbour_name.split('_')[2] +
+                                       if (bldg.name) != (neighbour_name.split('_')[0] + '_' + neighbour_name.split('_')[1] +'_' + neighbour_name.split('_')[2] + '_1')]
         else:
             # this is an extension and needs to be merged with its main building
             bldg_ext = bldg
             for bldg_main in prj.buildings:
-                if (bldg_main.name) == (bldg_ext.name.split('_')[0] + '_' + bldg_ext.name.split('_')[1]  +'_1'): #+ '_' + bldg_ext.name.split('_')[2]
+                if (bldg_main.name) == (bldg_ext.name.split('_')[0] + '_' + bldg_ext.name.split('_')[1] + '_' + bldg_ext.name.split('_')[2] +'_1'):
                     # print (bldg_ext.name + ' was found to be a building extension of ' + bldg_main.name)
                     # don't add net leased area of building on building level (is automatically summed up based on zones)
                     for bldg_ext_zone in bldg_ext.thermal_zones:
@@ -336,7 +341,7 @@ def _merge_bldg(prj, bldgs_to_remove):
 
     # rename main buildings
     for bldg in prj.buildings:
-        bldg.name = bldg.name.split('_')[0] + '_' + bldg.name.split('_')[1] #+ '_' + bldg.name.split('_')[2]
+        bldg.name = bldg.name.split('_')[0] + '_' + bldg.name.split('_')[1]  + '_' + bldg.name.split('_')[2]
 
     # print ([bldg.name for bldg in prj.buildings])
 
@@ -585,6 +590,7 @@ def _merge_orientations(prj, orientation_dict):
                             bldg_elem.orientation = new_orientation
                             bldg_elem.area = buildingelement.area
             zone.rooftops[:] = [roof for roof in zone.rooftops if roof.orientation in orientations]
+
     # remove building without any outerwalls from prj.buildings (don't do this in your for-loop as this will mess up the for-loop)
     for bldg_to_remove in bldgs_to_remove:
         prj.buildings[:] = [bldg for bldg in prj.buildings if bldg.name not in bldg_to_remove]

@@ -1424,7 +1424,7 @@ class Project(object):
         return self._number_of_zones
 
     @number_of_zones.setter
-    def number_of_elements_calc(self, value):
+    def number_of_zones(self, value):
 
         ass_error_1 = "number_of_zones has to be 1 or 2"
 

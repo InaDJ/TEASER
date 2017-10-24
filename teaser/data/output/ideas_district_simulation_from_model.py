@@ -86,6 +86,12 @@ def ideas_district_simulation_from_model(prj_name = "Berenbroekstraat_LOD2", mat
         po = Pool(3)
         po.map(simulate_case, li)
 
+        for bld in buildingsimlist:
+            # this is necessary for the correct names in the simulation script
+            name = prj_name + "." + bld + "." + bld  # path to runable building.mo files
+            s = Si.Simulator(name, "dymola", outputpath, packagepath)
+            li.append(s)
+
         endtime = time.time()
         help_file_name = "/" + prj_name + "_timeKPI.csv"
         help_file_simulation = open(resultspath + help_file_name, 'a')

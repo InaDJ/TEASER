@@ -238,9 +238,11 @@ class Building(object):
 
         if self.height_of_floors is None and self.number_of_floors is None:
             self.height_of_floors = height_of_floor
+            print(self.name + " has no proper floor height defined, floor height was therefore set to 3.5m.")
         elif self.height_of_floors is None and self.number_of_floors is not \
                 None:
             self.height_of_floors = self.bldg_height/self.number_of_floors
+            print(self.name + " has no proper floor height defined, floor height was therefore set to building height/number of floors.")
         else:
             pass
 
@@ -259,7 +261,9 @@ class Building(object):
 
             if self.net_leased_area < 1.0:
                 self.parent.buildings[:] = [bldg for bldg in self.parent.buildings if bldg.name != self.name]
-                print("Net leased area of building " + self.name + " was less than 1.0 m2 and this building was therefore deleted.")
+                self.net_leased_area = int(1)
+                print("Net leased area of building " + self.name + " was less than 1.0 m2 and this building will therefore be deleted.")
+                # actual removal of building happens in citygml_input.py
 
     def set_outer_wall_area(self,
                 new_area,

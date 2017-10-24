@@ -96,7 +96,7 @@ class ThermalZone(object):
         self._area = None
         self._volume = None
         self._floor_number = None
-        self._infiltration_rate = 0.5 
+        self._infiltration_rate = 0.4
         self._outer_walls = []
         self._rooftops = []
         self._ground_floors = []

@@ -81,11 +81,11 @@ def export_ideas(buildings,
         strobe_ids = [0]*len(buildings)
         strobe_destination_path = ""
 
-    # Then, create building level
+    # Then, create Modelica model
     for bldgindex, bldg in enumerate(buildings, start=0):
         # Rename building if not already correct
-        if len(bldg.name.split('_')) == 3:
-            bldg.name = bldg.name.split('_')[0]+"_"+bldg.name.split('_')[1]# +"_"+bldg.name.split('_')[2] change also == 4
+        if len(bldg.name.split('_')) == 4:
+            bldg.name = bldg.name.split('_')[0]+"_"+bldg.name.split('_')[1] +"_"+bldg.name.split('_')[2]
         # Re-order thermal zones, first dayzone, then nightzone (required for two-zone)
         if bldg.thermal_zones[0].name == "DayZone":
             pass
@@ -377,6 +377,7 @@ def export_ideas(buildings,
                             help_connections.close()
 
                     # Add zone to structure.mo and to help_connections
+                    zone.infiltration_rate = 0.4
                     template = Template(filename=template_path + "ideas_Zone")
                     out_file = open(structure_filepath, 'a')
                     out_file.write(
@@ -592,6 +593,39 @@ def export_ideas(buildings,
                               kindofpackage="MaterialProperties",
                               packagedescription="Library of building envelope constructions")
                 _help_package_order(constructions_path, [], None, bldg_constructions, [])
+
+            elif building_model == "ROM":
+                building_template = Template(
+                    filename=utilities.get_full_path(
+                        "data/output/modelicatemplate/IDEAS/ideas_FourElements_Building"), lookup=lookup)
+                structure_template = Template(
+                    filename=utilities.get_full_path(
+                        "data/output/modelicatemplate/IDEAS/ideas_FourElements_Structure"), lookup=lookup)
+
+                for i, bldg in enumerate(buildings):
+                    bldg_path = os.path.join(path, bldg.name) + "/"
+                    utilities.create_path(utilities.get_full_path(bldg_path))
+                    structure_path = bldg_path + "Structure"
+                    utilities.create_path(utilities.get_full_path(structure_path))
+
+                    out_file = open(utilities.get_full_path(os.path.join(bldg_path +
+                                                                         bldg.name + "_Building.mo")), 'w')
+                    out_file.write(building_template.render_unicode(bldg=bldg))
+                    out_file.close()
+
+                    _help_package(path=bldg_path, name=bldg.name, within=bldg.parent.name)
+                    _help_package_order(path=bldg_path, package_list_with_addition=[], addition=None,
+                                        extra_list=[bldg.name + "_Building", "Structure", bldg.name])
+
+                    for zone in bldg.thermal_zones:
+                        out_file = open(utilities.get_full_path(os.path.join(
+                            structure_path, bldg.name + '_Structure' + '.mo')), 'w')
+                        out_file.write(structure_template.render_unicode(zone=zone))
+                        out_file.close()
+
+                        _help_package(path=structure_path, name="Structure", within=prj.name + '.' + bldg.name)
+                        _help_package_order(path=structure_path, package_list_with_addition=[], addition=None,
+                                            extra_list=[bldg.name + "_Structure"])
     # Now, create project level (project.mo, package.mo and package.order) (after buildings are renamed)
     template = Template(
         filename=template_path + "ideas_Project")
@@ -608,55 +642,6 @@ def export_ideas(buildings,
 
     print("IDEAS building model export is finished. Exports can be found here:")
     print(path)
-
-    if building_model == "ROM":
-        #_help_project was reeds aangeroepen onafhankelijk vh export model, echter in .order zit occupant niet, dus we overschrijven nu de file
-        _help_package_order(path, buildings, extra_list=[prj.name + "_Project", "Occupant"])
-
-        occupant_path = path + "/Occupant/"
-        utilities.create_path(utilities.get_full_path(occupant_path))
-        #create occupant.mo, package.mo and package.order on occupant level
-        template_path = utilities.get_full_path("data/output/modelicatemplate/ideas/")
-        occupant_template = Template(filename=template_path + "ideas_Occupant_ProjectLevel")
-        out_file = open(utilities.get_full_path(occupant_path + "ISO13790.mo"), 'w')
-        out_file.write(occupant_template.render_unicode(project=prj))
-        out_file.close()
-        _help_package(occupant_path, "Occupant",within=prj.name,
-                      packagedescription="Package of the particular building occupant")
-        _help_package_order(occupant_path, [], "", ["ISO13790"], [])
-
-
-        lookup = TemplateLookup(directories=[utilities.get_full_path(
-            os.path.join('data', 'output', 'modelicatemplate'))])
-        building_template = Template(
-            filename=utilities.get_full_path(
-                "data/output/modelicatemplate/IDEAS/ideas_FourElements_Building"), lookup=lookup)
-        structure_template = Template(
-            filename=utilities.get_full_path(
-                "data/output/modelicatemplate/IDEAS/ideas_FourElements_Structure"), lookup=lookup)
-
-        for i, bldg in enumerate(buildings):
-            bldg_path = os.path.join(path, bldg.name) + "/"
-            utilities.create_path(utilities.get_full_path(bldg_path))
-            structure_path = bldg_path + "Structure"
-            utilities.create_path(utilities.get_full_path(structure_path))
-
-            out_file = open(utilities.get_full_path(os.path.join(bldg_path +
-                                           bldg.name + "_Building.mo")), 'w')
-            out_file.write(building_template.render_unicode(bldg=bldg))
-            out_file.close()
-
-            _help_package(path=bldg_path,name=bldg.name,within=bldg.parent.name)
-            _help_package_order(path=bldg_path,package_list_with_addition=[],addition=None,extra_list=[bldg.name + "_Building","Structure", bldg.name])
-
-            for zone in bldg.thermal_zones:
-                out_file = open(utilities.get_full_path(os.path.join(
-                    structure_path, bldg.name + '_Structure' + '.mo')), 'w')
-                out_file.write(structure_template.render_unicode(zone=zone))
-                out_file.close()
-
-                _help_package(path=structure_path,name="Structure",within=prj.name + '.' + bldg.name)
-                _help_package_order( path=structure_path,package_list_with_addition=[],addition=None,extra_list=[bldg.name + "_Structure"])
 
 def _help_package(path, name, uses=None, within=None,
                   kindofpackage=None, packagedescription=None):
