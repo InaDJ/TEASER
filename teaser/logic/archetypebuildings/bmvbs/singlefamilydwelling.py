@@ -620,7 +620,7 @@ class SingleFamilyDwelling(Residential):
 
         for surface in self.gml_surfaces:
             if surface.surface_tilt is not None:
-                if surface.surface_tilt != 0 and surface.surface_orientation\
+                if round(surface.surface_tilt,1) == 90.0 and surface.surface_orientation\
                         != -2 and surface.surface_orientation != -1: #walls
                     self.set_outer_wall_area(surface.surface_area *
                                              (1 - self.est_factor_win_area),
